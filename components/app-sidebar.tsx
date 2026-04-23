@@ -34,12 +34,12 @@ const navItems = [
     href: "/dashboard",
   },
   {
-    label: "Prestasi",
+    label: "Submission",
     icon: Trophy,
     children: [
-      { label: "Prestasi", icon: Trophy, href: "/dashboard/prestasi" },
-      { label: "Sertifikat", icon: ScrollText, href: "/dashboard/sertifikat" },
-      { label: "Rekognisi", icon: UserCheck, href: "/dashboard/rekognisi" },
+      { label: "Prestasi", icon: Trophy, href: "/achievement" },
+      { label: "Sertifikat", icon: ScrollText, href: "/certificate "},
+      { label: "Rekognisi", icon: UserCheck, href: "/recognition" },
     ],
   },
 ];
