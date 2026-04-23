@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import * as React from "react";
 import {
   ChevronDown,
@@ -33,25 +32,24 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-/* ─── Types ─────────────────────────────────────────────────── */
-interface Prestasi {
+interface Sertifikat {
   id: string;
   name: string;
   initials: string;
   color: string;
-  kegiatan: string;
+  grade: string;
   komentar: string;
   status: "Active" | "Inactive";
 }
 
 /* ─── Dummy data ─────────────────────────────────────────────── */
-const ALL_DATA: Prestasi[] = [
+const ALL_DATA: Sertifikat[] = [
   {
     id: "STD001",
     name: "Emma Wilson",
     initials: "EW",
     color: "#6366f1",
-    kegiatan: "Grade 10",
+    grade: "Grade 10",
     komentar: "-",
     status: "Active",
   },
@@ -60,7 +58,7 @@ const ALL_DATA: Prestasi[] = [
     name: "Michael Chen",
     initials: "MC",
     color: "#0ea5e9",
-    kegiatan: "Grade 10",
+    grade: "Grade 10",
     komentar: "-",
     status: "Active",
   },
@@ -69,7 +67,7 @@ const ALL_DATA: Prestasi[] = [
     name: "Sophia Rodriguez",
     initials: "SR",
     color: "#10b981",
-    kegiatan: "Grade 11",
+    grade: "Grade 11",
     komentar: "-",
     status: "Active",
   },
@@ -78,7 +76,7 @@ const ALL_DATA: Prestasi[] = [
     name: "James Anderson",
     initials: "JA",
     color: "#f59e0b",
-    kegiatan: "Grade 9",
+    grade: "Grade 9",
     komentar: "-",
     status: "Active",
   },
@@ -87,7 +85,7 @@ const ALL_DATA: Prestasi[] = [
     name: "Olivia Brown",
     initials: "OB",
     color: "#ec4899",
-    kegiatan: "Grade 12",
+    grade: "Grade 12",
     komentar: "-",
     status: "Active",
   },
@@ -96,7 +94,7 @@ const ALL_DATA: Prestasi[] = [
     name: "William Taylor",
     initials: "WT",
     color: "#14b8a6",
-    kegiatan: "Grade 10",
+    grade: "Grade 10",
     komentar: "-",
     status: "Active",
   },
@@ -105,7 +103,7 @@ const ALL_DATA: Prestasi[] = [
     name: "Ava Martinez",
     initials: "AM",
     color: "#8b5cf6",
-    kegiatan: "Grade 11",
+    grade: "Grade 11",
     komentar: "-",
     status: "Active",
   },
@@ -114,7 +112,7 @@ const ALL_DATA: Prestasi[] = [
     name: "Ethan Davis",
     initials: "ED",
     color: "#f97316",
-    kegiatan: "Grade 9",
+    grade: "Grade 9",
     komentar: "-",
     status: "Active",
   },
@@ -123,7 +121,7 @@ const ALL_DATA: Prestasi[] = [
     name: "Mia Thompson",
     initials: "MT",
     color: "#06b6d4",
-    kegiatan: "Grade 10",
+    grade: "Grade 10",
     komentar: "-",
     status: "Inactive",
   },
@@ -132,7 +130,7 @@ const ALL_DATA: Prestasi[] = [
     name: "Noah Garcia",
     initials: "NG",
     color: "#84cc16",
-    kegiatan: "Grade 11",
+    grade: "Grade 11",
     komentar: "-",
     status: "Active",
   },
@@ -141,7 +139,7 @@ const ALL_DATA: Prestasi[] = [
     name: "Isabella Lee",
     initials: "IL",
     color: "#e11d48",
-    kegiatan: "Grade 12",
+    grade: "Grade 12",
     komentar: "-",
     status: "Active",
   },
@@ -150,15 +148,15 @@ const ALL_DATA: Prestasi[] = [
     name: "Liam Walker",
     initials: "LW",
     color: "#7c3aed",
-    kegiatan: "Grade 9",
+    grade: "Grade 9",
     komentar: "-",
     status: "Inactive",
   },
 ];
 
 const PAGE_SIZE = 8;
-const KATEGORI = [
-  "Semua Kategori",
+const GRADE = [
+  "Semua Grade",
   "Grade 9",
   "Grade 10",
   "Grade 11",
@@ -166,7 +164,6 @@ const KATEGORI = [
 ];
 const STATUSES = ["Semua Status", "Active", "Inactive"];
 
-/* ─── Avatar Component ──────────────────────────────────────── */
 function AvatarUser({ initials, color }: { initials: string; color: string }) {
   return (
     <span
@@ -178,10 +175,9 @@ function AvatarUser({ initials, color }: { initials: string; color: string }) {
   );
 }
 
-export default function PrestasiPage() {
-  const router = useRouter();
+export default function SertifikatPage() {
   const [search, setSearch] = React.useState("");
-  const [kategori, setKategori] = React.useState("Semua Kategori");
+  const [grade, setGrade] = React.useState("Semua Grade");
   const [status, setStatus] = React.useState("Semua Status");
   const [page, setPage] = React.useState(1);
 
@@ -189,10 +185,10 @@ export default function PrestasiPage() {
     const matchSearch =
       row.name.toLowerCase().includes(search.toLowerCase()) ||
       row.id.toLowerCase().includes(search.toLowerCase());
-    const matchKategori =
-      kategori === "Semua Kategori" || row.kegiatan === kategori;
+    const matchGrade =
+      grade === "Semua Grade" || row.grade === grade;
     const matchStatus = status === "Semua Status" || row.status === status;
-    return matchSearch && matchKategori && matchStatus;
+    return matchSearch && matchGrade && matchStatus;
   });
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
@@ -200,11 +196,10 @@ export default function PrestasiPage() {
 
   const goTo = (p: number) => setPage(Math.min(Math.max(1, p), totalPages));
 
-  React.useEffect(() => setPage(1), [search, kategori, status]);
+  React.useEffect(() => setPage(1), [search, grade, status]);
 
   return (
     <div className='flex flex-col gap-6 animate-in fade-in duration-500'>
-      {/* ── Filters + CTA ───────────────────────────────────── */}
       <div className='flex flex-wrap items-center gap-3'>
         <div className='relative flex-1 min-w-[200px] max-w-xs'>
           <Search
@@ -214,21 +209,21 @@ export default function PrestasiPage() {
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder='Cari prestasi...'
+            placeholder='Cari Sertifikat...'
             className='pl-9 bg-white border-slate-200 text-sm h-10 rounded-xl shadow-sm focus-visible:ring-[#0F4C81]/20 focus-visible:border-[#0F4C81]'
           />
         </div>
 
         <DropdownMenu>
           <DropdownMenuTrigger className='h-10 gap-2 inline-flex items-center px-4 bg-white border border-slate-200 text-slate-600 font-medium text-sm rounded-xl shadow-sm hover:bg-slate-50 transition-colors border-none'>
-            {kategori}
+            {grade}
             <ChevronDown size={14} />
           </DropdownMenuTrigger>
           <DropdownMenuContent className='rounded-xl'>
-            {KATEGORI.map((k) => (
+            {GRADE.map((k) => (
               <DropdownMenuItem
                 key={k}
-                onClick={() => setKategori(k)}
+                onClick={() => setGrade(k)}
                 className='text-sm cursor-pointer'
               >
                 {k}
@@ -265,16 +260,12 @@ export default function PrestasiPage() {
 
         <div className='flex-1' />
 
-        <Button
-          onClick={() => router.push("/achievement/create")}
-          className='h-10 gap-2 bg-[#0F4C81] hover:bg-[#0c3e6b] text-white font-bold text-sm rounded-xl shadow-sm px-5 transition-all hover:-translate-y-0.5'
-        >
+        <Button className='h-10 gap-2 bg-[#0F4C81] hover:bg-[#0c3e6b] text-white font-bold text-sm rounded-xl shadow-sm px-5 transition-all hover:-translate-y-0.5'>
           <Plus size={16} />
-          Tambah Prestasi
+          Tambah Sertifikat
         </Button>
       </div>
 
-      {/* ── Table Card ──────────────────────────────────────── */}
       <Card className='border-slate-200 shadow-sm rounded-2xl overflow-hidden bg-white'>
         <Table>
           <TableHeader>
@@ -286,7 +277,7 @@ export default function PrestasiPage() {
                 Nama
               </TableHead>
               <TableHead className='text-[11px] font-bold tracking-widest uppercase text-slate-400'>
-                Kegiatan
+                Grade
               </TableHead>
               <TableHead className='text-[11px] font-bold tracking-widest uppercase text-slate-400'>
                 Komentar
@@ -317,7 +308,7 @@ export default function PrestasiPage() {
                   </div>
                 </TableCell>
                 <TableCell className='text-sm text-slate-600'>
-                  {row.kegiatan}
+                  {row.grade}
                 </TableCell>
                 <TableCell className='text-sm text-slate-400'>
                   {row.komentar}
