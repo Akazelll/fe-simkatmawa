@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import {
   ChevronDown,
   Eye,
@@ -170,6 +171,7 @@ function AvatarUser({ initials, color }: { initials: string; color: string }) {
 }
 
 export default function RekognisiPage() {
+  const router = useRouter();
   const [search, setSearch] = React.useState("");
   const [grade, setGrade] = React.useState("Semua Grade");
   const [status, setStatus] = React.useState("Semua Status");
@@ -253,7 +255,10 @@ export default function RekognisiPage() {
 
         <div className='flex-1' />
 
-        <Button className='h-10 gap-2 bg-[#0F4C81] hover:bg-[#0c3e6b] text-white font-bold text-sm rounded-xl shadow-sm px-5 transition-all hover:-translate-y-0.5'>
+        <Button
+          onClick={() => router.push("/recognition/create")}
+          className='h-10 gap-2 bg-[#0F4C81] hover:bg-[#0c3e6b] text-white font-bold text-sm rounded-xl shadow-sm px-5 transition-all hover:-translate-y-0.5'
+        >
           <Plus size={16} />
           Tambah Rekognisi
         </Button>
