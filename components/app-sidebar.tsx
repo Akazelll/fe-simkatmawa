@@ -182,19 +182,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               onClick={() => {
                 router.push("/login");
               }}
-              className='w-full px-4 py-2.5 rounded-xl text-slate-500 hover:bg-red-50 hover:text-red-600 transition-all group'
+              className='w-full px-4 py-2.5 rounded-xl text-red-600 hover:bg-red-50 hover:text-red-600 transition-all group'
             >
               <LogOut
                 size={18}
                 className='text-slate-400 group-hover:text-red-500 shrink-0'
                 strokeWidth={2}
               />
+
               <span className='font-medium text-[13px]'>Logout</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
-
       <SidebarRail />
     </Sidebar>
   );

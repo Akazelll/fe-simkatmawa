@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import * as React from "react";
 import {
   ChevronDown,
@@ -155,13 +156,7 @@ const ALL_DATA: Sertifikat[] = [
 ];
 
 const PAGE_SIZE = 8;
-const GRADE = [
-  "Semua Grade",
-  "Grade 9",
-  "Grade 10",
-  "Grade 11",
-  "Grade 12",
-];
+const GRADE = ["Semua Grade", "Grade 9", "Grade 10", "Grade 11", "Grade 12"];
 const STATUSES = ["Semua Status", "Active", "Inactive"];
 
 function AvatarUser({ initials, color }: { initials: string; color: string }) {
@@ -176,6 +171,8 @@ function AvatarUser({ initials, color }: { initials: string; color: string }) {
 }
 
 export default function SertifikatPage() {
+  
+    const router = useRouter();
   const [search, setSearch] = React.useState("");
   const [grade, setGrade] = React.useState("Semua Grade");
   const [status, setStatus] = React.useState("Semua Status");
@@ -185,8 +182,7 @@ export default function SertifikatPage() {
     const matchSearch =
       row.name.toLowerCase().includes(search.toLowerCase()) ||
       row.id.toLowerCase().includes(search.toLowerCase());
-    const matchGrade =
-      grade === "Semua Grade" || row.grade === grade;
+    const matchGrade = grade === "Semua Grade" || row.grade === grade;
     const matchStatus = status === "Semua Status" || row.status === status;
     return matchSearch && matchGrade && matchStatus;
   });
@@ -260,7 +256,10 @@ export default function SertifikatPage() {
 
         <div className='flex-1' />
 
-        <Button className='h-10 gap-2 bg-[#0F4C81] hover:bg-[#0c3e6b] text-white font-bold text-sm rounded-xl shadow-sm px-5 transition-all hover:-translate-y-0.5'>
+        <Button
+          onClick={() => router.push("/certificate/create")}
+          className='h-10 gap-2 bg-[#0F4C81] hover:bg-[#0c3e6b] text-white font-bold text-sm rounded-xl shadow-sm px-5 transition-all hover:-translate-y-0.5'
+        >
           <Plus size={16} />
           Tambah Sertifikat
         </Button>
