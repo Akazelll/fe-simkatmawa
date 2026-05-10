@@ -1,6 +1,6 @@
-import { ApprovalRateChart } from "./_components/approval-rate-chart";
-import { StatsGrid } from "./_components/stats-grid";
-import { SubmissionTrendsChart } from "./_components/submission-trends-chart";
+import { ApprovalRateChart } from "@/components/dashboard/approval-rate-chart";
+import { StatsGrid } from "@/components/dashboard/stats-grid";
+import { SubmissionTrendsChart } from "@/components/dashboard/submission-trends-chart";
 
 export default function DashboardPage() {
   return (
