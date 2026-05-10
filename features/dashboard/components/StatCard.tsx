@@ -1,8 +1,7 @@
-import { TrendingDown, TrendingUp, type LucideIcon } from "lucide-react";
+import { TrendingDown, TrendingUp } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-
-export type StatVariant = "navy" | "amber" | "emerald" | "rose";
+import { StatCardProps, StatVariant } from "../types";
 
 const VARIANT_STYLES: Record<
   StatVariant,
@@ -30,14 +29,6 @@ const VARIANT_STYLES: Record<
   },
 };
 
-export interface StatCardProps {
-  icon: LucideIcon;
-  label: string;
-  value: string;
-  trend: number;
-  variant: StatVariant;
-}
-
 export function StatCard({
   icon: Icon,
   label,
@@ -52,13 +43,13 @@ export function StatCard({
   const sign = isUp ? "+" : "";
 
   return (
-    <Card className="border-slate-200 shadow-sm rounded-2xl overflow-hidden hover:shadow-md transition-shadow bg-white">
-      <CardContent className="p-6">
-        <div className="flex items-start justify-between mb-4">
+    <Card className='border-slate-200 shadow-sm rounded-2xl overflow-hidden hover:shadow-md transition-shadow bg-white'>
+      <CardContent className='p-6'>
+        <div className='flex items-start justify-between mb-4'>
           <div
             className={cn(
               "h-12 w-12 flex items-center justify-center rounded-xl",
-              styles.iconWrap
+              styles.iconWrap,
             )}
           >
             <Icon size={22} />
@@ -66,7 +57,7 @@ export function StatCard({
           <div
             className={cn(
               "flex items-center gap-1 text-xs font-semibold",
-              trendColor
+              trendColor,
             )}
           >
             <TrendIcon size={14} />
