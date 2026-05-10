@@ -41,16 +41,14 @@ export default function ActivityLogPage() {
   return (
     <div className='flex flex-col gap-6 animate-in fade-in duration-500'>
       <PageHeader
-        title='Log Aktivitas'
-        description='Pantau riwayat perubahan data sistem'
+        title='Activity Logs'
+        description='Monitor all system activities and user actions'
         createPath='/activity'
-        buttonIcon={Download} // <-- Perbaikan: Gunakan komponen langsung, bukan string
+        buttonIcon={Download}
         buttonText='Export Log'
       />
 
       <FilterSection
-        search={filter.search}
-        setSearch={filter.setSearch}
         category={filter.category}
         setCategory={filter.setCategory}
         categories={actionLabels}
