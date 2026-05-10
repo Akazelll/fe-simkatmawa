@@ -77,6 +77,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter();
   const pathname = usePathname();
 
+  const isPathActive = (href: string) =>
+    pathname === href || pathname.startsWith(href + "/");
+
   const [openMenus, setOpenMenus] = React.useState<Record<string, boolean>>({
     Submission: true,
   });
@@ -115,9 +118,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenu className='gap-0.5'>
             {navItems.map((item) => {
               const isOpen = openMenus[item.label] ?? false;
-              const isActive = pathname === item.href;
-              const isChildActive = item.children?.some(
-                (child) => pathname === child.href,
+              const isActive = item.href ? isPathActive(item.href) : false;
+              const isChildActive = item.children?.some((child) =>
+                isPathActive(child.href),
               );
 
               if (item.children) {
@@ -127,9 +130,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     <SidebarMenuItem>
                       <SidebarMenuButton
                         onClick={() => toggleMenu(item.label)}
-                        className={`w-full px-8 py-5 rounded-xl transition-all ${
+                        className={`w-full px-8 py-5 rounded-xl transition-colors ${
                           isChildActive
-                            ? "!bg-[#1A4D87] !text-white hover:!bg-[#1A4D87] hover:!text-white font-semibold"
+                            ? "bg-transparent text-[#1A4D87] hover:bg-slate-50 hover:text-[#1A4D87] font-semibold"
                             : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                         }`}
                       >
@@ -137,28 +140,30 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                           size={18}
                           className={
                             isChildActive
-                              ? "!text-white shrink-0"
+                              ? "text-[#1A4D87] shrink-0"
                               : "text-slate-400 shrink-0"
                           }
                           strokeWidth={2}
                         />
 
-                        <span className='flex-1 font-medium text-[13px]'>
-                          {item.label}
-                        </span>
+                        <span className='flex-1 text-[13px]'>{item.label}</span>
 
                         {isOpen ? (
                           <ChevronUp
                             size={14}
                             className={
-                              isChildActive ? "!text-white" : "text-slate-400"
+                              isChildActive
+                                ? "text-[#1A4D87]"
+                                : "text-slate-400"
                             }
                           />
                         ) : (
                           <ChevronDown
                             size={14}
                             className={
-                              isChildActive ? "!text-white" : "text-slate-400"
+                              isChildActive
+                                ? "text-[#1A4D87]"
+                                : "text-slate-400"
                             }
                           />
                         )}
@@ -169,16 +174,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     {isOpen && (
                       <SidebarMenuSub className='ml-4 pl-3 border-l border-slate-100 gap-0.5'>
                         {item.children.map((child) => {
-                          const isChildItemActive = pathname === child.href;
+                          const isChildItemActive = isPathActive(child.href);
 
                           return (
                             <SidebarMenuSubItem key={child.label}>
                               <SidebarMenuSubButton
                                 onClick={() => router.push(child.href)}
                                 isActive={isChildItemActive}
-                                className={`px-3 py-2 rounded-lg transition-all cursor-pointer ${
+                                className={`px-3 py-2 rounded-lg transition-colors cursor-pointer ${
                                   isChildItemActive
-                                    ? "!bg-[#1A4D87] !text-white hover:!bg-[#1A4D87] hover:!text-white font-semibold"
+                                    ? "bg-[#1A4D87]! text-white! hover:bg-[#1A4D87]! hover:text-white! font-semibold shadow-sm"
                                     : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
                                 }`}
                               >
@@ -186,7 +191,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                   size={16}
                                   className={
                                     isChildItemActive
-                                      ? "!text-white shrink-0"
+                                      ? "text-white! shrink-0"
                                       : "text-slate-400 shrink-0"
                                   }
                                   strokeWidth={1.8}
@@ -210,9 +215,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <SidebarMenuButton
                     isActive={isActive}
                     onClick={() => router.push(item.href!)}
-                    className={`w-full px-8 py-5 rounded-xl transition-all ${
+                    className={`w-full px-8 py-5 rounded-xl transition-colors ${
                       isActive
-                        ? "!bg-[#1A4D87] !text-white hover:!bg-[#1A4D87] hover:!text-white font-semibold"
+                        ? "bg-[#1A4D87]! text-white! hover:bg-[#1A4D87]! hover:text-white! font-semibold shadow-sm"
                         : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                     }`}
                   >
@@ -220,13 +225,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       size={18}
                       className={
                         isActive
-                          ? "!text-white shrink-0"
+                          ? "text-white! shrink-0"
                           : "text-slate-400 shrink-0"
                       }
                       strokeWidth={2}
                     />
 
-                    <span className='font-semibold text-[13px]'>
+                    <span
+                      className={`text-[13px] ${
+                        isActive ? "font-semibold" : "font-medium"
+                      }`}
+                    >
                       {item.label}
                     </span>
                   </SidebarMenuButton>

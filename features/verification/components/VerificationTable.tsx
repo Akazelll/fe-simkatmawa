@@ -1,5 +1,7 @@
+import Link from "next/link";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   Table,
   TableBody,
@@ -9,7 +11,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { VerificationSubmission } from "../types";
-import { Search } from "lucide-react";
 
 interface VerificationTableProps {
   data: VerificationSubmission[];
@@ -77,12 +78,15 @@ export function VerificationTable({
                 })}
               </TableCell>
               <TableCell className='text-right pr-6'>
-                <Button
-                  size='sm'
-                  className='bg-[#0F4C81] hover:bg-[#0c3e6b] text-white text-xs font-bold rounded-lg px-4 h-8 transition-all hover:-translate-y-0.5'
+                <Link
+                  href={`/verification/${row.id}`}
+                  className={cn(
+                    buttonVariants(),
+                    "h-9 px-4 rounded-lg text-xs font-semibold bg-[#0F4C81] text-white shadow-sm transition-colors duration-150 hover:bg-[#0c3e6b] focus-visible:ring-2 focus-visible:ring-[#0F4C81]/30 focus-visible:ring-offset-2"
+                  )}
                 >
                   Review
-                </Button>
+                </Link>
               </TableCell>
             </TableRow>
           ))}

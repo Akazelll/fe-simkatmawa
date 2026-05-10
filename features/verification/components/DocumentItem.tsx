@@ -1,0 +1,74 @@
+"use client";
+
+import { useState } from "react";
+import { Link2, ExternalLink, Copy, Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { SubmissionDocument } from "../types";
+
+interface DocumentItemProps {
+  document: SubmissionDocument;
+}
+
+function formatUrl(url: string): string {
+  try {
+    const u = new URL(url);
+    const path = u.pathname.length > 16 ? `...${u.pathname.slice(-8)}` : u.pathname;
+    return `${u.hostname}${path}`;
+  } catch {
+    return url;
+  }
+}
+
+export function DocumentItem({ document }: DocumentItemProps) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(document.url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+
+  const handleOpen = () => {
+    window.open(document.url, "_blank", "noopener,noreferrer");
+  };
+
+  return (
+    <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-slate-50/70 border border-slate-200 rounded-xl'>
+      <div className='flex items-center gap-3 min-w-0 flex-1'>
+        <div className='shrink-0 flex items-center justify-center w-10 h-10 bg-[#6CBDFE1A] rounded-lg'>
+          <Link2 size={18} className='text-[#0F4C81]' />
+        </div>
+        <div className='flex flex-col gap-0.5 min-w-0'>
+          <span className='text-sm font-bold text-slate-800 truncate'>
+            {document.title}
+          </span>
+          <span className='text-xs text-slate-500 truncate'>
+            {formatUrl(document.url)}
+          </span>
+        </div>
+      </div>
+
+      <div className='flex items-center gap-2 shrink-0'>
+        <Button
+          onClick={handleOpen}
+          className='h-9 px-4 gap-1.5 rounded-lg text-xs font-semibold bg-[#0F4C81] text-white shadow-sm transition-colors duration-150 hover:bg-[#0c3e6b] focus-visible:ring-2 focus-visible:ring-[#0F4C81]/30 focus-visible:ring-offset-2'
+        >
+          <ExternalLink size={14} />
+          Open
+        </Button>
+        <Button
+          variant='outline'
+          onClick={handleCopy}
+          className='h-9 px-4 gap-1.5 rounded-lg text-xs font-semibold border-slate-200 bg-white text-slate-600 transition-colors duration-150 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 focus-visible:ring-2 focus-visible:ring-slate-300 focus-visible:ring-offset-2'
+        >
+          {copied ? (
+            <Check size={14} className='text-emerald-500' />
+          ) : (
+            <Copy size={14} />
+          )}
+          {copied ? "Copied" : "Copy"}
+        </Button>
+      </div>
+    </div>
+  );
+}
