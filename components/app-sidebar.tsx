@@ -12,6 +12,8 @@ import {
   ChevronDown,
   SquareCheckBig,
   Activity,
+  Rows3,
+  Settings,
 } from "lucide-react";
 
 import {
@@ -45,14 +47,29 @@ const navItems = [
     ],
   },
   {
+    label: "Activity Log",
+    icon: Activity,
+    href: "/activity",
+  },
+  {
     label: "Verification",
     icon: SquareCheckBig,
     href: "/verification",
   },
   {
-    label: "Activity Log",
-    icon: Activity,
-    href: "/activity",
+    label: "Queue Monitoring",
+    icon: Rows3,
+    href: "/queue",
+  },
+  {
+    label: " User Management",
+    icon: UserCheck,
+    href: "/user-management",
+  },
+  {
+    label: "Settings",
+    icon: Settings,
+    href: "/settings",
   },
 ];
 
@@ -72,7 +89,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar className='border-r border-slate-100 bg-white' {...props}>
-      {/* HEADER */}
       <SidebarHeader className='h-20 justify-center px-5 bg-white border-b border-slate-100'>
         <div className='flex items-center gap-3'>
           <div className='flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#1a2b5e]'>
@@ -111,7 +127,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     <SidebarMenuItem>
                       <SidebarMenuButton
                         onClick={() => toggleMenu(item.label)}
-                        className={`w-full px-4 py-2.5 rounded-xl transition-all ${
+                        className={`w-full px-8 py-5 rounded-xl transition-all ${
                           isChildActive
                             ? "!bg-[#1A4D87] !text-white hover:!bg-[#1A4D87] hover:!text-white font-semibold"
                             : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
@@ -194,7 +210,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <SidebarMenuButton
                     isActive={isActive}
                     onClick={() => router.push(item.href!)}
-                    className={`w-full px-4 py-2.5 rounded-xl transition-all ${
+                    className={`w-full px-8 py-5 rounded-xl transition-all ${
                       isActive
                         ? "!bg-[#1A4D87] !text-white hover:!bg-[#1A4D87] hover:!text-white font-semibold"
                         : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
@@ -227,7 +243,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton
               onClick={() => router.push("/login")}
-              className='w-full px-4 py-2.5 rounded-xl text-red-600 hover:bg-red-50 hover:text-red-600 transition-all group'
+              className='w-full px-8 py-5 rounded-xl text-red-600 hover:bg-red-50 hover:text-red-600 transition-all group'
             >
               <LogOut
                 size={18}

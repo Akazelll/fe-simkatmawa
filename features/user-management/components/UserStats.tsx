@@ -1,0 +1,44 @@
+import { ShieldCheck, Users } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+
+export function UserStats() {
+  const stats = [
+    {
+      label: "Total Role User Admin",
+      value: "24",
+      icon: ShieldCheck,
+      color: "text-[#0F4C81]",
+      bg: "bg-[#0F4C81]/10",
+    },
+    {
+      label: "Total User Mahasiswa",
+      value: "12,450",
+      icon: Users,
+      color: "text-emerald-600",
+      bg: "bg-emerald-50",
+    },
+  ];
+
+  return (
+    <div className='grid grid-cols-1 md:grid-cols-2 gap-5'>
+      {stats.map((item) => (
+        <Card
+          key={item.label}
+          className='border-slate-200 shadow-sm rounded-2xl bg-white'
+        >
+          <CardContent className='p-6 flex items-center gap-4'>
+            <div
+              className={`size-12 rounded-xl flex items-center justify-center ${item.bg}`}
+            >
+              <item.icon className={item.color} size={24} />
+            </div>
+            <div>
+              <p className='text-sm font-medium text-slate-500'>{item.label}</p>
+              <p className='text-2xl font-bold text-slate-800'>{item.value}</p>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+}

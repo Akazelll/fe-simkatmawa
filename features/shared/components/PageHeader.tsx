@@ -10,6 +10,7 @@ interface PageHeaderProps {
   createPath?: string;
   buttonText?: string;
   buttonIcon?: LucideIcon;
+  onButtonClick?: () => void;
 }
 
 export function PageHeader({
@@ -18,6 +19,7 @@ export function PageHeader({
   createPath,
   buttonText,
   buttonIcon: Icon = Plus,
+  onButtonClick,
 }: PageHeaderProps) {
   const router = useRouter();
 
@@ -28,9 +30,13 @@ export function PageHeader({
         <p className='text-slate-600 text-sm'>{description}</p>
       </div>
 
-      {buttonText && createPath && (
+      {buttonText && (createPath || onButtonClick) && (
         <Button
-          onClick={() => router.push(createPath)}
+          onClick={() =>
+            onButtonClick
+              ? onButtonClick()
+              : createPath && router.push(createPath)
+          }
           className='h-10 gap-2 bg-[#155DFC] hover:bg-[#124cb0] text-white font-bold text-sm rounded-xl shadow-sm px-5 transition-all hover:-translate-y-0.5'
         >
           <Icon size={16} />
