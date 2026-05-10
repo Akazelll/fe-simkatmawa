@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { Bell, ChevronDown, LogOut, User } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -14,17 +13,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-interface NavbarProps {
-  title: string;
-}
 
-export function Navbar({ title }: NavbarProps) {
+export function Navbar() {
   return (
     <header className='flex h-20 shrink-0 items-center justify-between border-b bg-white px-8'>
       <div className='flex items-center gap-4'>
         <SidebarTrigger className='-ml-1' />
         <div className='h-4 w-px bg-slate-200' />
-        <h1 className='text-lg font-bold text-slate-800'>{title}</h1>
       </div>
 
       <div className='flex items-center gap-4 sm:gap-6'>
