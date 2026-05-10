@@ -2,7 +2,7 @@ import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Navbar } from "@/components/navbar";
 
-export default function DashboardLayout({
+export default function ActivityLogLayout({
   children,
 }: {
   children: React.ReactNode;

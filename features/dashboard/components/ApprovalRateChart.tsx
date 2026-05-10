@@ -6,43 +6,26 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  type ChartConfig,
 } from "@/components/ui/chart";
-
-const APPROVAL_DATA = [
-  { category: "Prestasi", approved: 387, rejected: 42 },
-  { category: "Sertifikasi", approved: 312, rejected: 56 },
-  { category: "Rekognisi", approved: 193, rejected: 25 },
-];
-
-const CONFIG = {
-  approved: {
-    label: "Approved",
-    color: "#10b981",
-  },
-  rejected: {
-    label: "Rejected",
-    color: "#ef4444",
-  },
-} satisfies ChartConfig;
+import { APPROVAL_DATA, APPROVAL_CONFIG } from "../constants";
 
 export function ApprovalRateChart() {
   return (
-    <Card className="border-slate-200 shadow-sm rounded-2xl bg-white">
+    <Card className='border-slate-200 shadow-sm rounded-2xl bg-white'>
       <CardHeader>
-        <CardTitle className="text-base font-semibold text-slate-800">
+        <CardTitle className='text-base font-semibold text-slate-800'>
           Approval Rate by Category
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={CONFIG} className="h-[260px] w-full">
+        <ChartContainer config={APPROVAL_CONFIG} className='h-[260px] w-full'>
           <BarChart
             data={APPROVAL_DATA}
             margin={{ left: 8, right: 16, top: 8 }}
           >
-            <CartesianGrid strokeDasharray="4 4" vertical={false} />
+            <CartesianGrid strokeDasharray='4 4' vertical={false} />
             <XAxis
-              dataKey="category"
+              dataKey='category'
               tickLine={false}
               axisLine={false}
               tickMargin={8}
@@ -54,15 +37,15 @@ export function ApprovalRateChart() {
               ticks={[0, 100, 200, 300, 400]}
               domain={[0, 400]}
             />
-            <ChartTooltip content={<ChartTooltipContent indicator="dot" />} />
+            <ChartTooltip content={<ChartTooltipContent indicator='dot' />} />
             <Bar
-              dataKey="approved"
-              fill="var(--color-approved)"
+              dataKey='approved'
+              fill='var(--color-approved)'
               radius={[4, 4, 0, 0]}
             />
             <Bar
-              dataKey="rejected"
-              fill="var(--color-rejected)"
+              dataKey='rejected'
+              fill='var(--color-rejected)'
               radius={[4, 4, 0, 0]}
             />
           </BarChart>

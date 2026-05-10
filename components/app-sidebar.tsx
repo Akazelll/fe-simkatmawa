@@ -11,6 +11,7 @@ import {
   ChevronUp,
   ChevronDown,
   SquareCheckBig,
+  Activity,
 } from "lucide-react";
 
 import {
@@ -47,6 +48,11 @@ const navItems = [
     label: "Verification",
     icon: SquareCheckBig,
     href: "/verification",
+  },
+  {
+    label: "Activity Log",
+    icon: Activity,
+    href: "/activity",
   },
 ];
 
