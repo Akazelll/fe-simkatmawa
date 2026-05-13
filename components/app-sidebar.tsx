@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import {
   LayoutDashboard,
@@ -14,6 +15,7 @@ import {
   Activity,
   Rows3,
   Settings,
+  Recycle,
 } from "lucide-react";
 
 import {
@@ -67,6 +69,11 @@ const navItems = [
     href: "/user-management",
   },
   {
+    label: " Recycle Bin",
+    icon: Recycle,
+    href: "/recycle-bin",
+  },
+  {
     label: "Settings",
     icon: Settings,
     href: "/settings",
@@ -93,11 +100,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar className='border-r border-slate-100 bg-white' {...props}>
       <SidebarHeader className='h-20 justify-center px-5 bg-white border-b border-slate-100'>
-        <div className='flex items-center gap-3'>
-          <div className='flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#1a2b5e]'>
-            <span className='text-[9px] font-extrabold text-white tracking-wide'>
-              SIM
-            </span>
+        <div className='flex items-center gap-3 px-4 py-6'>
+          <div className='flex aspect-square size-10 items-center justify-center rounded-lg'>
+            <Image
+              src='/logo-udinus.png'
+              alt='Logo Udinus'
+              width={60}
+              height={60}
+              className='object-contain'
+            />
           </div>
 
           <div className='flex flex-col leading-tight'>
@@ -112,7 +123,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </div>
       </SidebarHeader>
 
-      {/* CONTENT */}
       <SidebarContent className='bg-white px-3 py-3'>
         <SidebarGroup>
           <SidebarMenu className='gap-0.5'>
@@ -126,11 +136,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               if (item.children) {
                 return (
                   <React.Fragment key={item.label}>
-                    {/* PARENT MENU */}
                     <SidebarMenuItem>
                       <SidebarMenuButton
                         onClick={() => toggleMenu(item.label)}
-                        className={`w-full px-8 py-5 rounded-xl transition-colors ${
+                        className={`w-full px-8 py-6 rounded-xl transition-colors ${
                           isChildActive
                             ? "bg-transparent text-[#1A4D87] hover:bg-slate-50 hover:text-[#1A4D87] font-semibold"
                             : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"

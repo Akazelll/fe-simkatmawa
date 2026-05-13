@@ -18,15 +18,18 @@ interface FilterSectionProps {
   category?: string;
   setCategory?: (val: string) => void;
   categories?: string[];
+  categoryLabel?: string;
 
   year?: string;
   setYear?: (val: string) => void;
   years?: string[];
+  yearLabel?: string;
 
   status?: string;
   setStatus?: (val: string) => void;
   statuses?: string[];
   statusLabel?: string;
+  
 }
 
 export function FilterSection({
@@ -37,14 +40,17 @@ export function FilterSection({
   category,
   setCategory,
   categories,
+  categoryLabel = "Filter by Type",
 
   year,
   setYear,
   years,
+  yearLabel = "Filter by Year",
 
   status,
   setStatus,
   statuses,
+  statusLabel = "Filter by Status",
 }: FilterSectionProps) {
   return (
     <div className='w-full rounded-2xl border border-slate-200 bg-white p-6'>
