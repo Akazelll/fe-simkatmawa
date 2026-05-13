@@ -7,6 +7,15 @@ const manrope = Manrope({
   variable: "--font-manrope",
 });
 
+export const metadata = {
+  title: "SIMKATMAWA - UDINUS",
+  description: "Sistem Informasi Rekapitulasi Kegiatan Kemahasiswaan",
+  icons: {
+    icon: "/logo-udinus.png", 
+    apple: "/logo-udinus.png", 
+  },
+};
+
 export default function RootLayout({
   children,
 }: {

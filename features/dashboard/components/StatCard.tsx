@@ -44,31 +44,24 @@ export function StatCard({
 
   return (
     <Card className='border-slate-200 shadow-sm rounded-2xl overflow-hidden hover:shadow-md transition-shadow bg-white'>
-      <CardContent className='p-6'>
-        <div className='flex items-start justify-between mb-4'>
-          <div
-            className={cn(
-              "h-12 w-12 flex items-center justify-center rounded-xl",
-              styles.iconWrap,
-            )}
-          >
-            <Icon size={22} />
-          </div>
-          <div
-            className={cn(
-              "flex items-center gap-1 text-xs font-semibold",
-              trendColor,
-            )}
-          >
-            <TrendIcon size={14} />
-            {sign}
-            {trend.toFixed(1)}%
-          </div>
+      <CardContent className='p-6 flex items-center justify-between'>
+        {/* Kiri: Icon */}
+        <div
+          className={cn(
+            "h-12 w-12 flex items-center justify-center rounded-xl shrink-0",
+            styles.iconWrap,
+          )}
+        >
+          <Icon size={22} />
         </div>
-        <div className={cn("text-3xl font-bold mb-1", styles.value)}>
-          {value}
+
+        {/* Kanan: Info Submission (Value & Label) */}
+        <div className='flex flex-col items-end text-right'>
+          <div className={cn("text-3xl font-bold mb-1", styles.value)}>
+            {value}
+          </div>
+          <div className={cn("text-sm font-medium", styles.label)}>{label}</div>
         </div>
-        <div className={cn("text-sm font-medium", styles.label)}>{label}</div>
       </CardContent>
     </Card>
   );

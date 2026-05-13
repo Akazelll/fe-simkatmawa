@@ -83,8 +83,8 @@ export function SyncConfigCard() {
           </div>
         </div>
       </CardContent>
-      <CardFooter className='pt-6 border-t border-slate-100'>
-        <Button className='bg-[#0F4C81] hover:bg-[#0c3e6b] text-white rounded-xl font-bold px-6 shadow-sm w-full sm:w-auto'>
+      <CardFooter className='gap-3 pt-6 border-t border-slate-100 flex-wrap justify-end'>
+        <Button className='bg-[#0F4C81] hover:bg-[#0c3e6b] text-white rounded-xl font-bold shadow-sm w-full sm:w-[200px] h-11'>
           Save Configuration
         </Button>
       </CardFooter>
