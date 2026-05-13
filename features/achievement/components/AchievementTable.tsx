@@ -17,22 +17,22 @@ export function AchievementTable({ data }: { data: Prestasi[] }) {
       <Table>
         <TableHeader>
           <TableRow className='border-slate-100 hover:bg-transparent'>
-            <TableHead className='text-[11px] font-bold tracking-widest uppercase text-slate-400'>
+            <TableHead className='text-[11px] font-bold tracking-widest uppercase text-slate-400 text-center'>
               Nama
             </TableHead>
-            <TableHead className='text-[11px] font-bold tracking-widest uppercase text-slate-400'>
+            <TableHead className='text-[11px] font-bold tracking-widest uppercase text-slate-400 text-center'>
               Level
             </TableHead>
-            <TableHead className='text-[11px] font-bold tracking-widest uppercase text-slate-400'>
+            <TableHead className='text-[11px] font-bold tracking-widest uppercase text-slate-400 text-center'>
               Penyelenggara
             </TableHead>
-            <TableHead className='text-[11px] font-bold tracking-widest uppercase text-slate-400'>
+            <TableHead className='text-[11px] font-bold tracking-widest uppercase text-slate-400 text-center'>
               Status
             </TableHead>
-            <TableHead className='text-[11px] font-bold tracking-widest uppercase text-slate-400'>
+            <TableHead className='text-[11px] font-bold tracking-widest uppercase text-slate-400 text-center'>
               Tanggal
             </TableHead>
-            <TableHead className='text-[11px] font-bold tracking-widest uppercase text-slate-400 text-right pr-6'>
+            <TableHead className='text-[11px] font-bold tracking-widest uppercase text-slate-400 text-center'>
               Actions
             </TableHead>
           </TableRow>

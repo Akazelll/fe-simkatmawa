@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
@@ -28,10 +29,14 @@ export default function LoginPage() {
   return (
     <main className='min-h-screen flex flex-col items-center justify-center bg-[#f0f2f5] px-4 py-8 gap-5'>
       <div className='flex flex-col items-center gap-2 animate-fade-down'>
-        <div className='w-10 h-10 rounded-lg bg-[#1a2b5e] grid place-items-center'>
-          <span className='text-white text-[10px] font-bold tracking-wide'>
-            SIM
-          </span>
+        <div className='w-10 h-10 rounded-lg bg-[#fffff] grid place-items-center'>
+          <Image
+            src='/logo-udinus.png'
+            alt='Logo Udinus'
+            width={60}
+            height={60}
+            className='object-contain'
+          />
         </div>
 
         <h1 className='text-2xl font-extrabold text-[#1a2b5e] tracking-wide'>
@@ -60,7 +65,7 @@ export default function LoginPage() {
 
           <form
             onSubmit={(e) => {
-              e.preventDefault(); 
+              e.preventDefault();
               router.push("/dashboard");
             }}
             className='space-y-4'

@@ -52,15 +52,15 @@ export function ApiConfigCard() {
           />
         </div>
       </CardContent>
-      <CardFooter className='gap-3 pt-6 border-t border-slate-100 flex-wrap'>
-        <Button className='bg-[#0F4C81] hover:bg-[#0c3e6b] text-white rounded-xl font-bold px-6 shadow-sm flex-1 sm:flex-none'>
-          Save Configuration
-        </Button>
+      <CardFooter className='gap-3 pt-6 border-t border-slate-100 flex-wrap justify-end'>
         <Button
           variant='outline'
-          className='rounded-xl font-bold text-[#0F4C81] border-[#0F4C81]/20 hover:bg-[#0F4C81]/5 flex-1 sm:flex-none'
+          className='rounded-xl font-bold text-[#0F4C81] border-[#0F4C81]/20 hover:bg-[#0F4C81]/5 shadow-sm w-full sm:w-[200px] h-11'
         >
           Test Connection
+        </Button>
+        <Button className='bg-[#0F4C81] hover:bg-[#0c3e6b] text-white rounded-xl font-bold shadow-sm w-full sm:w-[200px] h-11'>
+          Save Configuration
         </Button>
       </CardFooter>
     </Card>

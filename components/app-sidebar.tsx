@@ -16,6 +16,7 @@ import {
   Rows3,
   Settings,
   Recycle,
+  Award,
 } from "lucide-react";
 
 import {
@@ -41,7 +42,7 @@ const navItems = [
   },
   {
     label: "Submission",
-    icon: Trophy,
+    icon: Award ,
     children: [
       { label: "Prestasi", icon: Trophy, href: "/achievement" },
       { label: "Sertifikat", icon: ScrollText, href: "/certificate" },
