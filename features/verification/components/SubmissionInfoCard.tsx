@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { StatusBadge } from "@/features/shared/components/StatusBadge";
 import { VerificationSubmission } from "../types";
 
 interface SubmissionInfoCardProps {
@@ -12,9 +13,13 @@ interface InfoFieldProps {
 
 function InfoField({ label, value }: InfoFieldProps) {
   return (
-    <div className='flex flex-col gap-1.5'>
-      <span className='text-xs font-medium text-slate-400'>{label}</span>
-      <span className='text-sm font-bold text-slate-800'>{value}</span>
+    <div className='flex flex-col gap-1.5 min-w-0'>
+      <span className='text-[11px] font-semibold uppercase tracking-wider text-slate-400'>
+        {label}
+      </span>
+      <span className='text-sm font-semibold text-slate-800 wrap-break-word'>
+        {value}
+      </span>
     </div>
   );
 }
@@ -29,9 +34,12 @@ export function SubmissionInfoCard({ submission }: SubmissionInfoCardProps) {
   return (
     <Card className='border-slate-200 shadow-sm rounded-2xl bg-white'>
       <CardContent className='p-6 md:p-8'>
-        <h2 className='text-lg md:text-xl font-bold text-slate-900 mb-6'>
-          {submission.name}
-        </h2>
+        <div className='flex items-start justify-between gap-4 mb-7'>
+          <h2 className='text-lg md:text-xl font-bold text-slate-900 leading-snug'>
+            {submission.name}
+          </h2>
+          <StatusBadge status={submission.status} className='shrink-0' />
+        </div>
 
         <div className='grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6'>
           <InfoField label='Kategori' value={submission.category} />

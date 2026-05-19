@@ -12,7 +12,8 @@ interface DocumentItemProps {
 function formatUrl(url: string): string {
   try {
     const u = new URL(url);
-    const path = u.pathname.length > 16 ? `...${u.pathname.slice(-8)}` : u.pathname;
+    const path =
+      u.pathname.length > 16 ? `...${u.pathname.slice(-8)}` : u.pathname;
     return `${u.hostname}${path}`;
   } catch {
     return url;
@@ -33,16 +34,16 @@ export function DocumentItem({ document }: DocumentItemProps) {
   };
 
   return (
-    <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-slate-50/70 border border-slate-200 rounded-xl'>
+    <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-slate-50/60 border border-slate-200 rounded-xl transition-colors duration-150 hover:bg-slate-50 hover:border-slate-300'>
       <div className='flex items-center gap-3 min-w-0 flex-1'>
         <div className='shrink-0 flex items-center justify-center w-10 h-10 bg-[#6CBDFE1A] rounded-lg'>
           <Link2 size={18} className='text-[#0F4C81]' />
         </div>
         <div className='flex flex-col gap-0.5 min-w-0'>
-          <span className='text-sm font-bold text-slate-800 truncate'>
+          <span className='text-sm font-semibold text-slate-800 truncate'>
             {document.title}
           </span>
-          <span className='text-xs text-slate-500 truncate'>
+          <span className='text-xs text-slate-500 truncate font-mono'>
             {formatUrl(document.url)}
           </span>
         </div>

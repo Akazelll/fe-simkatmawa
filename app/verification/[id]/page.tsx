@@ -1,10 +1,9 @@
 "use client";
 
 import { use } from "react";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/features/shared/components/PageHeader";
+import { BackLink } from "@/features/shared/components/BackLink";
 import { SubmissionInfoCard } from "@/features/verification/components/SubmissionInfoCard";
 import { DocumentsCard } from "@/features/verification/components/DocumentsCard";
 import { VerificationActions } from "@/features/verification/components/VerificationActions";
@@ -24,13 +23,7 @@ export default function VerificationDetailPage({
 
   return (
     <div className='flex flex-col gap-6 animate-in fade-in duration-500'>
-      <Link
-        href='/verification'
-        className='inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-[#0F4C81] transition-colors w-fit'
-      >
-        <ArrowLeft size={16} />
-        Kembali
-      </Link>
+      <BackLink href='/verification' />
 
       <PageHeader
         title='Detail Verifikasi'
