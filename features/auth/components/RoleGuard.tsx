@@ -1,43 +1,33 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ShieldAlert } from "lucide-react";
+import { useAuth } from "@/features/auth/hooks/use-auth";
+import { hasRole } from "@/lib/auth/permissions";
+import { UserRole } from "@/lib/auth/types";
 
-interface RoleGuardProps {
+export function RoleGuard({
+  children,
+  allowedRoles,
+}: {
   children: React.ReactNode;
-  allowedRoles: string[];
-}
-
-export function RoleGuard({ children, allowedRoles }: RoleGuardProps) {
+  allowedRoles: UserRole[];
+}) {
+  const { currentUser, isLoaded, isAuthenticated } = useAuth();
   const router = useRouter();
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
   useEffect(() => {
-    // Mock get role from auth state/token
-    const userRole = "superadmin";
-
-    if (allowedRoles.includes(userRole)) {
-      setIsAuthorized(true);
-    } else {
-      setIsAuthorized(false);
-      router.push("/dashboard");
+    if (!isLoaded) return;
+    if (!isAuthenticated) {
+      router.replace("/login");
+      return;
     }
-  }, [allowedRoles, router]);
-
-  if (isAuthorized === null) return null; // Wait for check
-
-  if (!isAuthorized) {
-    return (
-      <div className='flex flex-col items-center justify-center min-h-[60vh] gap-4'>
-        <ShieldAlert className='text-rose-500' size={64} />
-        <h2 className='text-2xl font-bold text-slate-800'>Akses Ditolak</h2>
-        <p className='text-slate-500'>
-          Hanya Superadmin yang dapat mengakses halaman ini.
-        </p>
-      </div>
-    );
+    if (!hasRole(currentUser, allowedRoles)) {
+      router.replace("/forbidden");
+    }
+  }, [isLoaded, isAuthenticated, currentUser, allowedRoles, router]);
+  if (!isLoaded || !isAuthenticated || !hasRole(currentUser, allowedRoles)) {
+    return null;
   }
-
   return <>{children}</>;
 }
