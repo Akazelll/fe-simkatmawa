@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
-import { Eye, EyeOff, Lock, Mail } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -12,24 +12,42 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+import { useAuth } from "@/features/auth/hooks/use-auth";
+
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [keepSigned, setKeepSigned] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  // State form login
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    await new Promise((r) => setTimeout(r, 1500));
-    setIsLoading(false);
-    router.push("/dashboard");
+    setError("");
+
+    // Simulasi delay sedikit untuk UX (opsional)
+    await new Promise((r) => setTimeout(r, 800));
+
+    const success = login(email, password);
+
+    if (!success) {
+      setError("Email atau password salah.");
+      setIsLoading(false);
+    }
+    // Jika sukses, router.push("/dashboard") sudah di-handle di dalam hook useAuth
   };
 
   return (
     <main className='min-h-screen flex flex-col items-center justify-center bg-[#f0f2f5] px-4 py-8 gap-5'>
       <div className='flex flex-col items-center gap-2 animate-fade-down'>
-        <div className='w-10 h-10 rounded-lg bg-[#fffff] grid place-items-center'>
+        <div className='w-10 h-10 rounded-lg bg-[#ffffff] grid place-items-center'>
           <Image
             src='/logo-udinus.png'
             alt='Logo Udinus'
@@ -43,7 +61,7 @@ export default function LoginPage() {
           SIMKATMAWA
         </h1>
 
-        <p className='text-[10px] font-semibold text-muted-foreground text-center tracking-widest uppercase leading-relaxed w-[448px] h-[20px]'>
+        <p className='text-[10px] font-semibold text-muted-foreground text-center tracking-widest uppercase leading-relaxed md:w-[448px]'>
           Sistem Informasi Manajemen Pemeringkatan
           <br />
           Kemahasiswaan
@@ -52,7 +70,7 @@ export default function LoginPage() {
 
       {/* ── Card ───────────────────────────────────────────────── */}
       <Card className='w-full max-w-[420px] shadow-md rounded-2xl border-0 animate-fade-up'>
-        <CardContent className='pt-8 pb-2 px-8'>
+        <CardContent className='pt-8 pb-4 px-8'>
           {/* Card header */}
           <div className='mb-6'>
             <h2 className='text-xl font-bold text-foreground'>
@@ -63,13 +81,15 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              router.push("/dashboard");
-            }}
-            className='space-y-4'
-          >
+          <form onSubmit={handleSubmit} className='space-y-4'>
+            {/* Tampilkan Error Message */}
+            {error && (
+              <div className='flex items-center gap-2 text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-100'>
+                <AlertCircle className='w-4 h-4 shrink-0' />
+                <span className='font-medium'>{error}</span>
+              </div>
+            )}
+
             {/* Email */}
             <div className='space-y-1.5'>
               <Label
@@ -86,6 +106,8 @@ export default function LoginPage() {
                   placeholder='username@mhs.dinus.ac.id'
                   required
                   autoComplete='email'
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className='h-12 pl-9 bg-muted/50 border-border focus-visible:ring-[#1a2b5e]/20 focus-visible:border-[#1a2b5e]'
                 />
               </div>
@@ -115,6 +137,8 @@ export default function LoginPage() {
                   placeholder='••••••••••••'
                   required
                   autoComplete='current-password'
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className='h-12 pl-9 pr-10 bg-muted/50 border-border focus-visible:ring-[#1a2b5e]/20 focus-visible:border-[#1a2b5e]'
                 />
                 <button
@@ -150,8 +174,7 @@ export default function LoginPage() {
             </div>
 
             <Button
-              type='button'
-              onClick={() => router.push("/dashboard")}
+              type='submit'
               disabled={isLoading}
               className='w-full bg-gradient-to-r from-[#1a2b5e] to-[#2563eb] hover:from-[#243570] hover:to-[#3b82f6] text-white font-bold tracking-wide rounded-2xl h-11 shadow-md shadow-[#1a2b5e]/25 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-[#1a2b5e]/30 active:translate-y-0 mt-1'
             >
@@ -160,6 +183,7 @@ export default function LoginPage() {
           </form>
         </CardContent>
       </Card>
+
       <p className='text-sm text-muted-foreground font-medium'>
         Tidak punya akun?{" "}
         <Link
