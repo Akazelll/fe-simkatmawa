@@ -5,27 +5,30 @@ import { AdvisorFormSection } from "@/features/shared/components/form/AdvisorFor
 import { DeclarationSection } from "@/features/shared/components/form/DeclarationSection";
 import { AchievementDetailSection } from "@/features/achievement/components/AchievementDetailSection";
 import { useMemberForm } from "@/features/shared/hooks/useMemberForm";
+import { RoleGuard } from "@/features/auth/components/RoleGuard";
 
 export default function CreatePrestasiPage() {
   const memberHook = useMemberForm();
 
   return (
-    <form className='flex flex-col gap-6 animate-in fade-in duration-500 max-w-4xl w-full mx-auto p-4 md:p-0'>
-      <MemberFormSection
-        members={memberHook.members}
-        addMember={memberHook.addMember}
-        removeMember={memberHook.removeMember}
-        updateMember={memberHook.updateMember}
-      />
+    <RoleGuard allowedRoles={["mahasiswa"]}>
+      <form className='flex flex-col gap-6 animate-in fade-in duration-500 max-w-4xl w-full mx-auto p-4 md:p-0'>
+        <MemberFormSection
+          members={memberHook.members}
+          addMember={memberHook.addMember}
+          removeMember={memberHook.removeMember}
+          updateMember={memberHook.updateMember}
+        />
 
-      <AchievementDetailSection />
+        <AchievementDetailSection />
 
-      <AdvisorFormSection />
+        <AdvisorFormSection />
 
-      <DeclarationSection
-        onSubmit={() => console.log("Submit")}
-        onCancel={() => console.log("Cancel")}
-      />
-    </form>
+        <DeclarationSection
+          onSubmit={() => console.log("Submit")}
+          onCancel={() => console.log("Cancel")}
+        />
+      </form>
+    </RoleGuard>
   );
 }

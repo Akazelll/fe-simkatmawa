@@ -8,6 +8,7 @@ export default function ActivityLogLayout({
   children: React.ReactNode;
 }) {
   return (
+    
     <SidebarProvider>
       <div className='flex min-h-screen w-full bg-slate-50/50'>
         <AppSidebar />
