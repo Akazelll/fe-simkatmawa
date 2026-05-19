@@ -1,33 +1,51 @@
 "use client";
 
-import { PageHeader } from "@/features/shared/components/PageHeader";
-import { SystemStatusCard } from "@/features/settings/components/SystemStatusCard";
-import { ApiConfigCard } from "@/features/settings/components/ApiConfigCard";
-import { SyncConfigCard } from "@/features/settings/components/SyncConfigCard";
+import { useState } from "react";
+import { RoleGuard } from "@/features/auth/components/RoleGuard";
+import { Badge } from "@/components/ui/badge";
+import { useKemdikbudCredential } from "@/features/settings/hooks/use-kemdikbud-credential";
+import { KemdikbudIntegrationCard } from "@/features/settings/components/kemdikbud-integration-card";
+import { UpdateKemdikbudCredentialModal } from "@/features/settings/components/update-kemdikbud-credential-modal";
 
 export default function SettingsPage() {
+  const { credential, isLoaded, updateCredential } = useKemdikbudCredential();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  if (!isLoaded || !credential) return null; // Cegah hydration mismatch / UI bocor
+
   return (
-    <div className='flex flex-col gap-8 animate-in fade-in duration-500'>
-      <PageHeader
-        title='System Settings'
-        description='Konfigurasi integrasi sistem dan parameter sinkronisasi'
-      />
-
-      <div className='flex flex-col gap-6'>
-        {/* Status Section */}
-        <div>
-          <h2 className='text-base font-bold text-slate-800 mb-4 px-1'>
-            System Status
-          </h2>
-          <SystemStatusCard />
+    <RoleGuard allowedRoles={["superadmin"]}>
+      <div className='p-6 space-y-6 max-w-7xl mx-auto'>
+        {/* Header */}
+        <div className='flex flex-col gap-1 border-b border-slate-100 pb-5'>
+          <div className='flex items-center gap-3'>
+            <h1 className='text-2xl font-extrabold text-[#1a2b5e] tracking-tight'>
+              Pengaturan Sistem
+            </h1>
+            <Badge className='bg-red-50 text-red-600 font-bold text-[10px] rounded-md tracking-wider border border-red-100 uppercase px-2 py-0.5'>
+              Superadmin Only
+            </Badge>
+          </div>
+          <p className='text-xs font-medium text-slate-500'>
+            Kelola konfigurasi integrasi API Kemdiktisaintek untuk proses
+            sinkronisasi data.
+          </p>
         </div>
 
-        {/* Configuration Section (2 Columns Grid on Desktop) */}
-        <div className='grid grid-cols-1 lg:grid-cols-2 gap-5 mt-2'>
-          <ApiConfigCard />
-          <SyncConfigCard />
-        </div>
+        {/* Card Utama */}
+        <KemdikbudIntegrationCard
+          credential={credential}
+          onEdit={() => setIsModalOpen(true)}
+        />
+
+        {/* Modal Form */}
+        <UpdateKemdikbudCredentialModal
+          open={isModalOpen}
+          onOpenChange={setIsModalOpen}
+          currentEmail={credential.email}
+          onSubmit={updateCredential}
+        />
       </div>
-    </div>
+    </RoleGuard>
   );
 }
