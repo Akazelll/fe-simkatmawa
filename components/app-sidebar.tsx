@@ -17,6 +17,7 @@ import {
   Settings,
   Recycle,
   Award,
+  History, // Tambahan icon history
 } from "lucide-react";
 
 import {
@@ -50,6 +51,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const [openMenus, setOpenMenus] = React.useState<Record<string, boolean>>({
     Submission: true,
+    Verification: true, // Verification dropdown otomatis terbuka
   });
 
   const toggleMenu = (label: string) =>
@@ -92,7 +94,24 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {
           label: "Verification",
           icon: SquareCheckBig,
-          href: "/verification",
+          children: [
+            { label: "Prestasi", icon: Trophy, href: "/verification/prestasi" },
+            {
+              label: "Sertifikat",
+              icon: ScrollText,
+              href: "/verification/sertifikat",
+            },
+            {
+              label: "Rekognisi",
+              icon: UserCheck,
+              href: "/verification/rekognisi",
+            },
+          ],
+        },
+        {
+          label: "History",
+          icon: History,
+          href: "/history",
         },
         {
           label: "Queue Monitoring",
