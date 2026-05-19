@@ -33,8 +33,6 @@ export default function SertifikatPage() {
       <PageHeader
         title='Sertifikat'
         description='Kelola data sertifikat mahasiswa'
-        createPath='/certificate/create'
-        buttonText='Tambah Sertifikat'
       />
 
       <FilterSection
