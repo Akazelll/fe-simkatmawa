@@ -22,8 +22,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang='id' className={manrope.variable}>
-      <body className='font-sans'>
+    <html lang='id' className={manrope.variable} suppressHydrationWarning>
+      <body className='font-sans' suppressHydrationWarning>
         <QueryProvider>{children}</QueryProvider>
       </body>
     </html>

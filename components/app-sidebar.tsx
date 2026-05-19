@@ -34,56 +34,16 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 
-const navItems = [
-  {
-    label: "Dashboard",
-    icon: LayoutDashboard,
-    href: "/dashboard",
-  },
-  {
-    label: "Submission",
-    icon: Award ,
-    children: [
-      { label: "Prestasi", icon: Trophy, href: "/achievement" },
-      { label: "Sertifikat", icon: ScrollText, href: "/certificate" },
-      { label: "Rekognisi", icon: UserCheck, href: "/recognition" },
-    ],
-  },
-  {
-    label: "Activity Log",
-    icon: Activity,
-    href: "/activity",
-  },
-  {
-    label: "Verification",
-    icon: SquareCheckBig,
-    href: "/verification",
-  },
-  {
-    label: "Queue Monitoring",
-    icon: Rows3,
-    href: "/queue",
-  },
-  {
-    label: " User Management",
-    icon: UserCheck,
-    href: "/user-management",
-  },
-  {
-    label: " Recycle Bin",
-    icon: Recycle,
-    href: "/recycle-bin",
-  },
-  {
-    label: "Settings",
-    icon: Settings,
-    href: "/settings",
-  },
-];
+// Import Auth Hooks dan RBAC Permission Helper
+import { useAuth } from "@/features/auth/hooks/use-auth";
+import { hasRole } from "@/lib/auth/permissions";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter();
   const pathname = usePathname();
+
+  // Ambil state current user dan fungsi logout
+  const { currentUser, logout } = useAuth();
 
   const isPathActive = (href: string) =>
     pathname === href || pathname.startsWith(href + "/");
@@ -97,6 +57,78 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       ...prev,
       [label]: !prev[label],
     }));
+
+  // Render navigation item dinamis sesuai role yang sedang login
+  const navItems = React.useMemo(() => {
+    const items: any[] = [
+      {
+        label: "Dashboard",
+        icon: LayoutDashboard,
+        href: "/dashboard",
+      },
+    ];
+
+    if (hasRole(currentUser, "mahasiswa")) {
+      items.push(
+        {
+          label: "Submission",
+          icon: Award,
+          children: [
+            { label: "Prestasi", icon: Trophy, href: "/achievement" },
+            { label: "Sertifikat", icon: ScrollText, href: "/certificate" },
+            { label: "Rekognisi", icon: UserCheck, href: "/recognition" },
+          ],
+        },
+        {
+          label: "Activity Log",
+          icon: Activity,
+          href: "/activity",
+        },
+      );
+    }
+
+    if (hasRole(currentUser, ["admin", "superadmin"])) {
+      items.push(
+        {
+          label: "Verification",
+          icon: SquareCheckBig,
+          href: "/verification",
+        },
+        {
+          label: "Queue Monitoring",
+          icon: Rows3,
+          href: "/queue",
+        },
+        {
+          label: "Activity Log",
+          icon: Activity,
+          href: "/activity",
+        },
+      );
+    }
+
+    if (hasRole(currentUser, "superadmin")) {
+      items.push(
+        {
+          label: "User Management",
+          icon: UserCheck,
+          href: "/user-management",
+        },
+        {
+          label: "Recycle Bin",
+          icon: Recycle,
+          href: "/recycle-bin",
+        },
+        {
+          label: "Settings",
+          icon: Settings,
+          href: "/settings",
+        },
+      );
+    }
+
+    return items;
+  }, [currentUser]);
 
   return (
     <Sidebar className='border-r border-slate-100 bg-white' {...props}>
@@ -130,7 +162,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             {navItems.map((item) => {
               const isOpen = openMenus[item.label] ?? false;
               const isActive = item.href ? isPathActive(item.href) : false;
-              const isChildActive = item.children?.some((child) =>
+              const isChildActive = item.children?.some((child: any) =>
                 isPathActive(child.href),
               );
 
@@ -183,7 +215,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     {/* SUB MENU */}
                     {isOpen && (
                       <SidebarMenuSub className='ml-4 pl-3 border-l border-slate-100 gap-0.5'>
-                        {item.children.map((child) => {
+                        {item.children.map((child: any) => {
                           const isChildItemActive = isPathActive(child.href);
 
                           return (
@@ -261,7 +293,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              onClick={() => router.push("/login")}
+              onClick={() => logout()}
               className='w-full px-8 py-5 rounded-xl text-red-600 hover:bg-red-50 hover:text-red-600 transition-all group'
             >
               <LogOut
