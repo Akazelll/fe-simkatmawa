@@ -14,6 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { getStatusStyle } from "@/features/shared/constants/submissionStatus";
+import { RejectionReasonButton } from "@/features/shared/components/RejectionReasonButton";
 import { Prestasi } from "../types";
 
 const HEAD_CLASS =
@@ -101,11 +102,16 @@ export function AchievementTable({ data }: { data: Prestasi[] }) {
                   {row.pt}
                 </TableCell>
                 <TableCell className={CELL_BASE}>
-                  <Badge
-                    className={`rounded-full px-3 py-1 text-xs font-semibold border-0 ${style.className}`}
-                  >
-                    {style.label}
-                  </Badge>
+                  <div className='flex flex-col items-start gap-1.5'>
+                    <Badge
+                      className={`rounded-full px-3 py-1 text-xs font-semibold border-0 ${style.className}`}
+                    >
+                      {style.label}
+                    </Badge>
+                    {row.status === "Rejected" && row.rejectionReason && (
+                      <RejectionReasonButton reason={row.rejectionReason} />
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell className={`${CELL_BASE} pr-6 text-right`}>
                   <button className='inline-flex p-2 rounded-lg text-sky-500 bg-sky-50 hover:bg-sky-100 transition-colors'>

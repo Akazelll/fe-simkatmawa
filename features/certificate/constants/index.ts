@@ -110,5 +110,7 @@ export const ALL_DATA: Certificate[] = [
     pt: UDINUS,
     status: "Rejected",
     tanggal: new Date("2024-12-01"),
+    rejectionReason:
+      "Dokumen sertifikat yang diunggah tidak dapat diakses (link Google Drive tidak dibagikan untuk publik). Mohon ubah pengaturan akses dokumen menjadi 'Siapa saja yang memiliki link' lalu ajukan ulang.",
   },
 ];

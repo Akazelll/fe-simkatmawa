@@ -153,7 +153,9 @@ export const ALL_DATA: Prestasi[] = [
     penyelenggara: "Dicoding Indonesia",
     tahun: 2025,
     pt: UDINUS,
-    status: "Pending",
+    status: "Rejected",
     tanggal: new Date("2025-07-30"),
+    rejectionReason:
+      "Sertifikat prestasi tidak mencantumkan nama mahasiswa yang bersangkutan. Pastikan dokumen bukti memuat identitas peserta secara jelas sebelum diajukan kembali.",
   },
 ];

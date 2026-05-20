@@ -13,4 +13,5 @@ export interface Rekognisi {
     | "Sync_Failed"
     | "Sync_Success";
   tanggal: Date;
+  rejectionReason?: string;
 }

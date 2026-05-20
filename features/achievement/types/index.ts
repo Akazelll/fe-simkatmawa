@@ -15,4 +15,5 @@ export interface Prestasi {
     | "Sync_Failed"
     | "Sync_Success";
   tanggal: Date;
+  rejectionReason?: string;
 }
