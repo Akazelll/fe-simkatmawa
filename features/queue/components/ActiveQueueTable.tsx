@@ -1,5 +1,6 @@
 "use client";
 
+import { Card } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -15,23 +16,23 @@ import { QueueStatusBadge } from "./QueueStatusBadge";
 
 export function ActiveQueueTable({ jobs }: { jobs: ActiveQueueJob[] }) {
   return (
-    <div className='border border-slate-100 rounded-2xl bg-white overflow-hidden shadow-sm'>
+    <Card className='rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden'>
       <Table>
-        <TableHeader className='bg-slate-50/70'>
-          <TableRow>
-            <TableHead className='w-[100px] font-bold text-slate-500'>
+        <TableHeader className='bg-slate-50 border-b border-slate-200'>
+          <TableRow className='hover:bg-transparent'>
+            <TableHead className='w-[120px] pl-5 text-[10px] font-bold uppercase tracking-wider text-slate-500'>
               Tipe
             </TableHead>
-            <TableHead className='font-bold text-slate-500'>
+            <TableHead className='text-[10px] font-bold uppercase tracking-wider text-slate-500'>
               Nama Kegiatan
             </TableHead>
-            <TableHead className='font-bold text-slate-500'>
+            <TableHead className='w-[200px] text-[10px] font-bold uppercase tracking-wider text-slate-500'>
               Mahasiswa
             </TableHead>
-            <TableHead className='font-bold text-slate-500'>
+            <TableHead className='w-[180px] text-[10px] font-bold uppercase tracking-wider text-slate-500'>
               Masuk Antrean
             </TableHead>
-            <TableHead className='w-[120px] font-bold text-slate-500'>
+            <TableHead className='w-[120px] pr-5 text-[10px] font-bold uppercase tracking-wider text-slate-500'>
               Status
             </TableHead>
           </TableRow>
@@ -41,7 +42,7 @@ export function ActiveQueueTable({ jobs }: { jobs: ActiveQueueJob[] }) {
             <TableRow>
               <TableCell
                 colSpan={5}
-                className='text-center py-10 text-slate-400 font-medium'
+                className='h-24 text-center text-sm font-medium text-slate-500'
               >
                 Tidak ada antrean aktif yang sedang berjalan.
               </TableCell>
@@ -50,21 +51,21 @@ export function ActiveQueueTable({ jobs }: { jobs: ActiveQueueJob[] }) {
             jobs.map((job) => (
               <TableRow
                 key={job.id}
-                className='hover:bg-slate-50/50 transition-colors'
+                className='border-b border-slate-100 hover:bg-slate-50/70 transition-colors'
               >
-                <TableCell>
+                <TableCell className='pl-5'>
                   <SubmissionTypeBadge type={job.type} />
                 </TableCell>
-                <TableCell className='font-semibold text-slate-700'>
+                <TableCell className='text-sm font-semibold text-slate-800'>
                   {job.title}
                 </TableCell>
-                <TableCell className='font-medium text-slate-600'>
+                <TableCell className='text-sm font-medium text-slate-600'>
                   {job.studentName}
                 </TableCell>
-                <TableCell className='text-slate-500 text-xs font-medium'>
+                <TableCell className='text-xs font-medium text-slate-500'>
                   {formatDateTime(job.queuedAt)}
                 </TableCell>
-                <TableCell>
+                <TableCell className='pr-5'>
                   <QueueStatusBadge status={job.status} />
                 </TableCell>
               </TableRow>
@@ -72,6 +73,6 @@ export function ActiveQueueTable({ jobs }: { jobs: ActiveQueueJob[] }) {
           )}
         </TableBody>
       </Table>
-    </div>
+    </Card>
   );
 }

@@ -15,12 +15,10 @@ export default function SettingsPage() {
 
   return (
     <RoleGuard allowedRoles={["superadmin"]}>
-      {/* Wrapper seragam untuk semua halaman Superadmin */}
       <div className='space-y-6 p-4 md:p-6 max-w-7xl mx-auto animate-in fade-in duration-500'>
         <PageHeader
-          title='Pengaturan Sistem'
+          title='Pengaturan'
           description='Kelola konfigurasi integrasi API Kemdiktisaintek untuk proses sinkronisasi data.'
-          badge='Superadmin Only'
         />
 
         <KemdikbudIntegrationCard

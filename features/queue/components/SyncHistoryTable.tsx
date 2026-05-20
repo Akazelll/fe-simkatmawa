@@ -1,5 +1,6 @@
 "use client";
 
+import { Card } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -15,23 +16,23 @@ import { QueueStatusBadge } from "./QueueStatusBadge";
 
 export function SyncHistoryTable({ history }: { history: SyncHistoryItem[] }) {
   return (
-    <div className='border border-slate-100 rounded-2xl bg-white overflow-hidden shadow-sm'>
+    <Card className='rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden'>
       <Table>
-        <TableHeader className='bg-slate-50/70'>
-          <TableRow>
-            <TableHead className='w-[100px] font-bold text-slate-500'>
+        <TableHeader className='bg-slate-50 border-b border-slate-200'>
+          <TableRow className='hover:bg-transparent'>
+            <TableHead className='w-[120px] pl-5 text-[10px] font-bold uppercase tracking-wider text-slate-500'>
               Tipe
             </TableHead>
-            <TableHead className='font-bold text-slate-500'>
+            <TableHead className='text-[10px] font-bold uppercase tracking-wider text-slate-500'>
               Nama Kegiatan
             </TableHead>
-            <TableHead className='font-bold text-slate-500'>
+            <TableHead className='w-[150px] text-[10px] font-bold uppercase tracking-wider text-slate-500'>
               ID Kemdikbud
             </TableHead>
-            <TableHead className='font-bold text-slate-500'>
+            <TableHead className='w-[180px] text-[10px] font-bold uppercase tracking-wider text-slate-500'>
               Terkirim Pada
             </TableHead>
-            <TableHead className='w-[120px] font-bold text-slate-500'>
+            <TableHead className='w-[120px] pr-5 text-[10px] font-bold uppercase tracking-wider text-slate-500'>
               Status
             </TableHead>
           </TableRow>
@@ -41,7 +42,7 @@ export function SyncHistoryTable({ history }: { history: SyncHistoryItem[] }) {
             <TableRow>
               <TableCell
                 colSpan={5}
-                className='text-center py-10 text-slate-400 font-medium'
+                className='h-24 text-center text-sm font-medium text-slate-500'
               >
                 Belum ada histori log sinkronisasi data.
               </TableCell>
@@ -50,21 +51,21 @@ export function SyncHistoryTable({ history }: { history: SyncHistoryItem[] }) {
             history.map((item) => (
               <TableRow
                 key={item.id}
-                className='hover:bg-slate-50/50 transition-colors'
+                className='border-b border-slate-100 hover:bg-slate-50/70 transition-colors'
               >
-                <TableCell>
+                <TableCell className='pl-5'>
                   <SubmissionTypeBadge type={item.type} />
                 </TableCell>
-                <TableCell className='font-semibold text-slate-700'>
+                <TableCell className='text-sm font-semibold text-slate-800'>
                   {item.title}
                 </TableCell>
                 <TableCell className='font-mono text-xs font-bold text-slate-600'>
                   {item.kemdikbudId || "—"}
                 </TableCell>
-                <TableCell className='text-slate-500 text-xs font-medium'>
+                <TableCell className='text-xs font-medium text-slate-500'>
                   {formatDateTime(item.syncedAt)}
                 </TableCell>
-                <TableCell>
+                <TableCell className='pr-5'>
                   <QueueStatusBadge status={item.status} />
                 </TableCell>
               </TableRow>
@@ -72,6 +73,6 @@ export function SyncHistoryTable({ history }: { history: SyncHistoryItem[] }) {
           )}
         </TableBody>
       </Table>
-    </div>
+    </Card>
   );
 }

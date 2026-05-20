@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card"; // Tambahan import Card
 import { RefreshCw, Trash2 } from "lucide-react";
 import { FailedQueueJob } from "@/lib/queue/types";
 import { formatDateTime } from "@/lib/utils/dateFormat";
@@ -30,8 +31,6 @@ interface Props {
   onDelete: (id: string) => void;
   onRetryAll: () => void;
 }
-
-// Sub-komponen untuk memisahkan state Modal per baris
 function FailedJobRow({
   job,
   onRetry,
@@ -44,46 +43,41 @@ function FailedJobRow({
   const [openDelete, setOpenDelete] = useState(false);
 
   return (
-    <tr className='border-b hover:bg-slate-50/50 transition-colors text-sm'>
-      <TableCell className='p-4'>
+    <TableRow className='border-b border-slate-100 hover:bg-slate-50/70 transition-colors'>
+      <TableCell className='pl-5'>
         <SubmissionTypeBadge type={job.type} />
       </TableCell>
-      <TableCell className='p-4 font-semibold text-slate-700'>
+      <TableCell className='text-sm font-semibold text-slate-800'>
         {job.title}
       </TableCell>
-      <TableCell className='p-4 text-slate-500 text-xs font-medium'>
+      <TableCell className='text-xs font-medium text-slate-500'>
         {formatDateTime(job.failedAt)}
       </TableCell>
-      <TableCell className='p-4'>
-        <span className='text-red-600 font-medium text-xs bg-red-50 px-2 py-1 rounded-md border border-red-100'>
+      <TableCell>
+        <span className='inline-flex items-center rounded-md border border-red-200 bg-red-50 px-2.5 py-0.5 text-[11px] font-medium text-red-600'>
           {job.reason}
         </span>
       </TableCell>
-      <TableCell className='p-4 text-right space-x-1.5 whitespace-nowrap'>
-        {/* Tombol Retry per item */}
+      <TableCell className='pr-5 text-right space-x-1.5 whitespace-nowrap'>
         <Button
           size='icon'
           variant='outline'
-          className='h-8 w-8 rounded-lg text-blue-600 border-blue-100 hover:bg-blue-50'
+          className='h-8 w-8 rounded-lg border-blue-200 bg-blue-50 text-blue-600 transition-all hover:bg-blue-100 hover:text-blue-700'
           onClick={() => {
             onRetry(job.id);
             toast.success("Job berhasil dimasukkan kembali ke antrean");
           }}
         >
-          <RefreshCw className='w-3.5 h-3.5' />
+          <RefreshCw className='h-3.5 w-3.5' />
         </Button>
-
-        {/* Tombol Delete per item yang memicu Dialog */}
         <Button
           size='icon'
           variant='outline'
-          className='h-8 w-8 rounded-lg text-red-600 border-red-100 hover:bg-red-50'
+          className='h-8 w-8 rounded-lg border-red-200 bg-red-50 text-red-600 transition-all hover:bg-red-100 hover:text-red-700'
           onClick={() => setOpenDelete(true)}
         >
-          <Trash2 className='w-3.5 h-3.5' />
+          <Trash2 className='h-3.5 w-3.5' />
         </Button>
-
-        {/* Modal Konfirmasi Delete */}
         <Dialog open={openDelete} onOpenChange={setOpenDelete}>
           <DialogContent className='rounded-2xl'>
             <DialogHeader>
@@ -118,7 +112,7 @@ function FailedJobRow({
           </DialogContent>
         </Dialog>
       </TableCell>
-    </tr>
+    </TableRow>
   );
 }
 
@@ -132,18 +126,15 @@ export function FailedJobsTable({
 
   return (
     <div className='space-y-4'>
-      {/* Tombol Bulk Action */}
       {jobs.length > 0 && (
         <div className='flex justify-end'>
           <Button
             size='sm'
-            className='bg-gradient-to-r from-[#1a2b5e] to-[#2563eb] font-bold rounded-xl shadow-sm text-white flex items-center gap-2'
+            className='flex items-center gap-2 rounded-xl bg-[#1a2b5e] font-bold text-white shadow-sm hover:bg-[#111d42] transition-all'
             onClick={() => setOpenRetryAll(true)}
           >
-            <RefreshCw className='w-3.5 h-3.5' /> Coba Ulang Semua
+            <RefreshCw className='h-3.5 w-3.5' /> Coba Ulang Semua
           </Button>
-
-          {/* Modal Konfirmasi Bulk Retry */}
           <Dialog open={openRetryAll} onOpenChange={setOpenRetryAll}>
             <DialogContent className='rounded-2xl'>
               <DialogHeader>
@@ -163,7 +154,7 @@ export function FailedJobsTable({
                   Batal
                 </Button>
                 <Button
-                  className='bg-blue-600 hover:bg-blue-700 rounded-xl text-white'
+                  className='rounded-xl bg-[#1a2b5e] text-white hover:bg-[#111d42]'
                   onClick={() => {
                     setOpenRetryAll(false);
                     onRetryAll();
@@ -180,24 +171,24 @@ export function FailedJobsTable({
         </div>
       )}
 
-      {/* Tabel */}
-      <div className='border border-slate-100 rounded-2xl bg-white overflow-hidden shadow-sm'>
+      {/* Tabel Utama Dibungkus Card */}
+      <Card className='rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden'>
         <Table>
-          <TableHeader className='bg-slate-50/70'>
-            <TableRow>
-              <TableHead className='w-[100px] font-bold text-slate-500'>
+          <TableHeader className='bg-slate-50 border-b border-slate-200'>
+            <TableRow className='hover:bg-transparent'>
+              <TableHead className='w-[120px] pl-5 text-[10px] font-bold uppercase tracking-wider text-slate-500'>
                 Tipe
               </TableHead>
-              <TableHead className='font-bold text-slate-500'>
+              <TableHead className='text-[10px] font-bold uppercase tracking-wider text-slate-500'>
                 Nama Kegiatan
               </TableHead>
-              <TableHead className='font-bold text-slate-500'>
+              <TableHead className='w-[180px] text-[10px] font-bold uppercase tracking-wider text-slate-500'>
                 Gagal Pada
               </TableHead>
-              <TableHead className='font-bold text-slate-500'>
+              <TableHead className='text-[10px] font-bold uppercase tracking-wider text-slate-500'>
                 Penyebab
               </TableHead>
-              <TableHead className='w-[120px] text-right font-bold text-slate-500'>
+              <TableHead className='w-[120px] pr-5 text-right text-[10px] font-bold uppercase tracking-wider text-slate-500'>
                 Aksi
               </TableHead>
             </TableRow>
@@ -207,7 +198,7 @@ export function FailedJobsTable({
               <TableRow>
                 <TableCell
                   colSpan={5}
-                  className='text-center py-10 text-slate-400 font-medium'
+                  className='h-24 text-center text-sm font-medium text-slate-500'
                 >
                   Bersih! Tidak ada job sinkronisasi yang gagal.
                 </TableCell>
@@ -224,7 +215,7 @@ export function FailedJobsTable({
             )}
           </TableBody>
         </Table>
-      </div>
+      </Card>
     </div>
   );
 }

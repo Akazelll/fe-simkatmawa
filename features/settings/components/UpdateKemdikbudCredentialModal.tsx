@@ -1,20 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
+import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AlertTriangle } from "lucide-react";
-import { UpdateKemdikbudCredentialPayload } from "@/lib/settings/types";
-import { toast } from "sonner";
+import type { UpdateKemdikbudCredentialPayload } from "@/lib/settings/types";
 
 interface Props {
   open: boolean;
@@ -22,6 +15,18 @@ interface Props {
   currentEmail?: string;
   onSubmit: (payload: UpdateKemdikbudCredentialPayload) => void;
 }
+
+type FormErrors = {
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
+
+const initialErrors: FormErrors = {
+  email: "",
+  password: "",
+  confirmPassword: "",
+};
 
 export function UpdateKemdikbudCredentialModal({
   open,
@@ -32,168 +37,179 @@ export function UpdateKemdikbudCredentialModal({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [errors, setErrors] = useState<FormErrors>(initialErrors);
 
-  const [errors, setErrors] = useState({
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
-
-  // Reset form saat modal dibuka
   useEffect(() => {
-    if (open) {
-      setEmail(currentEmail || "");
-      setPassword("");
-      setConfirmPassword("");
-      setErrors({ email: "", password: "", confirmPassword: "" });
-    }
+    if (!open) return;
+
+    setEmail(currentEmail ?? "");
+    setPassword("");
+    setConfirmPassword("");
+    setErrors(initialErrors);
   }, [open, currentEmail]);
 
-  const handleSubmit = () => {
-    let isValid = true;
-    const newErrors = { email: "", password: "", confirmPassword: "" };
+  const validateForm = () => {
+    const newErrors: FormErrors = { ...initialErrors };
 
-    // Validasi Email
-    if (!email) {
+    if (!email.trim()) {
       newErrors.email = "Email wajib diisi.";
-      isValid = false;
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       newErrors.email = "Format email tidak valid.";
-      isValid = false;
     }
 
-    // Validasi Password
     if (!password) {
       newErrors.password = "Password wajib diisi.";
-      isValid = false;
     } else if (password.length < 8) {
       newErrors.password = "Password minimal 8 karakter.";
-      isValid = false;
     }
 
-    // Validasi Konfirmasi Password
     if (!confirmPassword) {
       newErrors.confirmPassword = "Konfirmasi password wajib diisi.";
-      isValid = false;
     } else if (password !== confirmPassword) {
       newErrors.confirmPassword = "Password tidak cocok.";
-      isValid = false;
     }
 
     setErrors(newErrors);
 
-    if (isValid) {
-      onSubmit({ email, password });
-      toast.success(
-        "Kredensial berhasil diperbarui. Worker akan login ulang pada sinkronisasi berikutnya.",
-      );
-      onOpenChange(false);
-    }
+    return (
+      !newErrors.email && !newErrors.password && !newErrors.confirmPassword
+    );
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!validateForm()) return;
+
+    onSubmit({
+      email: email.trim(),
+      password,
+      confirmPassword,
+    });
+
+    toast.success("Kredensial berhasil diperbarui.");
+    onOpenChange(false);
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='sm:max-w-[425px] rounded-2xl'>
-        <DialogHeader>
-          <DialogTitle className='text-[#1a2b5e]'>
-            Ubah Kredensial Kemdiktisaintek
-          </DialogTitle>
-          <DialogDescription>
-            Perubahan ini akan memperbarui email dan password akun API
-            Kemdiktisaintek yang digunakan worker untuk sinkronisasi.
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className='w-[calc(100vw-2rem)] overflow-hidden rounded-2xl p-0 sm:max-w-[560px]'>
+        <form onSubmit={handleSubmit}>
+          <DialogHeader className='space-y-2 px-6 pb-4 pt-6'>
+            <DialogTitle className='text-xl font-extrabold tracking-tight text-[#1a2b5e]'>
+              Ubah Kredensial Kemdiktisaintek
+            </DialogTitle>
 
-        <div className='bg-yellow-50 border border-yellow-200 text-yellow-800 p-3 rounded-lg flex items-start gap-2.5 my-2'>
-          <AlertTriangle className='w-4 h-4 mt-0.5 shrink-0 text-yellow-600' />
-          <p className='text-xs font-medium leading-tight'>
-            Token aktif akan dihapus. Sistem akan login ulang secara otomatis
-            saat worker berikutnya berjalan.
-          </p>
-        </div>
+            <DialogDescription className='max-w-[460px] text-sm leading-relaxed text-slate-500'>
+              Perubahan ini akan memperbarui akun API yang digunakan worker
+              untuk sinkronisasi.
+            </DialogDescription>
+          </DialogHeader>
 
-        <div className='space-y-4 py-2'>
-          <div className='space-y-1.5'>
-            <Label htmlFor='email'>
-              Email Akun <span className='text-red-500'>*</span>
-            </Label>
-            <Input
-              id='email'
-              type='email'
-              placeholder='pusat@udinus.ac.id'
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className={
-                errors.email ? "border-red-500 focus-visible:ring-red-200" : ""
-              }
-            />
-            {errors.email && (
-              <p className='text-xs text-red-500 font-medium'>{errors.email}</p>
-            )}
+          <div className='space-y-5 px-6 pb-6'>
+            <div className='space-y-4'>
+              <div className='space-y-1.5'>
+                <Label
+                  htmlFor='email'
+                  className='text-sm font-bold text-slate-700'
+                >
+                  Email Akun
+                </Label>
+                <Input
+                  id='email'
+                  type='email'
+                  placeholder='pusat@udinus.ac.id'
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  className={`h-11 rounded-xl text-sm ${
+                    errors.email
+                      ? "border-red-500 focus-visible:ring-red-500"
+                      : ""
+                  }`}
+                />
+                {errors.email ? (
+                  <p className='text-xs font-semibold text-red-500'>
+                    {errors.email}
+                  </p>
+                ) : null}
+              </div>
+
+              <div className='space-y-1.5'>
+                <Label
+                  htmlFor='new-password'
+                  className='text-sm font-bold text-slate-700'
+                >
+                  Password Baru
+                </Label>
+                <Input
+                  id='new-password'
+                  type='password'
+                  placeholder='Masukkan password baru'
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  className={`h-11 rounded-xl text-sm ${
+                    errors.password
+                      ? "border-red-500 focus-visible:ring-red-500"
+                      : ""
+                  }`}
+                />
+                {errors.password ? (
+                  <p className='text-xs font-semibold text-red-500'>
+                    {errors.password}
+                  </p>
+                ) : null}
+              </div>
+
+              <div className='space-y-1.5'>
+                <Label
+                  htmlFor='confirm-password'
+                  className='text-sm font-bold text-slate-700'
+                >
+                  Konfirmasi Password
+                </Label>
+                <Input
+                  id='confirm-password'
+                  type='password'
+                  placeholder='Ulangi password baru'
+                  value={confirmPassword}
+                  onChange={(event) => setConfirmPassword(event.target.value)}
+                  className={`h-11 rounded-xl text-sm ${
+                    errors.confirmPassword
+                      ? "border-red-500 focus-visible:ring-red-500"
+                      : ""
+                  }`}
+                />
+                {errors.confirmPassword ? (
+                  <p className='text-xs font-semibold text-red-500'>
+                    {errors.confirmPassword}
+                  </p>
+                ) : null}
+              </div>
+            </div>
           </div>
 
-          <div className='space-y-1.5'>
-            <Label htmlFor='new-password'>
-              Password Baru <span className='text-red-500'>*</span>
-            </Label>
-            <Input
-              id='new-password'
-              type='password'
-              placeholder='Masukkan password baru'
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className={
-                errors.password
-                  ? "border-red-500 focus-visible:ring-red-200"
-                  : ""
-              }
-            />
-            {errors.password && (
-              <p className='text-xs text-red-500 font-medium'>
-                {errors.password}
-              </p>
-            )}
-          </div>
+          <div className='border-t border-slate-100 bg-slate-50 px-6 py-4'>
+            <div className='flex items-center justify-end gap-2'>
+              <Button
+                type='button'
+                variant='outline'
+                size='sm'
+                className='h-9 rounded-lg px-4 text-xs font-bold'
+                onClick={() => onOpenChange(false)}
+              >
+                Batal
+              </Button>
 
-          <div className='space-y-1.5'>
-            <Label htmlFor='confirm-password'>
-              Konfirmasi Password <span className='text-red-500'>*</span>
-            </Label>
-            <Input
-              id='confirm-password'
-              type='password'
-              placeholder='Ulangi password baru'
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className={
-                errors.confirmPassword
-                  ? "border-red-500 focus-visible:ring-red-200"
-                  : ""
-              }
-            />
-            {errors.confirmPassword && (
-              <p className='text-xs text-red-500 font-medium'>
-                {errors.confirmPassword}
-              </p>
-            )}
+              <Button
+                type='submit'
+                size='sm'
+                className='h-9 rounded-lg bg-[#1a2b5e] px-4 text-xs font-bold text-white hover:bg-[#111d42]'
+              >
+                Simpan Perubahan
+              </Button>
+            </div>
           </div>
-        </div>
-
-        <DialogFooter className='pt-2'>
-          <Button
-            variant='outline'
-            className='rounded-xl'
-            onClick={() => onOpenChange(false)}
-          >
-            Batal
-          </Button>
-          <Button
-            className='bg-blue-600 hover:bg-blue-700 rounded-xl text-white'
-            onClick={handleSubmit}
-          >
-            Simpan
-          </Button>
-        </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

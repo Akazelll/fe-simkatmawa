@@ -1,98 +1,74 @@
 "use client";
+
+import { useMemo, useState } from "react";
+import type { Submission } from "@/features/submission/types/types";
+import { useParams } from "next/navigation";
+
+import { RejectSubmissionModal } from "@/features/verification/components/RejectSubmissionModal";
+import { VerificationTable } from "@/features/verification/components/VerificationTable";
 import { useSubmissions } from "@/features/submission/hooks/useSubmissions";
 import { shouldAppearInVerification } from "@/lib/submission/submissionRules";
-import { SubmissionStatusBadge } from "@/features/shared/components/SubmissionStatusBadge";
-import { RejectSubmissionModal } from "@/features/verification/components/RejectSubmissionModal";
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import { usePathname } from "next/navigation";
+
+type VerificationType = "prestasi" | "sertifikat" | "rekognisi";
 
 export default function VerificationTypePage() {
-  const pathname = usePathname();
-  const type = pathname.split("/").pop(); // prestasi | sertifikat | rekognisi
+  const params = useParams<{ type: VerificationType }>();
+  const type = params.type;
 
   const { submissions, approveSubmission, rejectSubmission } = useSubmissions();
   const [rejectId, setRejectId] = useState<string | null>(null);
 
-  const pendingSubmissions = submissions.filter(
-    (s) => s.type === type && shouldAppearInVerification(s),
-  );
+  const pendingSubmissions = useMemo(() => {
+    return submissions.filter(
+      (submission) =>
+        submission.type === type && shouldAppearInVerification(submission),
+    );
+  }, [submissions, type]);
+
+  const selectedSubmission = useMemo(() => {
+    return submissions.find((submission) => submission.id === rejectId);
+  }, [submissions, rejectId]);
 
   const handleApprove = (id: string) => {
-    if (
-      confirm(
-        "Apakah Anda yakin ingin menyetujui pengajuan ini? Data akan diteruskan ke antrean sinkronisasi.",
-      )
-    ) {
-      approveSubmission(id);
-      // alert or toast success here
-    }
+    const isConfirmed = confirm(
+      "Apakah Anda yakin ingin menyetujui pengajuan ini? Data akan diteruskan ke antrean sinkronisasi.",
+    );
+
+    if (!isConfirmed) return;
+
+    approveSubmission(id);
+  };
+
+  const handleReject = (id: string) => {
+    setRejectId(id);
   };
 
   return (
-    <div className='p-6 space-y-6'>
-      <h1 className='text-2xl font-bold capitalize'>Verifikasi {type}</h1>
-      <div className='bg-white rounded-xl shadow-sm border p-4'>
-        {pendingSubmissions.length === 0 ? (
-          <p className='text-muted-foreground text-center py-8'>
-            Tidak ada antrean verifikasi.
-          </p>
-        ) : (
-          <table className='w-full text-sm text-left'>
-            <thead className='text-xs text-slate-500 uppercase bg-slate-50 border-b'>
-              <tr>
-                <th className='px-4 py-3'>Nama Pengajuan</th>
-                <th className='px-4 py-3'>Mahasiswa</th>
-                <th className='px-4 py-3'>Tanggal</th>
-                <th className='px-4 py-3'>Status</th>
-                <th className='px-4 py-3 text-right'>Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pendingSubmissions.map((sub) => (
-                <tr key={sub.id} className='border-b'>
-                  <td className='px-4 py-3 font-medium'>{sub.title}</td>
-                  <td className='px-4 py-3'>
-                    <div className='font-semibold'>{sub.studentName}</div>
-                    <div className='text-xs text-slate-400'>
-                      {sub.studentNim}
-                    </div>
-                  </td>
-                  <td className='px-4 py-3'>
-                    {new Date(sub.submittedAt).toLocaleDateString("id-ID")}
-                  </td>
-                  <td className='px-4 py-3'>
-                    <SubmissionStatusBadge submission={sub} />
-                  </td>
-                  <td className='px-4 py-3 text-right space-x-2'>
-                    <Button
-                      size='sm'
-                      onClick={() => handleApprove(sub.id)}
-                      className='bg-blue-600 hover:bg-blue-700'
-                    >
-                      Approve
-                    </Button>
-                    <Button
-                      size='sm'
-                      variant='destructive'
-                      onClick={() => setRejectId(sub.id)}
-                    >
-                      Reject
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+    <div className="space-y-6 p-6">
+      <div className="space-y-1">
+        <h1 className="text-2xl font-bold capitalize text-slate-900">
+          Verifikasi {type}
+        </h1>
+        <p className="text-sm text-slate-500">
+          Kelola submission {type} yang sedang menunggu proses verifikasi.
+        </p>
       </div>
+
+      <VerificationTable
+        data={pendingSubmissions}
+        onApprove={handleApprove}
+        onReject={handleReject}
+      />
 
       <RejectSubmissionModal
         isOpen={!!rejectId}
         onClose={() => setRejectId(null)}
-        title={submissions.find((s) => s.id === rejectId)?.title || ""}
+        title={selectedSubmission?.title ?? ""}
         onReject={(reason) => {
-          if (rejectId) rejectSubmission(rejectId, reason);
+          if (!rejectId) return;
+
+          rejectSubmission(rejectId, reason);
+          setRejectId(null);
         }}
       />
     </div>

@@ -56,14 +56,27 @@ export function RejectSubmissionModal({
           />
           {error && <p className='text-xs text-red-500 font-medium'>{error}</p>}
         </div>
-        <DialogFooter>
-          <Button variant='outline' onClick={onClose}>
-            Batal
-          </Button>
-          <Button variant='destructive' onClick={handleSubmit}>
-            Tolak Submission
-          </Button>
-        </DialogFooter>
+        <div className='border-t border-slate-100 bg-slate-50 px-6 py-4'>
+          <div className='flex items-center justify-end gap-2'>
+            <Button
+              type='button'
+              variant='outline'
+              size='sm'
+              className='h-9 rounded-lg px-4 text-xs font-bold'
+              onClick={() => onClose()}
+            >
+              Batal
+            </Button>
+
+            <Button
+              type='submit'
+              size='sm'
+              className='h-9 rounded-lg bg-[#1a2b5e] px-4 text-xs font-bold text-white hover:bg-[#111d42]'
+            >
+              Simpan Perubahan
+            </Button>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );
