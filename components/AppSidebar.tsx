@@ -17,8 +17,22 @@ import {
   Settings,
   Recycle,
   Award,
-  History, // Tambahan icon history
+  History,
+  type LucideIcon,
 } from "lucide-react";
+
+type NavChild = {
+  label: string;
+  icon: LucideIcon;
+  href: string;
+};
+
+type NavItem = {
+  label: string;
+  icon: LucideIcon;
+  href?: string;
+  children?: NavChild[];
+};
 
 import {
   Sidebar,
@@ -59,10 +73,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       ...prev,
       [label]: !prev[label],
     }));
-
-  // Render navigation item dinamis sesuai role yang sedang login
   const navItems = React.useMemo(() => {
-    const items: any[] = [
+    const items: NavItem[] = [
       {
         label: "Dashboard",
         icon: LayoutDashboard,
@@ -181,7 +193,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             {navItems.map((item) => {
               const isOpen = openMenus[item.label] ?? false;
               const isActive = item.href ? isPathActive(item.href) : false;
-              const isChildActive = item.children?.some((child: any) =>
+              const isChildActive = item.children?.some((child) =>(child: any) =>
                 isPathActive(child.href),
               );
 
@@ -234,7 +246,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     {/* SUB MENU */}
                     {isOpen && (
                       <SidebarMenuSub className='ml-4 pl-3 border-l border-slate-100 gap-0.5'>
-                        {item.children.map((child: any) => {
+                        {item.children.map((child) => {
                           const isChildItemActive = isPathActive(child.href);
 
                           return (

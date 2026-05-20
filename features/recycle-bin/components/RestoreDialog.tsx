@@ -32,7 +32,7 @@ export function RestoreDialog({
           </DialogTitle>
           <DialogDescription className='text-sm text-slate-500 pt-2'>
             Anda yakin ingin mengembalikan{" "}
-            <span className='font-semibold text-slate-700'>"{itemName}"</span>?
+            <span className='font-semibold text-slate-700'>{itemName}?</span>?
             Data akan kembali muncul di tabel aktif dengan status sebelumnya.
           </DialogDescription>
         </DialogHeader>
