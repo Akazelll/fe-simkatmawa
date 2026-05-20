@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { QueueSubmissionType } from "@/lib/queue/queue-types";
+import { QueueSubmissionType } from "@/lib/queue/types";
 
 export function SubmissionTypeBadge({ type }: { type: QueueSubmissionType }) {
   const styles = {

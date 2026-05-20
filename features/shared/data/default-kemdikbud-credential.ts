@@ -1,4 +1,4 @@
-import { KemdikbudCredential } from "@/lib/settings/settings-types";
+import { KemdikbudCredential } from "@/lib/settings/types";
 export const defaultKemdikbudCredential: KemdikbudCredential = {
   email: "pusat@udinus.ac.id",
   hasPassword: true,

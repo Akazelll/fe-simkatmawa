@@ -1,17 +1,19 @@
 "use client";
 import { useEffect, useState } from "react";
-import { SubmissionActivityLog } from "@/lib/submission/submission-types";
 import { CheckCircle2, XCircle } from "lucide-react";
+import { EmptyState } from "@/features/shared/components/EmptyState";
+import type { SubmissionActivityLog } from "@/features/submission/types/types";
 
 export function RecentSubmissionActivity() {
   const [activities, setActivities] = useState<SubmissionActivityLog[]>([]);
 
   useEffect(() => {
-    // Ambil log yang disimpan oleh useSubmissions hook
+    // Membaca logs dari localStorage
     const logs: SubmissionActivityLog[] = JSON.parse(
       localStorage.getItem("simkatmawa_activity") || "[]",
     );
-    // Filter hanya Approved & Rejected, ambil top 5
+
+    // Filter HANYA Approved dan Rejected, lalu limit 5
     const filtered = logs
       .filter(
         (l) =>
@@ -19,25 +21,31 @@ export function RecentSubmissionActivity() {
           l.action === "submission.rejected",
       )
       .slice(0, 5);
+
     setActivities(filtered);
   }, []);
 
-  if (activities.length === 0)
+  if (activities.length === 0) {
     return (
-      <p className='text-sm text-slate-500 p-4'>Belum ada aktivitas terbaru.</p>
+      <EmptyState
+        icon={<CheckCircle2 className='w-8 h-8 opacity-50' />}
+        title='Belum ada aktivitas'
+        description='Belum ada riwayat persetujuan atau penolakan pengajuan terbaru.'
+      />
     );
+  }
 
   return (
-    <div className='space-y-4 p-4'>
+    <div className='space-y-4 p-1'>
       {activities.map((log) => {
         const isApprove = log.action === "submission.approved";
         return (
           <div
             key={log.id}
-            className='flex gap-4 items-start border-b pb-4 last:border-0 last:pb-0'
+            className='flex gap-4 items-start border-b border-slate-100 pb-4 last:border-0 last:pb-0'
           >
             <div
-              className={`mt-0.5 p-2 rounded-full ${isApprove ? "bg-blue-100 text-blue-600" : "bg-red-100 text-red-600"}`}
+              className={`mt-0.5 p-2 rounded-xl shadow-sm ${isApprove ? "bg-blue-50 text-blue-600" : "bg-red-50 text-red-600"}`}
             >
               {isApprove ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
             </div>

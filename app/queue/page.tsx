@@ -1,8 +1,8 @@
 "use client";
 
-import { useQueueMonitoring } from "@/features/queue/hooks/use-queue-monitoring";
-import { QueueStatCards } from "@/features/queue/components/queue-stat-cards";
-import { QueueMonitoringTabs } from "@/features/queue/components/queue-monitoring-tabs";
+import { useQueueMonitoring } from "@/features/queue/hooks/useQueueMonitoring";
+import { QueueStatCards } from "@/features/queue/components/QueueStatCard";
+import { QueueMonitoringTabs } from "@/features/queue/components/QueueMonitoringTabs";
 import { RoleGuard } from "@/features/auth/components/RoleGuard";
 
 export default function QueueMonitoringPage() {

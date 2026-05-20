@@ -8,12 +8,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ActiveQueueJob } from "@/lib/queue/queue-types";
-import { formatDateTime } from "@/lib/utils/date-format";
-import { SubmissionTypeBadge } from "./submission-type-badge";
-import { QueueStatusBadge } from "./queue-status-badge";
+import { SyncHistoryItem } from "@/lib/queue/types";
+import { formatDateTime } from "@/lib/utils/dateFormat";
+import { SubmissionTypeBadge } from "../../shared/components/SubmissionTypeBadge";
+import { QueueStatusBadge } from "./QueueStatusBadge";
 
-export function ActiveQueueTable({ jobs }: { jobs: ActiveQueueJob[] }) {
+export function SyncHistoryTable({ history }: { history: SyncHistoryItem[] }) {
   return (
     <div className='border border-slate-100 rounded-2xl bg-white overflow-hidden shadow-sm'>
       <Table>
@@ -26,10 +26,10 @@ export function ActiveQueueTable({ jobs }: { jobs: ActiveQueueJob[] }) {
               Nama Kegiatan
             </TableHead>
             <TableHead className='font-bold text-slate-500'>
-              Mahasiswa
+              ID Kemdikbud
             </TableHead>
             <TableHead className='font-bold text-slate-500'>
-              Masuk Antrean
+              Terkirim Pada
             </TableHead>
             <TableHead className='w-[120px] font-bold text-slate-500'>
               Status
@@ -37,35 +37,35 @@ export function ActiveQueueTable({ jobs }: { jobs: ActiveQueueJob[] }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {jobs.length === 0 ? (
+          {history.length === 0 ? (
             <TableRow>
               <TableCell
                 colSpan={5}
                 className='text-center py-10 text-slate-400 font-medium'
               >
-                Tidak ada antrean aktif yang sedang berjalan.
+                Belum ada histori log sinkronisasi data.
               </TableCell>
             </TableRow>
           ) : (
-            jobs.map((job) => (
+            history.map((item) => (
               <TableRow
-                key={job.id}
+                key={item.id}
                 className='hover:bg-slate-50/50 transition-colors'
               >
                 <TableCell>
-                  <SubmissionTypeBadge type={job.type} />
+                  <SubmissionTypeBadge type={item.type} />
                 </TableCell>
                 <TableCell className='font-semibold text-slate-700'>
-                  {job.title}
+                  {item.title}
                 </TableCell>
-                <TableCell className='font-medium text-slate-600'>
-                  {job.studentName}
+                <TableCell className='font-mono text-xs font-bold text-slate-600'>
+                  {item.kemdikbudId || "—"}
                 </TableCell>
                 <TableCell className='text-slate-500 text-xs font-medium'>
-                  {formatDateTime(job.queuedAt)}
+                  {formatDateTime(item.syncedAt)}
                 </TableCell>
                 <TableCell>
-                  <QueueStatusBadge status={job.status} />
+                  <QueueStatusBadge status={item.status} />
                 </TableCell>
               </TableRow>
             ))

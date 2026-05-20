@@ -11,9 +11,9 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Trash2 } from "lucide-react";
-import { FailedQueueJob } from "@/lib/queue/queue-types";
-import { formatDateTime } from "@/lib/utils/date-format";
-import { SubmissionTypeBadge } from "./submission-type-badge";
+import { FailedQueueJob } from "@/lib/queue/types";
+import { formatDateTime } from "@/lib/utils/dateFormat";
+import { SubmissionTypeBadge } from "../../shared/components/SubmissionTypeBadge";
 import { toast } from "sonner";
 import {
   Dialog,

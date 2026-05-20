@@ -1,4 +1,7 @@
-import { Submission, SubmissionStatus } from "./submission-types";
+import {
+  Submission,
+  SubmissionStatus,
+} from "../../features/submission/types/types";
 import { UserRole } from "@/lib/auth/types";
 
 export const isPendingSubmission = (s: Submission) => s.status === "PENDING";

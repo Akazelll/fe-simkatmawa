@@ -8,8 +8,8 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Submission } from "@/lib/submission/submission-types";
-import { canShowRejectionReason } from "@/lib/submission/submission-rules";
+import { Submission } from "@/features/submission/types/types";
+import { canShowRejectionReason } from "@/lib/submission/submissionRules";
 
 export function SubmissionStatusBadge({
   submission,

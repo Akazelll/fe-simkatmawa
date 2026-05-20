@@ -1,6 +1,6 @@
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
-import { Navbar } from "@/components/navbar";
+import { AppSidebar } from "@/components/AppSidebar";
+import { Navbar } from "@/components/Navbar";
 
 export default function ActivityLogLayout({
   children,
@@ -8,7 +8,6 @@ export default function ActivityLogLayout({
   children: React.ReactNode;
 }) {
   return (
-    
     <SidebarProvider>
       <div className='flex min-h-screen w-full bg-slate-50/50'>
         <AppSidebar />

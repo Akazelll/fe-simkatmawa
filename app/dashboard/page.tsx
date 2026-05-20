@@ -1,7 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { useAuth } from "@/features/auth/hooks/use-auth";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { hasRole } from "@/lib/auth/permissions";
 import { StatsGrid } from "@/features/dashboard/components/StatsGrid";
 import { SubmissionTrendsChart } from "@/features/dashboard/components/SubmissionTrendsChart";

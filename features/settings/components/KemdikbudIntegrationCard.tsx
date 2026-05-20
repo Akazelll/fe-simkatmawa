@@ -3,10 +3,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link2, Pencil } from "lucide-react";
-import { KemdikbudCredential } from "@/lib/settings/settings-types";
-import { PasswordMask } from "./password-mask";
-import { SettingsInfoAlert } from "./settings-info-alert";
-import { formatDateTime } from "@/lib/utils/date-format";
+import { KemdikbudCredential } from "@/lib/settings/types";
+import { PasswordMask } from "./PasswordMask";
+import { SettingsInfoAlert } from "./SettingInfoAlert";
+import { formatDateTime } from "@/lib/utils/dateFormat";
 
 interface Props {
   credential: KemdikbudCredential;

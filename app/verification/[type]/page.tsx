@@ -1,8 +1,8 @@
 "use client";
-import { useSubmissions } from "@/features/submission/hooks/use-submissions";
-import { shouldAppearInVerification } from "@/lib/submission/submission-rules";
-import { SubmissionStatusBadge } from "@/features/submission/components/submission-status-badge";
-import { RejectSubmissionModal } from "@/features/verification/components/reject-submission-modal";
+import { useSubmissions } from "@/features/submission/hooks/useSubmissions";
+import { shouldAppearInVerification } from "@/lib/submission/submissionRules";
+import { SubmissionStatusBadge } from "@/features/shared/components/SubmissionStatusBadge";
+import { RejectSubmissionModal } from "@/features/verification/components/RejectSubmissionModal";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { usePathname } from "next/navigation";

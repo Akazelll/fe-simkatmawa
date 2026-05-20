@@ -1,11 +1,11 @@
 "use client";
-import { useSubmissions } from "@/features/submission/hooks/use-submissions";
+import { useSubmissions } from "@/features/submission/hooks/useSubmissions";
 import {
   shouldAppearInHistory,
   getSubmissionProcessedBy,
   getSubmissionProcessedAt,
-} from "@/lib/submission/submission-rules";
-import { SubmissionStatusBadge } from "@/features/submission/components/submission-status-badge";
+} from "@/lib/submission/submissionRules";
+import { SubmissionStatusBadge } from "@/features/shared/components/SubmissionStatusBadge";
 import { Badge } from "@/components/ui/badge";
 import { RoleGuard } from "@/features/auth/components/RoleGuard";
 

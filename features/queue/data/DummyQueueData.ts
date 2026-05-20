@@ -2,7 +2,7 @@ import {
   ActiveQueueJob,
   FailedQueueJob,
   SyncHistoryItem,
-} from "@/lib/queue/queue-types";
+} from "@/lib/queue/types";
 
 export const dummyActiveQueueJobs: ActiveQueueJob[] = [
   {

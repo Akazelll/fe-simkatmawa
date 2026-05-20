@@ -1,6 +1,6 @@
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
-import { Navbar } from "@/components/navbar";
+import { AppSidebar } from "@/components/AppSidebar";
+import { Navbar } from "@/components/Navbar";
 import { RoleGuard } from "@/features/auth/components/RoleGuard";
 
 export default function UserManagementLayout({

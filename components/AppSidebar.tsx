@@ -36,7 +36,7 @@ import {
 } from "@/components/ui/sidebar";
 
 // Import Auth Hooks dan RBAC Permission Helper
-import { useAuth } from "@/features/auth/hooks/use-auth";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { hasRole } from "@/lib/auth/permissions";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {

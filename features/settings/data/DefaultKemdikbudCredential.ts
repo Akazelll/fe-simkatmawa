@@ -1,4 +1,4 @@
-import { KemdikbudCredential } from "@/lib/settings/settings-types";
+import { KemdikbudCredential } from "@/lib/settings/types";
 
 // Default state jika belum pernah disetting di localStorage
 export const defaultKemdikbudCredential: KemdikbudCredential = {

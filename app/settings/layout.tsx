@@ -1,8 +1,8 @@
 import React from "react";
 import { RoleGuard } from "@/features/auth/components/RoleGuard";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { Navbar } from "@/components/navbar";
-import { AppSidebar } from "@/components/app-sidebar";
+import { Navbar } from "@/components/Navbar";
+import { AppSidebar } from "@/components/AppSidebar";
 
 export default function SettingsLayout({
   children,

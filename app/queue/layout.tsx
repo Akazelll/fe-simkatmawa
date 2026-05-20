@@ -1,8 +1,8 @@
 import React from "react";
 import { RoleGuard } from "@/features/auth/components/RoleGuard";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
-import { Navbar } from "@/components/navbar";
+import { AppSidebar } from "@/components/AppSidebar";
+import { Navbar } from "@/components/Navbar";
 import { SidebarInset } from "@/components/ui/sidebar";
 
 export default function QueueLayout({

@@ -12,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { useAuth } from "@/features/auth/hooks/use-auth";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);

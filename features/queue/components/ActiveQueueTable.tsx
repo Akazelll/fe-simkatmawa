@@ -8,12 +8,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { SyncHistoryItem } from "@/lib/queue/queue-types";
-import { formatDateTime } from "@/lib/utils/date-format";
-import { SubmissionTypeBadge } from "./submission-type-badge";
-import { QueueStatusBadge } from "./queue-status-badge";
+import { ActiveQueueJob } from "@/lib/queue/types";
+import { formatDateTime } from "@/lib/utils/dateFormat";
+import { SubmissionTypeBadge } from "../../shared/components/SubmissionTypeBadge";
+import { QueueStatusBadge } from "./QueueStatusBadge";
 
-export function SyncHistoryTable({ history }: { history: SyncHistoryItem[] }) {
+export function ActiveQueueTable({ jobs }: { jobs: ActiveQueueJob[] }) {
   return (
     <div className='border border-slate-100 rounded-2xl bg-white overflow-hidden shadow-sm'>
       <Table>
@@ -26,10 +26,10 @@ export function SyncHistoryTable({ history }: { history: SyncHistoryItem[] }) {
               Nama Kegiatan
             </TableHead>
             <TableHead className='font-bold text-slate-500'>
-              ID Kemdikbud
+              Mahasiswa
             </TableHead>
             <TableHead className='font-bold text-slate-500'>
-              Terkirim Pada
+              Masuk Antrean
             </TableHead>
             <TableHead className='w-[120px] font-bold text-slate-500'>
               Status
@@ -37,35 +37,35 @@ export function SyncHistoryTable({ history }: { history: SyncHistoryItem[] }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {history.length === 0 ? (
+          {jobs.length === 0 ? (
             <TableRow>
               <TableCell
                 colSpan={5}
                 className='text-center py-10 text-slate-400 font-medium'
               >
-                Belum ada histori log sinkronisasi data.
+                Tidak ada antrean aktif yang sedang berjalan.
               </TableCell>
             </TableRow>
           ) : (
-            history.map((item) => (
+            jobs.map((job) => (
               <TableRow
-                key={item.id}
+                key={job.id}
                 className='hover:bg-slate-50/50 transition-colors'
               >
                 <TableCell>
-                  <SubmissionTypeBadge type={item.type} />
+                  <SubmissionTypeBadge type={job.type} />
                 </TableCell>
                 <TableCell className='font-semibold text-slate-700'>
-                  {item.title}
+                  {job.title}
                 </TableCell>
-                <TableCell className='font-mono text-xs font-bold text-slate-600'>
-                  {item.kemdikbudId || "—"}
+                <TableCell className='font-medium text-slate-600'>
+                  {job.studentName}
                 </TableCell>
                 <TableCell className='text-slate-500 text-xs font-medium'>
-                  {formatDateTime(item.syncedAt)}
+                  {formatDateTime(job.queuedAt)}
                 </TableCell>
                 <TableCell>
-                  <QueueStatusBadge status={item.status} />
+                  <QueueStatusBadge status={job.status} />
                 </TableCell>
               </TableRow>
             ))

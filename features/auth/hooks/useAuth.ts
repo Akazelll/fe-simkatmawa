@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { User } from "@/lib/auth/types";
-import { DUMMY_USERS } from "../data/dummy-users";
+import { DUMMY_USERS } from "../data/DummyUsers";
 import { logAudit } from "@/lib/audit/audit-log";
 
 export function useAuth() {

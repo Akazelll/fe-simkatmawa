@@ -5,12 +5,12 @@ import {
   ActiveQueueJob,
   FailedQueueJob,
   SyncHistoryItem,
-} from "@/lib/queue/queue-types";
+} from "@/lib/queue/types";
 import {
   dummyActiveQueueJobs,
   dummyFailedQueueJobs,
   dummySyncHistoryItems,
-} from "../data/dummy-queue-data";
+} from "../data/DummyQueueData";
 
 export function useQueueMonitoring() {
   const [activeJobs, setActiveJobs] = useState<ActiveQueueJob[]>([]);

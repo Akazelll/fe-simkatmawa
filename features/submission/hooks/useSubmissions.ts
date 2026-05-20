@@ -3,8 +3,8 @@ import { useState, useEffect } from "react";
 import {
   Submission,
   SubmissionActivityLog,
-} from "@/lib/submission/submission-types";
-import { useAuth } from "@/features/auth/hooks/use-auth";
+} from "@/features/submission/types/types";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 
 const DUMMY_SUBMISSIONS: Submission[] = [
   {

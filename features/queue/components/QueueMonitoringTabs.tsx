@@ -5,10 +5,10 @@ import {
   ActiveQueueJob,
   FailedQueueJob,
   SyncHistoryItem,
-} from "@/lib/queue/queue-types";
-import { ActiveQueueTable } from "./active-queue-table";
-import { FailedJobsTable } from "./failed-jobs-table";
-import { SyncHistoryTable } from "./sync-history-table";
+} from "@/lib/queue/types";
+import { ActiveQueueTable } from "./ActiveQueueTable";
+import { FailedJobsTable } from "./FailedJobsTable";
+import { SyncHistoryTable } from "./SyncHistoryTable";
 
 interface Props {
   activeJobs: ActiveQueueJob[];

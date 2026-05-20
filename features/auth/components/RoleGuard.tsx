@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/features/auth/hooks/use-auth";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { hasRole } from "@/lib/auth/permissions";
 import { UserRole } from "@/lib/auth/types";
 

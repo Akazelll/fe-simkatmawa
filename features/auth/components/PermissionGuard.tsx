@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "../hooks/use-auth";
+import { useAuth } from "../hooks/useAuth";
 import { hasPermission } from "@/lib/auth/permissions";
 import { Permission } from "@/lib/auth/types";
 
