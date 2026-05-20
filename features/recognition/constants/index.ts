@@ -74,8 +74,10 @@ export const ALL_DATA: Rekognisi[] = [
     penyelenggara: "ARTJOG",
     tahun: 2025,
     pt: UDINUS,
-    status: "Pending",
+    status: "Rejected",
     tanggal: new Date("2025-09-02"),
+    rejectionReason:
+      "Bukti rekognisi belum dilengkapi surat keterangan resmi dari penyelenggara pameran. Lengkapi dokumen pendukung lalu ajukan kembali rekognisi ini.",
   },
   {
     id: "118154",

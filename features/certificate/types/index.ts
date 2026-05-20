@@ -13,4 +13,5 @@ export interface Certificate {
     | "Sync_Failed"
     | "Sync_Success";
   tanggal: Date;
+  rejectionReason?: string;
 }

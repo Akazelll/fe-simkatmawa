@@ -1,8 +1,9 @@
-import { UserRound, Plus, Trash2 } from "lucide-react";
+import { UserRound, Plus, Trash2, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 import { MahasiswaRow } from "@/features/shared/hooks/useFieldList";
 
 interface Props {
@@ -50,49 +51,71 @@ export function MahasiswaListSection({
           </Button>
         </div>
 
-        <div className='flex flex-col gap-4'>
-          {items.map((row, index) => (
-            <div
-              key={index}
-              className='flex flex-col gap-3 rounded-xl border border-slate-100 p-4 sm:flex-row sm:items-end sm:gap-3 sm:border-0 sm:p-0 animate-in slide-in-from-top-1 duration-200'
-            >
-              <div className='flex flex-col gap-1.5 sm:flex-1'>
-                <Label className='text-slate-700 font-semibold text-xs'>
-                  NIM <span className='text-red-500'>*</span>
-                </Label>
-                <Input
-                  value={row.nim}
-                  onChange={(e) => update(index, "nim", e.target.value)}
-                  placeholder='NIM'
-                  required
-                  className={INPUT_CLASS}
-                />
-              </div>
+        <div className='flex flex-col gap-5'>
+          {items.map((row, index) => {
+            const isMulti = items.length > 1;
+            const isKetua = index === 0;
+            const namaLabel = isMulti && !isKetua ? "Nama Anggota" : "Nama Mahasiswa";
 
-              <div className='flex flex-col gap-1.5 sm:flex-2'>
-                <Label className='text-slate-700 font-semibold text-xs'>
-                  Nama Mahasiswa <span className='text-red-500'>*</span>
-                </Label>
-                <Input
-                  value={row.nama}
-                  onChange={(e) => update(index, "nama", e.target.value)}
-                  placeholder='Nama Mahasiswa'
-                  required
-                  className={INPUT_CLASS}
-                />
-              </div>
-
-              <Button
-                type='button'
-                onClick={() => remove(index)}
-                variant='ghost'
-                disabled={items.length <= 1}
-                className='h-11 md:h-12 w-full sm:w-12 p-0 text-rose-500 hover:text-rose-600 hover:bg-rose-50 rounded-xl shrink-0 disabled:opacity-40 disabled:hover:bg-transparent'
+            return (
+              <div
+                key={index}
+                className='flex flex-col gap-2.5 animate-in slide-in-from-top-1 duration-200'
               >
-                <Trash2 size={18} />
-              </Button>
-            </div>
-          ))}
+                {isMulti && (
+                  <span
+                    className={cn(
+                      "inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold",
+                      isKetua
+                        ? "bg-amber-50 text-amber-700"
+                        : "bg-slate-100 text-slate-600",
+                    )}
+                  >
+                    {isKetua ? <Crown size={12} /> : <UserRound size={12} />}
+                    {isKetua ? "Ketua Kelompok" : `Anggota ${index}`}
+                  </span>
+                )}
+
+                <div className='flex flex-col gap-3 rounded-xl border border-slate-100 p-4 sm:flex-row sm:items-end sm:gap-3 sm:border-0 sm:p-0'>
+                  <div className='flex flex-col gap-1.5 sm:flex-1'>
+                    <Label className='text-slate-700 font-semibold text-xs'>
+                      NIM <span className='text-red-500'>*</span>
+                    </Label>
+                    <Input
+                      value={row.nim}
+                      onChange={(e) => update(index, "nim", e.target.value)}
+                      placeholder='NIM'
+                      required
+                      className={INPUT_CLASS}
+                    />
+                  </div>
+
+                  <div className='flex flex-col gap-1.5 sm:flex-2'>
+                    <Label className='text-slate-700 font-semibold text-xs'>
+                      {namaLabel} <span className='text-red-500'>*</span>
+                    </Label>
+                    <Input
+                      value={row.nama}
+                      onChange={(e) => update(index, "nama", e.target.value)}
+                      placeholder={namaLabel}
+                      required
+                      className={INPUT_CLASS}
+                    />
+                  </div>
+
+                  <Button
+                    type='button'
+                    onClick={() => remove(index)}
+                    variant='ghost'
+                    disabled={items.length <= 1}
+                    className='h-11 md:h-12 w-full sm:w-12 p-0 text-rose-500 hover:text-rose-600 hover:bg-rose-50 rounded-xl shrink-0 disabled:opacity-40 disabled:hover:bg-transparent'
+                  >
+                    <Trash2 size={18} />
+                  </Button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </CardContent>
     </Card>

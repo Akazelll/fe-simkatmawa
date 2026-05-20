@@ -14,6 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { getStatusStyle } from "@/features/shared/constants/submissionStatus";
+import { RejectionReasonButton } from "@/features/shared/components/RejectionReasonButton";
 import { Certificate } from "../types";
 
 const HEAD_CLASS =
@@ -106,11 +107,16 @@ export function CertificateTable({ data }: { data: Certificate[] }) {
                   {row.pt}
                 </TableCell>
                 <TableCell className={CELL_BASE}>
-                  <Badge
-                    className={`rounded-full px-3 py-1 text-xs font-semibold border-0 ${style.className}`}
-                  >
-                    {style.label}
-                  </Badge>
+                  <div className='flex flex-col items-start gap-1.5'>
+                    <Badge
+                      className={`rounded-full px-3 py-1 text-xs font-semibold border-0 ${style.className}`}
+                    >
+                      {style.label}
+                    </Badge>
+                    {row.status === "Rejected" && row.rejectionReason && (
+                      <RejectionReasonButton reason={row.rejectionReason} />
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell className={`${CELL_BASE} pr-6`}>
                   <div className='flex items-center justify-end gap-1.5'>
