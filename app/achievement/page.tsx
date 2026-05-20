@@ -33,8 +33,6 @@ export default function PrestasiPage() {
       <PageHeader
         title='Prestasi'
         description='Kelola data prestasi mahasiswa'
-        createPath='/achievement/create'
-        buttonText='Tambah Prestasi'
       />
 
       <FilterSection

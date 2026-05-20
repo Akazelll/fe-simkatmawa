@@ -33,8 +33,6 @@ export default function RekognisiPage() {
       <PageHeader
         title='Rekognisi'
         description='Kelola data rekognisi mahasiswa'
-        createPath='/recognition/create'
-        buttonText='Tambah Rekognisi'
       />
 
       <FilterSection

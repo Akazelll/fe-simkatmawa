@@ -1,8 +1,11 @@
 export interface Certificate {
   id: string;
   name: string;
+  url: string;
   level: string;
   penyelenggara: string;
+  tahun: number;
+  pt: string;
   status:
     | "Pending"
     | "Rejected"
