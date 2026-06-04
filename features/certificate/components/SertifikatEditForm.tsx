@@ -71,10 +71,6 @@ export function SertifikatEditForm({ detail }: { detail: Certificate }) {
       onSubmit={handleSubmit}
       className='flex flex-col gap-6 animate-in fade-in duration-500 max-w-5xl w-full mx-auto p-4 md:p-0'
     >
-      <FormPageHeader
-        title='Edit Sertifikasi'
-        description='Perbarui data sertifikasi, mahasiswa, dan dosen pendamping.'
-      />
 
       {errorMsg && (
         <div className='flex items-center gap-2 p-4 text-sm font-medium text-red-700 bg-red-50 rounded-xl border border-red-200'>

@@ -43,9 +43,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Hapus token/session di localStorage
       localStorage.removeItem("token");
-      // Redirect ke login
       window.location.href = "/login";
     }
     return Promise.reject(error);

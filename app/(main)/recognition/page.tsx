@@ -5,10 +5,9 @@ import { FilterSection } from "@/features/shared/components/FilterSection";
 import { Pagination } from "@/features/shared/components/Pagination";
 import { RecognitionTable } from "@/features/recognition/components/RecognitionTable";
 import { KATEGORI, STATUSES } from "@/features/recognition/constants";
-import { AlertCircle, Loader2 } from "lucide-react";
-
-// Import hook API
+import { AlertCircle } from "lucide-react";
 import { useRekognisiList } from "@/features/recognition/hooks/useRekognisiList";
+import { TableSkeleton } from "@/features/shared/components/TableSkeleton";
 
 export default function RekognisiPage() {
   const { data, meta, isLoading, error, params, updateParams, refetch } =
@@ -43,23 +42,23 @@ export default function RekognisiPage() {
         </div>
       )}
 
-      {isLoading ? (
-        <div className='flex justify-center items-center py-20 bg-white rounded-2xl border border-slate-200 shadow-sm'>
-          <Loader2 className='w-8 h-8 animate-spin text-[#1a2b5e]' />
-        </div>
-      ) : (
-        <>
-          <RecognitionTable data={data} onChanged={refetch} />
+      <div className='space-y-4'>
+        {isLoading ? (
+          <TableSkeleton />
+        ) : (
+          <>
+            <RecognitionTable data={data} onChanged={refetch} />
 
-          {meta && meta.last_page > 1 && (
-            <Pagination
-              page={meta.current_page}
-              totalPages={meta.last_page}
-              goTo={(page) => updateParams({ page })}
-            />
-          )}
-        </>
-      )}
+            {meta && meta.last_page > 1 && (
+              <Pagination
+                page={meta.current_page}
+                totalPages={meta.last_page}
+                goTo={(page) => updateParams({ page })}
+              />
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }
