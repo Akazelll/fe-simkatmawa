@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { prestasiService } from "@/features/achievement/services/prestasiService";
 import { sertifikasiService } from "@/features/certificate/services/sertifikasiService";
 import { rekognisiService } from "@/features/recognition/services/rekognisiService";
+import { Skeleton } from "@/components/ui/skeleton"; // Import Skeleton
 
 export function SubmissionStatsGrid() {
   const [stats, setStats] = useState({
@@ -78,9 +79,13 @@ export function SubmissionStatsGrid() {
           <CardContent className='p-6 flex items-center justify-between'>
             <div>
               <p className='text-sm text-slate-500 font-medium'>{item.label}</p>
-              <h3 className='text-2xl font-bold mt-1'>
-                {isLoading ? "..." : item.value}
-              </h3>
+              <div className='mt-1'>
+                {isLoading ? (
+                  <Skeleton className='h-8 w-16' />
+                ) : (
+                  <h3 className='text-2xl font-bold'>{item.value}</h3>
+                )}
+              </div>
             </div>
             <div className={`p-3 bg-slate-50 rounded-xl ${item.color}`}>
               <item.icon size={24} />

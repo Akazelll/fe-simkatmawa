@@ -27,5 +27,5 @@ export interface User {
   email: string;
   role: UserRole;
   nim?: string;
-  password?: string; // Hanya untuk dummy frontend
+  password?: string;
 }

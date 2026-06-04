@@ -11,7 +11,8 @@ import { WorkflowInfographic } from "@/features/dashboard/components/student/Wor
 import { SubmissionStatsGrid } from "@/features/dashboard/components/student/SubmissionStatsGrid";
 import { RecentSubmissions } from "@/features/dashboard/components/student/RecentSubmissions";
 import { PageHeader } from "@/features/shared/components/PageHeader";
-import { useDashboard } from "@/features/dashboard/hooks/useDashboard"; // IMPORT HOOK BARU
+import { useDashboard } from "@/features/dashboard/hooks/useDashboard";
+import { CardSkeleton } from "@/features/shared/components/CardSkeleton";
 
 const getGreeting = (hour: number) => {
   if (hour >= 4 && hour < 11) return "Selamat pagi";
@@ -33,12 +34,9 @@ export default function DashboardPage() {
     () => 8,
   );
 
-  // Panggil Data dari Backend
   const { data: dashboardData, isLoading } = useDashboard();
 
-  if (!isAuthLoaded) return null;
-
-  if (hasRole(currentUser, "mahasiswa")) {
+  if (isAuthLoaded && hasRole(currentUser, "mahasiswa")) {
     return (
       <div className='flex flex-col gap-6 animate-in fade-in duration-500'>
         <h1 className='text-2xl font-bold text-slate-800'>
@@ -58,14 +56,30 @@ export default function DashboardPage() {
         description='Pantau ringkasan pengajuan dan performa sistem SIMKATMAWA.'
       />
 
-      {isLoading ? (
-        // Loading skeleton sederhana
-        <div className='flex items-center justify-center h-64'>
-          <div className='w-10 h-10 border-4 border-[#0F4C81] border-t-transparent rounded-full animate-spin'></div>
+      {!isAuthLoaded || isLoading ? (
+        <div className='flex flex-col gap-8'>
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
+            {[1, 2, 3, 4].map((i) => (
+              <CardSkeleton
+                key={i}
+                hasHeader={false}
+                lines={2}
+                className='h-32 justify-center'
+              />
+            ))}
+          </div>
+
+          <div className='grid grid-cols-1 lg:grid-cols-2 gap-5'>
+            <CardSkeleton lines={5} className='h-[350px]' />
+            <CardSkeleton lines={5} className='h-[350px]' />
+          </div>
+
+          <div className='grid grid-cols-1'>
+            <CardSkeleton lines={8} className='h-[400px]' />
+          </div>
         </div>
       ) : (
         <>
-          {/* Distribusikan Data API ke Komponen */}
           <StatsGrid stats={dashboardData?.stats} />
 
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-5'>

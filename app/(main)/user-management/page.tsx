@@ -10,21 +10,21 @@ import { DeleteUserModal } from "@/features/user-management/components/DeleteUse
 import { useUsers } from "@/features/user-management/hooks/useUsers";
 import { TotalUserCard } from "@/features/user-management/components/TotalUserCard";
 
-// IMPORT KOMPONEN FILTER SECTION
+// IMPORT KOMPONEN SHARED & SKELETON
 import { FilterSection } from "@/features/shared/components/FilterSection";
+import { TableSkeleton } from "@/features/shared/components/TableSkeleton";
+import { CardSkeleton } from "@/features/shared/components/CardSkeleton";
 
 export default function UserManagementPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
 
-  // State roleFilter disesuaikan dengan nilai string yang akan ditampilkan di Dropdown
   const [roleFilter, setRoleFilter] = useState("Semua Role");
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editUser, setEditUser] = useState<any>(null);
   const [deleteUser, setDeleteUser] = useState<any>(null);
 
-  // Menerjemahkan nilai dropdown ke format API (backend)
   const apiRoleFormat =
     roleFilter === "Semua Role" ? "all" : roleFilter.toLowerCase();
 
@@ -36,6 +36,10 @@ export default function UserManagementPage() {
 
   return (
     <div className='flex flex-col gap-6 p-6 animate-in fade-in duration-500'>
+      {/* ========================================== */}
+      {/* BAGIAN STATIS: Langsung Render Tanpa Nunggu */}
+      {/* ========================================== */}
+
       {/* --- HEADER & TOMBOL TAMBAH --- */}
       <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4'>
         <PageHeader
@@ -51,38 +55,61 @@ export default function UserManagementPage() {
         </Button>
       </div>
 
-      {/* --- KARTU STATISTIK --- */}
-      <TotalUserCard stats={stats} />
-
-      {/* --- BAGIAN FILTER & SEARCH (Menggunakan Shared Component) --- */}
+      {/* --- BAGIAN FILTER & SEARCH --- */}
       <FilterSection
         search={search}
         setSearch={setSearch}
         searchPlaceholder='Cari berdasarkan email...'
-        // Kita "meminjam" prop category untuk digunakan sebagai Filter Role
         category={roleFilter}
         setCategory={setRoleFilter}
         categories={["Semua Role", "Admin", "Mahasiswa"]}
       />
 
+      {/* ========================================== */}
+      {/* BAGIAN DINAMIS: Tampilkan Skeleton saat loading */}
+      {/* ========================================== */}
+
+      {/* --- KARTU STATISTIK --- */}
+      {isLoading ? (
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+          {[1, 2, 3].map((i) => (
+            <CardSkeleton
+              key={i}
+              hasHeader={false}
+              lines={2}
+              className='h-28 justify-center'
+            />
+          ))}
+        </div>
+      ) : (
+        <TotalUserCard stats={stats} />
+      )}
+
       {/* --- TABEL --- */}
       <div className='space-y-4'>
-        <UserTable
-          data={data}
-          isLoading={isLoading}
-          onEdit={(user) => setEditUser(user)}
-          onDelete={(user) => setDeleteUser(user)}
-        />
+        {isLoading ? (
+          <TableSkeleton />
+        ) : (
+          <>
+            <UserTable
+              data={data}
+              isLoading={false}
+              onEdit={(user) => setEditUser(user)}
+              onDelete={(user) => setDeleteUser(user)}
+            />
 
-        {!isLoading && meta && meta.last_page > 1 && (
-          <Pagination
-            page={meta.current_page}
-            totalPages={meta.last_page}
-            goTo={(page) => setCurrentPage(page)}
-          />
+            {meta && meta.last_page > 1 && (
+              <Pagination
+                page={meta.current_page}
+                totalPages={meta.last_page}
+                goTo={(page) => setCurrentPage(page)}
+              />
+            )}
+          </>
         )}
       </div>
 
+      {/* MODALS */}
       <UserModal
         isOpen={isAddModalOpen || !!editUser}
         onClose={() => {

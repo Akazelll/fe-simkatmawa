@@ -6,7 +6,9 @@ import { Pagination } from "@/features/shared/components/Pagination";
 import { AchievementTable } from "@/features/achievement/components/AchievementTable";
 import { KATEGORI, STATUSES } from "@/features/achievement/constants";
 import { usePrestasiList } from "@/features/achievement/hooks/usePrestasiList";
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle } from "lucide-react";
+
+import { TableSkeleton } from "@/features/shared/components/TableSkeleton";
 
 export default function PrestasiPage() {
   const { data, meta, isLoading, error, params, updateParams, refetch } =
@@ -41,23 +43,23 @@ export default function PrestasiPage() {
         </div>
       )}
 
-      {isLoading ? (
-        <div className='flex justify-center items-center py-20 bg-white rounded-2xl border border-slate-200 shadow-sm'>
-          <Loader2 className='w-8 h-8 animate-spin text-[#1a2b5e]' />
-        </div>
-      ) : (
-        <>
-          <AchievementTable data={data} onChanged={refetch} />
+      <div className='space-y-4'>
+        {isLoading ? (
+          <TableSkeleton />
+        ) : (
+          <>
+            <AchievementTable data={data} onChanged={refetch} />
 
-          {meta && meta.last_page > 1 && (
-            <Pagination
-              page={meta.current_page}
-              totalPages={meta.last_page}
-              goTo={(page) => updateParams({ page })}
-            />
-          )}
-        </>
-      )}
+            {meta && meta.last_page > 1 && (
+              <Pagination
+                page={meta.current_page}
+                totalPages={meta.last_page}
+                goTo={(page) => updateParams({ page })}
+              />
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }
