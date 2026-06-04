@@ -1,43 +1,29 @@
 "use client";
 
 import { useState } from "react";
+import { Download, AlertCircle, Loader2 } from "lucide-react";
 import { PageHeader } from "@/features/shared/components/PageHeader";
 import { FilterSection } from "@/features/shared/components/FilterSection";
 import { Pagination } from "@/features/shared/components/Pagination";
 import { ActivityLogTable } from "@/features/activity/components/ActivityLogTable";
-import { StudentActivityTable } from "@/features/activity/components/StudentActivityTable";
 import { usePaginationFilter } from "@/features/shared/hooks/usePaginationFilter";
 import {
   DEFAULT_ACTIVITY_LOGS,
   ACTIVITY_LOG_ACTION_OPTIONS,
 } from "@/features/activity/constants";
 import { ActivityLog } from "@/features/activity/types";
-import { Download } from "lucide-react";
 import { PAGE_SIZE } from "@/features/shared/constants/pagination";
 import { ExportLogButton } from "@/features/activity/components/ExportLogButton";
 import { ExportLogModal } from "@/features/activity/components/ExportLogModal";
-
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { hasRole } from "@/lib/auth/permissions";
-import {
-  STUDENT_ACTIVITY_DATA,
-  StudentActivityEvent,
-} from "@/features/activity/constants/student-activity";
-
-const PAGE_SIZE_STUDENT = 8;
+import { useActivityLog } from "@/features/activity/hooks/useActivityLog";
 
 export default function ActivityLogPage() {
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
-
   const { currentUser, isLoaded } = useAuth();
 
-  const studentFilter = usePaginationFilter<StudentActivityEvent>({
-    data: [...STUDENT_ACTIVITY_DATA].sort(
-      (a, b) => b.timestamp.getTime() - a.timestamp.getTime(),
-    ),
-    pageSize: PAGE_SIZE_STUDENT,
-    filterFn: () => true,
-  });
+  const studentLog = useActivityLog({ page: 1, per_page: PAGE_SIZE });
 
   const actionLabels = [
     "Semua Kategori",
@@ -74,13 +60,30 @@ export default function ActivityLogPage() {
           description='Riwayat aktivitas akun kamu di SIMKATMAWA.'
         />
 
-        <StudentActivityTable data={studentFilter.paginated} />
+        {studentLog.error && (
+          <div className='flex items-center gap-2 p-4 text-red-700 bg-red-50 rounded-lg border border-red-200'>
+            <AlertCircle className='w-5 h-5' />
+            <p>{studentLog.error}</p>
+          </div>
+        )}
 
-        <Pagination
-          page={studentFilter.page}
-          totalPages={studentFilter.totalPages}
-          goTo={studentFilter.goTo}
-        />
+        {studentLog.isLoading ? (
+          <div className='flex justify-center items-center py-20 bg-white rounded-2xl border border-slate-200 shadow-sm'>
+            <Loader2 className='w-8 h-8 animate-spin text-[#1a2b5e]' />
+          </div>
+        ) : (
+          <>
+            <ActivityLogTable data={studentLog.data} />
+
+            {studentLog.meta && studentLog.meta.last_page > 1 && (
+              <Pagination
+                page={studentLog.meta.current_page}
+                totalPages={studentLog.meta.last_page}
+                goTo={(page) => studentLog.updateParams({ page })}
+              />
+            )}
+          </>
+        )}
       </div>
     );
   }
