@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { CertificateDetailSection } from "@/features/certificate/components/CertificatedetailSection";
@@ -15,16 +15,33 @@ import {
   DOSEN_INITIAL,
 } from "@/features/shared/hooks/useFieldList";
 import { RoleGuard } from "@/features/auth/components/RoleGuard";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 
 import { mapToSertifikasiPayload } from "@/features/certificate/utils/sertifikasiMapper";
 import { sertifikasiService } from "@/features/certificate/services/sertifikasiService";
 
 export default function CreateCertificatePage() {
   const router = useRouter();
+  const { currentUser } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const mahasiswa = useFieldList(MAHASISWA_INITIAL);
   const dosen = useFieldList(DOSEN_INITIAL);
+
+  // Prefill row 0 (Ketua) dengan data mahasiswa yang login.
+  // Fill NIM dan Nama secara terpisah supaya kalau salah satu kosong di BE,
+  // yang ada tetap keisi.
+  const prefilledRef = useRef(false);
+  useEffect(() => {
+    if (prefilledRef.current) return;
+    if (currentUser?.role !== "mahasiswa") return;
+    const nim = currentUser.identitas ?? "";
+    const nama = currentUser.name ?? "";
+    if (!nim && !nama) return;
+    if (nim) mahasiswa.update(0, "nim", nim);
+    if (nama) mahasiswa.update(0, "nama", nama);
+    prefilledRef.current = true;
+  }, [currentUser, mahasiswa]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

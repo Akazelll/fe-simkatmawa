@@ -1,7 +1,6 @@
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-import { Navbar } from "@/components/Navbar";
-import { Breadcrumbs } from "@/features/shared/components/Breadcrumbs";
+import { Navbar } from "@/components/navbar";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
@@ -11,10 +10,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <SidebarInset className='flex flex-col w-full'>
           <Navbar />
           <main className='flex-1 overflow-y-auto'>
-            <div className='px-8 pt-6'>
-              <Breadcrumbs />
-            </div>
-            <div className='px-8 pt-4 pb-8'>{children}</div>
+            <div className='px-8 pt-6 pb-8'>{children}</div>
           </main>
         </SidebarInset>
       </div>

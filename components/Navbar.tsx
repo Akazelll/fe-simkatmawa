@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
+import { Breadcrumbs } from "@/features/shared/components/Breadcrumbs";
 
 interface UserData {
   id: string | number;
@@ -87,9 +88,12 @@ export function Navbar() {
           : "bg-transparent border-transparent"
       }`}
     >
-      <div className='flex items-center gap-4'>
-        <SidebarTrigger className='-ml-1' />
-        <div className='h-4 w-px bg-slate-200' />
+      <div className='flex items-center gap-4 min-w-0 flex-1'>
+        <SidebarTrigger className='-ml-1 shrink-0' />
+        <div className='h-4 w-px bg-slate-200 shrink-0' />
+        <div className='min-w-0 overflow-hidden'>
+          <Breadcrumbs />
+        </div>
       </div>
 
       <div className='flex items-center gap-4 sm:gap-6'>
