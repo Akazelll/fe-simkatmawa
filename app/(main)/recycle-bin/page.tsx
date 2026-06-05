@@ -16,6 +16,7 @@ import { TYPES, STATUSES, PAGE_SIZE } from "@/features/recycle-bin/constants";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { TableSkeleton } from "@/features/shared/components/TableSkeleton";
 import { CardSkeleton } from "@/features/shared/components/CardSkeleton";
+
 export default function RecycleBinPage() {
   const { isLoaded: isAuthLoaded } = useAuth();
   const { trashedItems, isLoading, restoreItem, isRestoring } = useRecycleBin();
@@ -43,7 +44,7 @@ export default function RecycleBinPage() {
     <div className='flex flex-col gap-6 p-6 animate-in fade-in duration-500'>
       <PageHeader
         title='Recycle Bin'
-        description='Kelola data yang dihapus (soft delete). Data dapat dikembalikan ke tabel aktif.'
+        description='Kelola data yang dihapus. Data dapat dikembalikan ke tabel aktif.'
       />
 
       <FilterSection
@@ -59,14 +60,23 @@ export default function RecycleBinPage() {
         statuses={STATUSES}
         statusLabel='Filter Status'
       />
+
       <RoleGuard allowedRoles={["superadmin"]}>
         {!isAuthLoaded || isLoading ? (
           <div className='space-y-6'>
-            <CardSkeleton
-              hasHeader={false}
-              lines={2}
-              className='h-28 max-w-sm'
-            />
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+              <CardSkeleton
+                hasHeader={false}
+                lines={2}
+                className='h-28 justify-center'
+              />
+              <CardSkeleton
+                hasHeader={false}
+                lines={2}
+                className='h-28 justify-center'
+              />
+            </div>
+
             <TableSkeleton />
           </div>
         ) : (

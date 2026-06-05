@@ -9,18 +9,13 @@ import { UserModal } from "@/features/user-management/components/UserModal";
 import { DeleteUserModal } from "@/features/user-management/components/DeleteUserModal";
 import { useUsers } from "@/features/user-management/hooks/useUsers";
 import { TotalUserCard } from "@/features/user-management/components/TotalUserCard";
-
-// IMPORT KOMPONEN SHARED & SKELETON
 import { FilterSection } from "@/features/shared/components/FilterSection";
-import { TableSkeleton } from "@/features/shared/components/TableSkeleton";
-import { CardSkeleton } from "@/features/shared/components/CardSkeleton";
+import { TableSkeleton } from "@/features/shared/components/TableSkeleton"; // 1. Import TableSkeleton
 
 export default function UserManagementPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
-
   const [roleFilter, setRoleFilter] = useState("Semua Role");
-
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editUser, setEditUser] = useState<any>(null);
   const [deleteUser, setDeleteUser] = useState<any>(null);
@@ -36,11 +31,6 @@ export default function UserManagementPage() {
 
   return (
     <div className='flex flex-col gap-6 p-6 animate-in fade-in duration-500'>
-      {/* ========================================== */}
-      {/* BAGIAN STATIS: Langsung Render Tanpa Nunggu */}
-      {/* ========================================== */}
-
-      {/* --- HEADER & TOMBOL TAMBAH --- */}
       <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4'>
         <PageHeader
           title='Manajemen Pengguna'
@@ -55,7 +45,6 @@ export default function UserManagementPage() {
         </Button>
       </div>
 
-      {/* --- BAGIAN FILTER & SEARCH --- */}
       <FilterSection
         search={search}
         setSearch={setSearch}
@@ -65,35 +54,17 @@ export default function UserManagementPage() {
         categories={["Semua Role", "Admin", "Mahasiswa"]}
       />
 
-      {/* ========================================== */}
-      {/* BAGIAN DINAMIS: Tampilkan Skeleton saat loading */}
-      {/* ========================================== */}
+      <TotalUserCard stats={stats} isLoading={isLoading} />
 
-      {/* --- KARTU STATISTIK --- */}
-      {isLoading ? (
-        <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-          {[1, 2, 3].map((i) => (
-            <CardSkeleton
-              key={i}
-              hasHeader={false}
-              lines={2}
-              className='h-28 justify-center'
-            />
-          ))}
-        </div>
-      ) : (
-        <TotalUserCard stats={stats} />
-      )}
-
-      {/* --- TABEL --- */}
       <div className='space-y-4'>
+        {/* 2. Kondisional Render untuk Skeleton Tabel */}
         {isLoading ? (
           <TableSkeleton />
         ) : (
           <>
             <UserTable
               data={data}
-              isLoading={false}
+              isLoading={false} // Pastikan loading bawaan tabel dimatikan
               onEdit={(user) => setEditUser(user)}
               onDelete={(user) => setDeleteUser(user)}
             />
@@ -109,7 +80,6 @@ export default function UserManagementPage() {
         )}
       </div>
 
-      {/* MODALS */}
       <UserModal
         isOpen={isAddModalOpen || !!editUser}
         onClose={() => {

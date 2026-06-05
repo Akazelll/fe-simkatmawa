@@ -1,4 +1,6 @@
-import { StatCard } from "./StatCard";
+"use client";
+
+import { StatCard, StatCardSkeleton } from "./StatCard";
 import {
   Trophy,
   FileBadge,
@@ -10,11 +12,33 @@ import {
 
 interface StatsGridProps {
   stats?: any;
+  isLoading?: boolean;
 }
 
-export function StatsGrid({ stats }: StatsGridProps) {
+export function StatsGrid({ stats, isLoading }: StatsGridProps) {
+  if (isLoading) {
+    return (
+      <div className='space-y-6'>
+        <div>
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'>
+            {[1, 2, 3].map((i) => (
+              <StatCardSkeleton key={`skel-top-${i}`} />
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'>
+            {[4, 5, 6].map((i) => (
+              <StatCardSkeleton key={`skel-bot-${i}`} />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const mappedStats = [
-    // --- 3 KARTU KATEGORI DATA ---
     {
       label: "Total Prestasi",
       value: stats?.total_prestasi || 0,
@@ -36,7 +60,6 @@ export function StatsGrid({ stats }: StatsGridProps) {
       trend: 0,
       variant: "amber",
     },
-    // --- 3 KARTU STATUS PENGAJUAN ---
     {
       label: "Pengajuan Pending",
       value: stats?.status_pending || 0,
@@ -62,11 +85,7 @@ export function StatsGrid({ stats }: StatsGridProps) {
 
   return (
     <div className='space-y-6'>
-      {/* Baris Pertama: Kategori Utama */}
       <div>
-        <h3 className='text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3'>
-          Ringkasan Berkas Pengajuan
-        </h3>
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'>
           {mappedStats.slice(0, 3).map((stat) => (
             <StatCard key={stat.label} {...(stat as any)} />
@@ -74,11 +93,7 @@ export function StatsGrid({ stats }: StatsGridProps) {
         </div>
       </div>
 
-      {/* Baris Kedua: Status Verifikasi */}
       <div>
-        <h3 className='text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3'>
-          Status Alur Verifikasi
-        </h3>
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'>
           {mappedStats.slice(3, 6).map((stat) => (
             <StatCard key={stat.label} {...(stat as any)} />
