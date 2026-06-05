@@ -26,8 +26,11 @@ export default function SettingsPage() {
       />
       <RoleGuard allowedRoles={["superadmin"]}>
         {!isAuthLoaded || !isCredentialLoaded ? (
-          <div className='space-y-6'>
-            <CardSkeleton lines={5} />
+          <div className='w-full'>
+            <CardSkeleton
+              lines={6}
+              className='mx-auto max-w-3xl min-h-[380px]'
+            />
           </div>
         ) : (
           credential && (
