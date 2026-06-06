@@ -6,6 +6,8 @@ export type ActivityLogQueryParams = {
   search?: string;
   action?: string;
   module?: string;
+  start_date?: string; 
+  end_date?: string; 
 };
 
 export const activityLogService = {

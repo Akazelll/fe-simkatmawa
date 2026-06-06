@@ -1,7 +1,6 @@
 "use client";
 
 import { useAuth } from "../hooks/useAuth";
-// Update path import berikut:
 import { hasPermission } from "@/features/auth/utils/permissions";
 import { Permission } from "@/features/auth/types";
 
