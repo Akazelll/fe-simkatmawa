@@ -16,6 +16,28 @@ function stringifyData(
 }
 
 /**
+ * Format ISO timestamp UTC → string WIB (Asia/Jakarta).
+ * Bypass `informasi_umum.waktu` dari BE karena default Laravel timezone-nya UTC,
+ * jadi label "WIB" di BE bisa mundur 7 jam dari real-time.
+ */
+function formatJakartaTime(iso: string | null | undefined): string {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return String(iso);
+
+  const fmt = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Asia/Jakarta",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+  return `${fmt.format(d)} WIB`;
+}
+
+/**
  * Map response Spatie ActivityLog dari BE (Laravel) ke shape ActivityLog FE.
  *
  * Shape BE (lihat ActivityLogResource.php):
@@ -33,7 +55,9 @@ export function mapBackendActivityLog(raw: any): ActivityLog {
 
   return {
     id: String(raw.id),
-    timestamp: raw.informasi_umum?.waktu ?? raw.created_at ?? "—",
+    // Format dari created_at (ISO UTC) → WIB di FE, lebih reliable daripada
+    // ngandelin informasi_umum.waktu yg bisa kena bug timezone Laravel.
+    timestamp: formatJakartaTime(raw.created_at),
     user: raw.informasi_umum?.pelaku ?? "—",
     role: (raw.informasi_umum?.role as ActivityRole) ?? "mahasiswa",
     action,

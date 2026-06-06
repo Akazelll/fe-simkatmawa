@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { MahasiswaRow } from "@/features/shared/hooks/useFieldList";
+import { MahasiswaNameAutocomplete } from "./MahasiswaNameAutocomplete";
 
 interface Props {
   description?: string;
@@ -86,6 +87,7 @@ export function MahasiswaListSection({
                       onChange={(e) => update(index, "nim", e.target.value)}
                       placeholder='NIM'
                       required
+                      autoComplete='off'
                       className={INPUT_CLASS}
                     />
                   </div>
@@ -94,9 +96,13 @@ export function MahasiswaListSection({
                     <Label className='text-slate-700 font-semibold text-xs'>
                       {namaLabel} <span className='text-red-500'>*</span>
                     </Label>
-                    <Input
+                    <MahasiswaNameAutocomplete
                       value={row.nama}
-                      onChange={(e) => update(index, "nama", e.target.value)}
+                      onChange={(val) => update(index, "nama", val)}
+                      onPick={(m) => {
+                        update(index, "nim", m.nim);
+                        update(index, "nama", m.nama);
+                      }}
                       placeholder={namaLabel}
                       required
                       className={INPUT_CLASS}

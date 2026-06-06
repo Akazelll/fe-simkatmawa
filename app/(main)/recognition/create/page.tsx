@@ -1,6 +1,5 @@
 "use client";
-
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle } from "lucide-react";
 
@@ -17,20 +16,33 @@ import {
 } from "@/features/shared/hooks/useFieldList";
 import { RoleGuard } from "@/features/auth/components/RoleGuard";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { CardSkeleton } from "@/features/shared/components/CardSkeleton";
 
 import { rekognisiService } from "@/features/recognition/services/rekognisiService";
 import { mapToRekognisiPayload } from "@/features/recognition/utils/rekognisiMapper";
 
 export default function CreateRecognitionPage() {
   const router = useRouter();
-  const { isLoaded: isAuthLoaded } = useAuth();
-
+  const { currentUser } = useAuth();
   const mahasiswa = useFieldList(MAHASISWA_INITIAL);
   const dosen = useFieldList(DOSEN_INITIAL);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+
+  // Prefill row 0 (Ketua) dengan data mahasiswa yang login.
+  // Fill NIM dan Nama secara terpisah supaya kalau salah satu kosong di BE,
+  // yang ada tetap keisi.
+  const prefilledRef = useRef(false);
+  useEffect(() => {
+    if (prefilledRef.current) return;
+    if (currentUser?.role !== "mahasiswa") return;
+    const nim = currentUser.identitas ?? "";
+    const nama = currentUser.name ?? "";
+    if (!nim && !nama) return;
+    if (nim) mahasiswa.update(0, "nim", nim);
+    if (nama) mahasiswa.update(0, "nama", nama);
+    prefilledRef.current = true;
+  }, [currentUser, mahasiswa]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
