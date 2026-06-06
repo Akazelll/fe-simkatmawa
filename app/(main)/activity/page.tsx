@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Download, AlertCircle, Loader2 } from "lucide-react";
+import { Download, AlertCircle } from "lucide-react";
 import { PageHeader } from "@/features/shared/components/PageHeader";
 import { FilterSection } from "@/features/shared/components/FilterSection";
 import { Pagination } from "@/features/shared/components/Pagination";
@@ -18,10 +18,12 @@ import { ExportLogModal } from "@/features/activity/components/ExportLogModal";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { hasRole } from "@/lib/auth/permissions";
 import { useActivityLog } from "@/features/activity/hooks/useActivityLog";
+import { TableSkeleton } from "@/features/shared/components/TableSkeleton";
 
 export default function ActivityLogPage() {
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
-  const { currentUser, isLoaded } = useAuth();
+
+  const { currentUser, isLoaded: isAuthLoaded } = useAuth();
 
   const studentLog = useActivityLog({ page: 1, per_page: PAGE_SIZE });
 
@@ -50,15 +52,18 @@ export default function ActivityLogPage() {
     },
   });
 
-  if (!isLoaded) return null;
-
-  if (hasRole(currentUser, "mahasiswa")) {
+  if (isAuthLoaded && hasRole(currentUser, "mahasiswa")) {
     return (
       <div className='flex flex-col gap-6 animate-in fade-in duration-500'>
         <PageHeader
-          title='Activity Log'
+          title='Activity Logs'
           description='Riwayat aktivitas akun kamu di SIMKATMAWA.'
-        />
+        >
+          <ExportLogButton onClick={() => setIsExportModalOpen(true)}>
+            <Download className='mr-2 h-4 w-4' />
+            Export Log
+          </ExportLogButton>
+        </PageHeader>
 
         {studentLog.error && (
           <div className='flex items-center gap-2 p-4 text-red-700 bg-red-50 rounded-lg border border-red-200'>
@@ -67,23 +72,28 @@ export default function ActivityLogPage() {
           </div>
         )}
 
-        {studentLog.isLoading ? (
-          <div className='flex justify-center items-center py-20 bg-white rounded-2xl border border-slate-200 shadow-sm'>
-            <Loader2 className='w-8 h-8 animate-spin text-[#1a2b5e]' />
-          </div>
-        ) : (
-          <>
-            <ActivityLogTable data={studentLog.data} />
+        <div className='space-y-4'>
+          {studentLog.isLoading ? (
+            <TableSkeleton />
+          ) : (
+            <>
+              <ActivityLogTable data={studentLog.data} />
 
-            {studentLog.meta && studentLog.meta.last_page > 1 && (
-              <Pagination
-                page={studentLog.meta.current_page}
-                totalPages={studentLog.meta.last_page}
-                goTo={(page) => studentLog.updateParams({ page })}
-              />
-            )}
-          </>
-        )}
+              {studentLog.meta && studentLog.meta.last_page > 1 && (
+                <Pagination
+                  page={studentLog.meta.current_page}
+                  totalPages={studentLog.meta.last_page}
+                  goTo={(page) => studentLog.updateParams({ page })}
+                />
+              )}
+            </>
+          )}
+        </div>
+
+        <ExportLogModal
+          open={isExportModalOpen}
+          onOpenChange={setIsExportModalOpen}
+        />
       </div>
     );
   }
@@ -111,15 +121,23 @@ export default function ActivityLogPage() {
         statuses={["Semua Status"]}
       />
 
-      <ActivityLogTable data={adminFilter.paginated} />
+      <div className='space-y-4'>
+        {!isAuthLoaded ? (
+          <TableSkeleton />
+        ) : (
+          <>
+            <ActivityLogTable data={adminFilter.paginated} />
 
-      {adminFilter.totalPages > 1 && (
-        <Pagination
-          page={adminFilter.page}
-          totalPages={adminFilter.totalPages}
-          goTo={adminFilter.goTo}
-        />
-      )}
+            {adminFilter.totalPages > 1 && (
+              <Pagination
+                page={adminFilter.page}
+                totalPages={adminFilter.totalPages}
+                goTo={adminFilter.goTo}
+              />
+            )}
+          </>
+        )}
+      </div>
 
       <ExportLogModal
         open={isExportModalOpen}

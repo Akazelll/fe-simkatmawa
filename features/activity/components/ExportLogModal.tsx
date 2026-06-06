@@ -13,6 +13,7 @@ import { DateRangeInput } from "@/features/shared/components/DateRangeInput";
 import { LogPdfTemplate } from "./LogPdfTemplate";
 import { fetchLogsByDate } from "@/features/activity/actions/activityLog";
 import { parseISO } from "date-fns";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 
 export function ExportLogModal({
   open,
@@ -23,6 +24,7 @@ export function ExportLogModal({
 }) {
   const [date, setDate] = useState({ start: "", end: "" });
   const [loading, setLoading] = useState(false);
+  const { currentUser } = useAuth(); 
 
   const handleExport = async () => {
     if (!date.start || !date.end) return;
@@ -31,17 +33,30 @@ export function ExportLogModal({
     const from = parseISO(date.start);
     const to = parseISO(date.end);
 
-    const logs = await fetchLogsByDate(from, to);
+    try {
+      const logs = await fetchLogsByDate(from, to);
 
-    const blob = await pdf(<LogPdfTemplate logs={logs} dateRange={{ from, to }} exporterName='Admin' />).toBlob();
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `logs-${date.start}.pdf`;
-    link.click();
+      const exporterName = currentUser?.name || "Admin";
 
-    setLoading(false);
-    onOpenChange(false);
+      const blob = await pdf(
+        <LogPdfTemplate
+          logs={logs}
+          dateRange={{ from, to }}
+          exporterName={exporterName}
+        />,
+      ).toBlob();
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `logs-${date.start}.pdf`;
+      link.click();
+    } catch (error) {
+      console.error("Gagal mengexport PDF:", error);
+    } finally {
+      setLoading(false);
+      onOpenChange(false);
+    }
   };
 
   return (

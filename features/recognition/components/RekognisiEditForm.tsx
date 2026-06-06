@@ -71,10 +71,6 @@ export function RekognisiEditForm({ detail }: { detail: Rekognisi }) {
       onSubmit={handleSubmit}
       className='flex flex-col gap-6 animate-in fade-in duration-500 max-w-5xl w-full mx-auto p-4 md:p-0'
     >
-      <FormPageHeader
-        title='Edit Rekognisi'
-        description='Perbarui data rekognisi, mahasiswa, dan dosen pendamping.'
-      />
 
       {errorMsg && (
         <div className='flex items-center gap-2 p-4 text-sm font-medium text-red-700 bg-red-50 rounded-xl border border-red-200'>

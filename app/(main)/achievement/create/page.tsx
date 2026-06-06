@@ -18,6 +18,9 @@ import {
 import { RoleGuard } from "@/features/auth/components/RoleGuard";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 
+import { useAuth } from "@/features/auth/hooks/useAuth";
+import { CardSkeleton } from "@/features/shared/components/CardSkeleton";
+
 // Import Service & Mapper
 import { prestasiService } from "@/features/achievement/services/prestasiService";
 import { mapToPrestasiPayload } from "@/features/achievement/utils/prestasiMapper";
@@ -25,6 +28,8 @@ import { mapToPrestasiPayload } from "@/features/achievement/utils/prestasiMappe
 export default function CreatePrestasiPage() {
   const router = useRouter();
   const { currentUser } = useAuth();
+
+  const { isLoaded: isAuthLoaded } = useAuth();
 
   const mahasiswa = useFieldList(MAHASISWA_INITIAL);
   const dosen = useFieldList(DOSEN_INITIAL);
@@ -84,49 +89,57 @@ export default function CreatePrestasiPage() {
   };
 
   return (
-    <RoleGuard allowedRoles={["mahasiswa"]}>
-      <form
-        onSubmit={handleSubmit}
-        className='flex flex-col gap-6 animate-in fade-in duration-500 max-w-5xl w-full mx-auto p-4 md:p-0'
-      >
-        <FormPageHeader
-          title='Prestasi Mandiri'
-          description='Lengkapi data prestasi, mahasiswa, dan dosen pendamping dalam satu alur.'
-        />
+    <form
+      onSubmit={handleSubmit}
+      className='flex flex-col gap-6 animate-in fade-in duration-500 max-w-5xl w-full mx-auto p-4 md:p-0'
+    >
+      <FormPageHeader
+        title='Prestasi Mandiri'
+        description='Lengkapi data prestasi, mahasiswa, dan dosen pendamping dalam satu alur.'
+      />
 
-        <FormWelcomeBanner
-          badge='Tambah Prestasi'
-          title='Form prestasi mandiri terpadu'
-          description='Data mahasiswa dan dosen kini diisi langsung di form ini, sehingga tidak perlu berpindah halaman setelah data prestasi tersimpan.'
-        />
+      <FormWelcomeBanner
+        badge='Tambah Prestasi'
+        title='Form prestasi mandiri terpadu'
+        description='Data mahasiswa dan dosen kini diisi langsung di form ini, sehingga tidak perlu berpindah halaman setelah data prestasi tersimpan.'
+      />
 
-        {errorMsg && (
-          <div className='flex items-center gap-2 p-4 text-sm font-medium text-red-700 bg-red-50 rounded-xl border border-red-200'>
-            <AlertCircle className='w-5 h-5 shrink-0' />
-            <p>{errorMsg}</p>
+      <RoleGuard allowedRoles={["mahasiswa"]}>
+        {!isAuthLoaded ? (
+          <div className='space-y-6'>
+            <CardSkeleton lines={6} />
+            <CardSkeleton lines={4} />
+            <CardSkeleton lines={4} />
           </div>
+        ) : (
+          <>
+            {errorMsg && (
+              <div className='flex items-center gap-2 p-4 text-sm font-medium text-red-700 bg-red-50 rounded-xl border border-red-200'>
+                <AlertCircle className='w-5 h-5 shrink-0' />
+                <p>{errorMsg}</p>
+              </div>
+            )}
+
+            <AchievementDetailSection />
+
+            <MahasiswaListSection
+              items={mahasiswa.items}
+              add={mahasiswa.add}
+              remove={mahasiswa.remove}
+              update={mahasiswa.update}
+            />
+
+            <DosenListSection
+              items={dosen.items}
+              add={dosen.add}
+              remove={dosen.remove}
+              update={dosen.update}
+            />
+
+            <FormFooter backHref='/achievement' />
+          </>
         )}
-
-        <AchievementDetailSection />
-
-        <MahasiswaListSection
-          items={mahasiswa.items}
-          add={mahasiswa.add}
-          remove={mahasiswa.remove}
-          update={mahasiswa.update}
-        />
-
-        <DosenListSection
-          items={dosen.items}
-          add={dosen.add}
-          remove={dosen.remove}
-          update={dosen.update}
-        />
-
-        <FormFooter
-          backHref='/achievement'
-        />
-      </form>
-    </RoleGuard>
+      </RoleGuard>
+    </form>
   );
 }

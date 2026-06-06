@@ -7,6 +7,7 @@ import { Pagination } from "@/features/shared/components/Pagination";
 import { FilterSection } from "@/features/shared/components/FilterSection";
 import { useVerifikasiList } from "@/features/verification/hooks/useVerifikasiList";
 import { TipeKegiatan } from "@/features/verification/types";
+import { TableSkeleton } from "@/features/shared/components/TableSkeleton";
 
 type VerificationType = "prestasi" | "sertifikat" | "rekognisi";
 
@@ -50,6 +51,9 @@ export default function VerificationTypePage() {
 
   return (
     <div className='space-y-6 p-6 animate-in fade-in duration-500'>
+      {/* ========================================== */}
+      {/* BAGIAN STATIS: Langsung Render Tanpa Nunggu */}
+      {/* ========================================== */}
       <div className='space-y-1'>
         <h1 className='text-2xl font-bold capitalize text-slate-900'>
           Verifikasi {type}
@@ -67,15 +71,24 @@ export default function VerificationTypePage() {
         statusLabel='Urutkan Tanggal'
       />
 
+      {/* ========================================== */}
+      {/* BAGIAN DINAMIS: Skeleton Table saat Loading */}
+      {/* ========================================== */}
       <div className='space-y-4'>
-        <VerificationTable data={sortedData} isLoading={isLoading} />
+        {isLoading ? (
+          <TableSkeleton />
+        ) : (
+          <>
+            <VerificationTable data={sortedData} />
 
-        {meta && meta.last_page > 1 && (
-          <Pagination
-            page={meta.current_page}
-            totalPages={meta.last_page}
-            goTo={(newPage) => setCurrentPage(newPage)}
-          />
+            {meta && meta.last_page > 1 && (
+              <Pagination
+                page={meta.current_page}
+                totalPages={meta.last_page}
+                goTo={(newPage) => setCurrentPage(newPage)}
+              />
+            )}
+          </>
         )}
       </div>
     </div>
