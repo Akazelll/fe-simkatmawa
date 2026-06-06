@@ -16,12 +16,9 @@ import {
   DOSEN_INITIAL,
 } from "@/features/shared/hooks/useFieldList";
 import { RoleGuard } from "@/features/auth/components/RoleGuard";
-import { useAuth } from "@/features/auth/hooks/useAuth";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { CardSkeleton } from "@/features/shared/components/CardSkeleton";
-
-// Import Service & Mapper
 import { prestasiService } from "@/features/achievement/services/prestasiService";
 import { mapToPrestasiPayload } from "@/features/achievement/utils/prestasiMapper";
 
@@ -34,9 +31,6 @@ export default function CreatePrestasiPage() {
   const mahasiswa = useFieldList(MAHASISWA_INITIAL);
   const dosen = useFieldList(DOSEN_INITIAL);
 
-  // Prefill row 0 (Ketua) dengan data mahasiswa yang login.
-  // Fill NIM dan Nama secara terpisah supaya kalau salah satu kosong di BE,
-  // yang ada tetap keisi.
   const prefilledRef = useRef(false);
   useEffect(() => {
     if (prefilledRef.current) return;

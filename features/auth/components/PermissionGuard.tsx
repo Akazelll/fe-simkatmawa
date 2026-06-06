@@ -1,8 +1,9 @@
 "use client";
 
 import { useAuth } from "../hooks/useAuth";
-import { hasPermission } from "@/lib/auth/permissions";
-import { Permission } from "@/lib/auth/types";
+// Update path import berikut:
+import { hasPermission } from "@/features/auth/utils/permissions";
+import { Permission } from "@/features/auth/types";
 
 export function PermissionGuard({
   permission,
@@ -14,6 +15,7 @@ export function PermissionGuard({
   fallback?: React.ReactNode;
 }) {
   const { currentUser } = useAuth();
+
   if (hasPermission(currentUser, permission)) {
     return <>{children}</>;
   }

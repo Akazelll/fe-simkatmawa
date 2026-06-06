@@ -16,22 +16,21 @@ import {
 } from "@/features/shared/hooks/useFieldList";
 import { RoleGuard } from "@/features/auth/components/RoleGuard";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { CardSkeleton } from "@/features/shared/components/CardSkeleton"; // <-- Tambahkan import ini
 
 import { mapToSertifikasiPayload } from "@/features/certificate/utils/sertifikasiMapper";
 import { sertifikasiService } from "@/features/certificate/services/sertifikasiService";
 
 export default function CreateCertificatePage() {
   const router = useRouter();
-  const { currentUser } = useAuth();
+  // <-- Tambahkan isLoaded: isAuthLoaded di sini
+  const { currentUser, isLoaded: isAuthLoaded } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const mahasiswa = useFieldList(MAHASISWA_INITIAL);
   const dosen = useFieldList(DOSEN_INITIAL);
-
-  // Prefill row 0 (Ketua) dengan data mahasiswa yang login.
-  // Fill NIM dan Nama secara terpisah supaya kalau salah satu kosong di BE,
-  // yang ada tetap keisi.
   const prefilledRef = useRef(false);
+
   useEffect(() => {
     if (prefilledRef.current) return;
     if (currentUser?.role !== "mahasiswa") return;

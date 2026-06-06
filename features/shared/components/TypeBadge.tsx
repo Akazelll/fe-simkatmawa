@@ -9,10 +9,7 @@ interface TypeBadgeProps {
   showIcon?: boolean;
 }
 
-const STYLES: Record<
-  SubmissionType,
-  { pill: string; icon: LucideIcon }
-> = {
+const STYLES: Record<SubmissionType, { pill: string; icon: LucideIcon }> = {
   Prestasi: {
     pill: "bg-amber-50 text-amber-700 border-amber-200",
     icon: Trophy,
@@ -28,22 +25,28 @@ const STYLES: Record<
 };
 
 const ALIASES: Record<string, SubmissionType> = {
-  Sertifikat: "Sertifikasi",
   sertifikat: "Sertifikasi",
+  sertifikasi: "Sertifikasi",
   prestasi: "Prestasi",
   rekognisi: "Rekognisi",
 };
 
 function normalize(raw: string): SubmissionType | null {
+  if (!raw) return null;
   if (raw in STYLES) return raw as SubmissionType;
-  return ALIASES[raw] ?? null;
+  return ALIASES[raw.toLowerCase()] ?? null;
 }
 
-export function TypeBadge({ type, className, showIcon = true }: TypeBadgeProps) {
+export function TypeBadge({
+  type,
+  className,
+  showIcon = true,
+}: TypeBadgeProps) {
   const variant = normalize(type);
   const config = variant
     ? STYLES[variant]
     : { pill: "bg-slate-50 text-slate-700 border-slate-200", icon: null };
+
   const Icon = config.icon;
 
   return (
@@ -55,7 +58,7 @@ export function TypeBadge({ type, className, showIcon = true }: TypeBadgeProps) 
       )}
     >
       {showIcon && Icon && <Icon size={12} />}
-      {variant ?? type}
+      <span className='capitalize'>{variant ?? type}</span>
     </span>
   );
 }

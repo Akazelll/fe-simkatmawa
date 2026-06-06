@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import {
   KemdikbudCredential,
   UpdateKemdikbudCredentialPayload,
-} from "@/lib/settings/types";
+} from "@/features/settings/types";
 import { defaultKemdikbudCredential } from "../data/DefaultKemdikbudCredential";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 
