@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { hasRole } from "@/lib/auth/permissions";
+import { hasRole } from "@/features/auth/utils/permissions";
 import { StatsGrid } from "@/features/dashboard/components/StatsGrid";
 import { SubmissionTrendsChart } from "@/features/dashboard/components/SubmissionTrendsChart";
 import { ApprovalRateChart } from "@/features/dashboard/components/ApprovalRateChart";

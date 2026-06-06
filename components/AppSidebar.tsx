@@ -50,7 +50,7 @@ import {
 } from "@/components/ui/sidebar";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { hasRole } from "@/lib/auth/permissions";
+import { hasRole } from "@/features/auth/utils/permissions";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter();

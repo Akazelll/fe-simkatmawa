@@ -4,6 +4,8 @@ export type ActivityLogQueryParams = {
   page?: number;
   per_page?: number;
   search?: string;
+  action?: string;
+  module?: string;
 };
 
 export const activityLogService = {

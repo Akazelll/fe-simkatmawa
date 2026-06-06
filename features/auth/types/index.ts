@@ -1,12 +1,5 @@
 export type UserRole = "mahasiswa" | "admin" | "superadmin";
 
-export type SubmissionStatus =
-  | "PENDING"
-  | "REJECTED"
-  | "APPROVED_UNSYNCED"
-  | "SYNC_FAILED"
-  | "SYNC_SUCCESS";
-
 export type Permission =
   | "submission:create"
   | "submission:read-own"

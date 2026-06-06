@@ -1,11 +1,10 @@
-// features/auth/components/ProtectedRoute.tsx
 "use client";
 
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "../hooks/useAuth";
-import { hasRole } from "@/lib/auth/permissions";
-import { UserRole } from "@/lib/auth/types";
+import { hasRole } from "@/features/auth/utils/permissions";
+import { UserRole } from "@/features/auth/types";
 
 export function ProtectedRoute({
   children,

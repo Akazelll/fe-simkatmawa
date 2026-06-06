@@ -3,7 +3,6 @@ export function formatDateTime(
 ): string {
   if (!value) return "—";
 
-  // Jika input adalah string, convert ke Date. Jika sudah Date, gunakan langsung.
   const date = value instanceof Date ? value : new Date(value);
 
   if (isNaN(date.getTime())) return "—";

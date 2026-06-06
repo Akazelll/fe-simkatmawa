@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { UpdateKemdikbudCredentialPayload } from "@/lib/settings/types";
+import type { UpdateKemdikbudCredentialPayload } from "@/features/settings/types";
 
 interface Props {
   open: boolean;
