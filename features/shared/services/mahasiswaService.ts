@@ -1,23 +1,40 @@
 import { api } from "@/lib/api";
 
-export interface MahasiswaSearchResult {
+export type MahasiswaSearchResult = {
+  id: string;
   nim: string;
   nama: string;
-  email?: string;
-  program_studi?: string;
-  [key: string]: unknown;
-}
+  label?: string;
+  program_studi?: string | null;
+};
 
 export const mahasiswaService = {
-  /**
-   * Cari mahasiswa berdasarkan NIM atau nama.
-   * Asumsi endpoint: GET /api/v1/mahasiswa/search?q=...&per_page=10
-   * Kalau temen BE pakai path lain, cukup ubah URL di sini.
-   */
-  searchMahasiswa: async (query: string, perPage = 10) => {
-    const response = await api.get("/mahasiswa/search", {
-      params: { q: query, per_page: perPage },
+  async searchMahasiswa(query: string): Promise<MahasiswaSearchResult[]> {
+    const keyword = query.trim();
+
+    if (keyword.length < 2) {
+      return [];
+    }
+
+    const response = await api.get("/referensi/mahasiswa", {
+      params: {
+        q: keyword,
+        limit: 10,
+      },
     });
-    return response.data;
+
+    const data = response.data?.data;
+
+    if (!Array.isArray(data)) {
+      return [];
+    }
+
+    return data.map((item: any) => ({
+      id: String(item.id ?? item.nim),
+      nim: String(item.nim ?? ""),
+      nama: String(item.nama ?? ""),
+      label: item.label ?? `${item.nama ?? ""} - ${item.nim ?? ""}`,
+      program_studi: item.program_studi ?? null,
+    }));
   },
 };

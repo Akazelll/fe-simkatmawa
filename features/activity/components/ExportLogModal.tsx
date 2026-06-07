@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { pdf } from "@react-pdf/renderer";
 import { format, parseISO } from "date-fns";
+
 import {
   Dialog,
   DialogContent,
@@ -14,13 +15,8 @@ import { DateRangeInput } from "@/features/shared/components/DateRangeInput";
 import { LogPdfTemplate } from "./LogPdfTemplate";
 import { activityLogService } from "@/features/activity/services/activityLogService";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-
-const getActionLabel = (action: string) => {
-  if (action === "created") return "Dibuat";
-  if (action === "updated") return "Diubah";
-  if (action === "deleted") return "Dihapus";
-  return action;
-};
+import { normalizeActivityLogs } from "@/features/activity/utils/activityLogExportMapper";
+import { createActivityLogExportFileName } from "@/features/activity/utils/activityLogExportFile";
 
 export function ExportLogModal({
   open,
@@ -37,26 +33,19 @@ export function ExportLogModal({
     if (!date.start || !date.end) return;
 
     setLoading(true);
+
     const from = parseISO(date.start);
     const to = parseISO(date.end);
+    const exporterName = currentUser?.name || "Mahasiswa";
 
     try {
       const response = await activityLogService.getMyActivityLog({
         start_date: format(from, "yyyy-MM-dd"),
         end_date: format(to, "yyyy-MM-dd"),
-        per_page: 5000,
+        per_page: 100,
       });
 
-      const logsData = response.data || [];
-
-      const formattedLogs = logsData.map((item: any) => ({
-        id: item.id,
-        user: item.causer?.name || currentUser?.name || "Sistem",
-        action: getActionLabel(item.event),
-        timestamp: item.created_at,
-      }));
-
-      const exporterName = currentUser?.name || "Mahasiswa";
+      const formattedLogs = normalizeActivityLogs(response, exporterName);
 
       const blob = await pdf(
         <LogPdfTemplate
@@ -68,14 +57,23 @@ export function ExportLogModal({
 
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
+
       link.href = url;
-      link.download = `ActivityLog_${format(from, "yyyyMMdd")}_to_${format(to, "yyyyMMdd")}.pdf`;
+      link.download = createActivityLogExportFileName(from, to, exporterName);
+
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
 
       URL.revokeObjectURL(url);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Gagal mengexport PDF:", error);
-      alert("Gagal mengambil data untuk di-export.");
+      console.error("Detail error:", error.response?.data);
+
+      alert(
+        error.response?.data?.message ||
+          "Gagal mengambil data untuk di-export.",
+      );
     } finally {
       setLoading(false);
       onOpenChange(false);
