@@ -6,50 +6,59 @@ import {
   MahasiswaSearchResult,
 } from "@/features/shared/services/mahasiswaService";
 
-const DEBOUNCE_MS = 300;
-const MIN_QUERY_LENGTH = 2;
-
 export function useMahasiswaSearch(query: string) {
   const [results, setResults] = useState<MahasiswaSearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const trimmed = query.trim();
-    if (trimmed.length < MIN_QUERY_LENGTH) {
+    const keyword = query.trim();
+
+    if (keyword.length < 2) {
       setResults([]);
       setError("");
       setIsLoading(false);
       return;
     }
 
-    let aborted = false;
-    setIsLoading(true);
-    const timer = setTimeout(async () => {
+    let isMounted = true;
+
+    const timer = window.setTimeout(async () => {
       try {
-        const res = await mahasiswaService.searchMahasiswa(trimmed);
-        if (aborted) return;
-        if (res?.success && Array.isArray(res.data)) {
-          setResults(res.data);
-          setError("");
-        } else {
-          setResults([]);
-          setError(res?.message || "Tidak ada hasil");
-        }
+        setIsLoading(true);
+        setError("");
+
+        const data = await mahasiswaService.searchMahasiswa(keyword);
+
+        if (!isMounted) return;
+
+        setResults(data);
       } catch (err: any) {
-        if (aborted) return;
+        if (!isMounted) return;
+
+        console.error("Gagal mencari mahasiswa:", err);
+        console.error("Detail error mahasiswa:", err.response?.data);
+
         setResults([]);
-        setError(err.response?.data?.message || "Gagal mencari mahasiswa");
+        setError(
+          err.response?.data?.message || "Gagal mencari data mahasiswa.",
+        );
       } finally {
-        if (!aborted) setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
-    }, DEBOUNCE_MS);
+    }, 350);
 
     return () => {
-      aborted = true;
-      clearTimeout(timer);
+      isMounted = false;
+      window.clearTimeout(timer);
     };
   }, [query]);
 
-  return { results, isLoading, error };
+  return {
+    results,
+    isLoading,
+    error,
+  };
 }

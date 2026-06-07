@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
+
 import { Input } from "@/components/ui/input";
 import { useMahasiswaSearch } from "@/features/shared/hooks/useMahasiswaSearch";
 import { MahasiswaSearchResult } from "@/features/shared/services/mahasiswaService";
@@ -25,18 +26,23 @@ export function MahasiswaNameAutocomplete({
 }: Props) {
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
+
   const { results, isLoading, error } = useMahasiswaSearch(value);
 
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (!wrapperRef.current?.contains(e.target as Node)) setOpen(false);
+    const handler = (event: MouseEvent) => {
+      if (!wrapperRef.current?.contains(event.target as Node)) {
+        setOpen(false);
+      }
     };
+
     document.addEventListener("mousedown", handler);
+
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const handlePick = (m: MahasiswaSearchResult) => {
-    onPick(m);
+  const handlePick = (mahasiswa: MahasiswaSearchResult) => {
+    onPick(mahasiswa);
     setOpen(false);
   };
 
@@ -46,16 +52,21 @@ export function MahasiswaNameAutocomplete({
     <div ref={wrapperRef} className='relative w-full'>
       <Input
         value={value}
-        onChange={(e) => {
-          onChange(e.target.value);
+        onChange={(event) => {
+          onChange(event.target.value);
           setOpen(true);
         }}
-        onFocus={() => setOpen(true)}
+        onFocus={() => {
+          if (value.trim().length >= 2) {
+            setOpen(true);
+          }
+        }}
         placeholder={placeholder}
         required={required}
         autoComplete='off'
         className={className}
       />
+
       {isLoading && (
         <Loader2
           size={16}
@@ -67,7 +78,8 @@ export function MahasiswaNameAutocomplete({
         <div className='absolute z-20 mt-1.5 w-full bg-white rounded-xl border border-slate-200 shadow-lg overflow-hidden max-h-72 overflow-y-auto'>
           {isLoading && results.length === 0 ? (
             <div className='px-4 py-3 text-sm text-slate-500 flex items-center gap-2'>
-              <Loader2 size={14} className='animate-spin' /> Mencari...
+              <Loader2 size={14} className='animate-spin' />
+              Mencari...
             </div>
           ) : error ? (
             <div className='px-4 py-3 text-sm text-rose-600'>{error}</div>
@@ -80,23 +92,24 @@ export function MahasiswaNameAutocomplete({
             </div>
           ) : (
             <ul className='divide-y divide-slate-100'>
-              {results.map((m) => (
-                <li key={m.nim}>
+              {results.map((mahasiswa) => (
+                <li key={mahasiswa.nim}>
                   <button
                     type='button'
-                    onClick={() => handlePick(m)}
+                    onClick={() => handlePick(mahasiswa)}
                     className='w-full text-left px-4 py-2.5 hover:bg-slate-50 transition-colors'
                   >
                     <div className='flex flex-col gap-0.5 min-w-0'>
                       <span className='text-sm font-semibold text-slate-800 truncate'>
-                        {m.nama}
+                        {mahasiswa.nama}
                       </span>
+
                       <span className='text-xs text-slate-500 font-mono'>
-                        {m.nim}
-                        {m.program_studi && (
+                        {mahasiswa.nim}
+                        {mahasiswa.program_studi && (
                           <span className='text-slate-300'>
                             {" "}
-                            · {m.program_studi}
+                            · {mahasiswa.program_studi}
                           </span>
                         )}
                       </span>

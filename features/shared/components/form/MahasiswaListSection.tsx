@@ -1,9 +1,11 @@
 import { UserRound, Plus, Trash2, Crown } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+
 import { MahasiswaRow } from "@/features/shared/hooks/useFieldList";
 import { MahasiswaNameAutocomplete } from "./MahasiswaNameAutocomplete";
 
@@ -15,6 +17,13 @@ interface Props {
   update: (index: number, field: keyof MahasiswaRow, value: string) => void;
 }
 
+type MahasiswaSuggestion = {
+  id?: string;
+  nim: string;
+  nama: string;
+  label?: string;
+};
+
 const INPUT_CLASS =
   "h-11 md:h-12 bg-white border-slate-200 rounded-xl focus-visible:ring-[#0F4C81]/20 focus-visible:border-[#0F4C81] transition-all placeholder:text-slate-400";
 
@@ -25,6 +34,31 @@ export function MahasiswaListSection({
   remove,
   update,
 }: Props) {
+  const handlePickMahasiswa = (
+    index: number,
+    mahasiswa: MahasiswaSuggestion,
+  ) => {
+    update(index, "nama", mahasiswa.nama);
+    update(index, "nim", mahasiswa.nim);
+  };
+
+  const handleNamaChange = (index: number, value: string) => {
+    update(index, "nama", value);
+
+    /**
+     * Jika user menghapus / mengganti nama secara manual,
+     * kosongkan NIM agar tidak tertinggal dari pilihan sebelumnya.
+     *
+     * Contoh:
+     * sebelumnya pilih "Adam Raga - A11..."
+     * lalu user ketik nama lain,
+     * maka NIM lama jangan tetap nyangkut.
+     */
+    if (!value.trim()) {
+      update(index, "nim", "");
+    }
+  };
+
   return (
     <Card className='w-full shadow-sm rounded-2xl border-slate-200 overflow-hidden bg-white'>
       <CardContent className='p-6 md:p-8 flex flex-col gap-5'>
@@ -33,6 +67,7 @@ export function MahasiswaListSection({
             <div className='flex items-center justify-center bg-[#6CBDFE1A] p-2 rounded-xl'>
               <UserRound size={18} className='text-[#0F4C81]' />
             </div>
+
             <div className='flex flex-col gap-0.5'>
               <p className='text-sm font-bold text-slate-800 leading-none'>
                 Data Mahasiswa
@@ -56,7 +91,8 @@ export function MahasiswaListSection({
           {items.map((row, index) => {
             const isMulti = items.length > 1;
             const isKetua = index === 0;
-            const namaLabel = isMulti && !isKetua ? "Nama Anggota" : "Nama Mahasiswa";
+            const namaLabel =
+              isMulti && !isKetua ? "Nama Anggota" : "Nama Mahasiswa";
 
             return (
               <div
@@ -82,9 +118,12 @@ export function MahasiswaListSection({
                     <Label className='text-slate-700 font-semibold text-xs'>
                       NIM <span className='text-red-500'>*</span>
                     </Label>
+
                     <Input
                       value={row.nim}
-                      onChange={(e) => update(index, "nim", e.target.value)}
+                      onChange={(event) =>
+                        update(index, "nim", event.target.value)
+                      }
                       placeholder='NIM'
                       required
                       autoComplete='off'
@@ -96,6 +135,7 @@ export function MahasiswaListSection({
                     <Label className='text-slate-700 font-semibold text-xs'>
                       {namaLabel} <span className='text-red-500'>*</span>
                     </Label>
+
                     <MahasiswaNameAutocomplete
                       value={row.nama}
                       onChange={(val) => update(index, "nama", val)}
