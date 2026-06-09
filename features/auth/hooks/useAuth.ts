@@ -1,12 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { authService, AuthUser } from "../services/authService";
 import { tokenStorage } from "@/lib/api";
 
 export function useAuth() {
-  const router = useRouter();
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -46,7 +44,7 @@ export function useAuth() {
     } finally {
       tokenStorage.clear();
       setCurrentUser(null);
-      router.push("/login");
+      window.location.href = "/login";
     }
   };
 

@@ -11,8 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useRouter } from "next/navigation";
-import { api } from "@/lib/api";
+import { api, tokenStorage } from "@/lib/api";
 import { Breadcrumbs } from "@/features/shared/components/Breadcrumbs";
 
 interface UserData {
@@ -24,7 +23,6 @@ interface UserData {
 }
 
 export function Navbar() {
-  const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
   const [user, setUser] = useState<UserData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -64,7 +62,10 @@ export function Navbar() {
       console.error("Gagal melakukan revoking token di server:", error);
     } finally {
       localStorage.removeItem("token");
-      router.push("/login");
+      if (tokenStorage) tokenStorage.clear();
+      document.cookie =
+        "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      window.location.href = "/login";
     }
   };
 

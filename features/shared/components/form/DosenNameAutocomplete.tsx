@@ -4,19 +4,22 @@ import { useEffect, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
-import { useMahasiswaSearch } from "@/features/shared/hooks/useMahasiswaSearch";
-import { MahasiswaSearchResult } from "@/features/shared/services/mahasiswaService";
+import {
+  lookupService,
+  LookupItem,
+} from "@/features/submission/services/lookupService";
+import { useDebounce } from "@/features/shared/hooks/useDebounce";
 
 interface Props {
   value: string;
   onChange: (val: string) => void;
-  onPick: (m: MahasiswaSearchResult) => void;
+  onPick: (m: LookupItem) => void;
   placeholder?: string;
   className?: string;
   required?: boolean;
 }
 
-export function MahasiswaNameAutocomplete({
+export function DosenNameAutocomplete({
   value,
   onChange,
   onPick,
@@ -25,24 +28,48 @@ export function MahasiswaNameAutocomplete({
   required,
 }: Props) {
   const [open, setOpen] = useState(false);
+  const [results, setResults] = useState<LookupItem[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const { results, isLoading, error } = useMahasiswaSearch(value);
+  // Mencegah API terpanggil setiap kali tombol ditekan (jeda 300ms)
+  const debouncedSearch = useDebounce(value, 300);
 
+  // Menutup dropdown jika user klik di luar kotak
   useEffect(() => {
     const handler = (event: MouseEvent) => {
       if (!wrapperRef.current?.contains(event.target as Node)) {
         setOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handler);
-
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const handlePick = (mahasiswa: MahasiswaSearchResult) => {
-    onPick(mahasiswa);
+  // Fetching data dari lookupService
+  useEffect(() => {
+    async function fetchDosen() {
+      if (debouncedSearch.trim().length < 2) {
+        setResults([]);
+        return;
+      }
+      setIsLoading(true);
+      setError(null);
+      try {
+        const data = await lookupService.searchDosen(debouncedSearch);
+        setResults(data);
+      } catch (err) {
+        setError("Gagal mengambil data dosen pembimbing.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchDosen();
+  }, [debouncedSearch]);
+
+  const handlePick = (dosen: LookupItem) => {
+    onPick(dosen);
     setOpen(false);
   };
 
@@ -92,26 +119,19 @@ export function MahasiswaNameAutocomplete({
             </div>
           ) : (
             <ul className='divide-y divide-slate-100'>
-              {results.map((mahasiswa) => (
-                <li key={mahasiswa.nim}>
+              {results.map((dosen) => (
+                <li key={dosen.id}>
                   <button
                     type='button'
-                    onClick={() => handlePick(mahasiswa)}
+                    onClick={() => handlePick(dosen)}
                     className='w-full text-left px-4 py-2.5 hover:bg-slate-50 transition-colors'
                   >
                     <div className='flex flex-col gap-0.5 min-w-0'>
                       <span className='text-sm font-semibold text-slate-800 truncate'>
-                        {mahasiswa.nama}
+                        {dosen.nama}
                       </span>
-
                       <span className='text-xs text-slate-500 font-mono'>
-                        {mahasiswa.nim}
-                        {mahasiswa.program_studi && (
-                          <span className='text-slate-300'>
-                            {" "}
-                            · {mahasiswa.program_studi}
-                          </span>
-                        )}
+                        {dosen.nuptk ? `NUPTK: ${dosen.nuptk}` : "Tanpa NUPTK"}
                       </span>
                     </div>
                   </button>

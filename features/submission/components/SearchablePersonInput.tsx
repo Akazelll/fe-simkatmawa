@@ -1,182 +1,154 @@
+// features/submission/components/SearchablePersonInput.tsx
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Loader2, Search, UserRound, X } from "lucide-react";
-
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect, useRef } from "react";
+import { Check, ChevronsUpDown, Loader2, Search } from "lucide-react";
 import { useDebounce } from "@/features/shared/hooks/useDebounce";
+import {
+  lookupService,
+  LookupItem,
+} from "@/features/submission/services/lookupService";
+import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
-type SearchablePersonInputProps<T> = {
-  label?: string;
+interface SearchablePersonInputProps {
+  type: "mahasiswa" | "dosen";
+  value: string;
+  onChange: (id: string, nama: string) => void;
   placeholder?: string;
-  value?: T | null;
-  disabled?: boolean;
-  getOptionLabel: (item: T) => string;
-  getOptionDescription?: (item: T) => string;
-  onSearch: (query: string) => Promise<T[]>;
-  onSelect: (item: T) => void;
-  onClear?: () => void;
-};
+  error?: boolean;
+}
 
-export function SearchablePersonInput<T>({
-  label,
-  placeholder = "Ketik nama atau nomor identitas...",
+export function SearchablePersonInput({
+  type,
   value,
-  disabled,
-  getOptionLabel,
-  getOptionDescription,
-  onSearch,
-  onSelect,
-  onClear,
-}: SearchablePersonInputProps<T>) {
-  const wrapperRef = useRef<HTMLDivElement | null>(null);
-
-  const [query, setQuery] = useState("");
-  const [options, setOptions] = useState<T[]>([]);
-  const [loading, setLoading] = useState(false);
+  onChange,
+  placeholder,
+  error,
+}: SearchablePersonInputProps) {
   const [open, setOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [options, setOptions] = useState<LookupItem[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const debouncedQuery = useDebounce(query, 350);
+  const [selectedLabel, setSelectedLabel] = useState<string>("");
+
+  const debouncedSearch = useDebounce(searchQuery, 300);
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
-    if (value) {
-      setQuery(getOptionLabel(value));
-      setOptions([]);
-      setOpen(false);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      if (!debouncedSearch) return;
     }
-  }, [value, getOptionLabel]);
 
-  useEffect(() => {
     const fetchOptions = async () => {
-      if (value) return;
-
-      const keyword = debouncedQuery.trim();
-
-      if (keyword.length < 2) {
+      if (!debouncedSearch) {
         setOptions([]);
-        setOpen(false);
         return;
       }
 
+      setLoading(true);
       try {
-        setLoading(true);
-        const result = await onSearch(keyword);
-        setOptions(result);
-        setOpen(true);
-      } catch (error) {
-        console.error("Gagal mengambil data sugesti:", error);
-        setOptions([]);
-        setOpen(false);
+        const data =
+          type === "mahasiswa"
+            ? await lookupService.searchMahasiswa(debouncedSearch)
+            : await lookupService.searchDosen(debouncedSearch);
+
+        setOptions(data);
+      } catch (err) {
+        console.error("Gagal mengambil data referensi", err);
       } finally {
         setLoading(false);
       }
     };
 
     fetchOptions();
-  }, [debouncedQuery, onSearch, value]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (!wrapperRef.current?.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleClear = () => {
-    setQuery("");
-    setOptions([]);
-    setOpen(false);
-    onClear?.();
-  };
+  }, [debouncedSearch, type]);
 
   return (
-    <div ref={wrapperRef} className='relative space-y-1.5'>
-      {label && (
-        <label className='text-sm font-semibold text-slate-700'>{label}</label>
-      )}
-
-      <div className='relative'>
-        <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400' />
-
-        <Input
-          value={query}
-          disabled={disabled}
-          placeholder={placeholder}
-          onChange={(event) => {
-            setQuery(event.target.value);
-            setOpen(true);
-
-            if (value) {
-              onClear?.();
-            }
-          }}
-          className='h-11 pl-9 pr-10'
-        />
-
-        {loading ? (
-          <Loader2 className='absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-slate-400' />
-        ) : query ? (
-          <Button
-            type='button'
-            variant='ghost'
-            size='icon'
-            onClick={handleClear}
-            className='absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2'
-          >
-            <X className='h-4 w-4 text-slate-400' />
-          </Button>
-        ) : null}
-      </div>
-
-      {open && !value && (
-        <div className='absolute z-50 mt-1 max-h-64 w-full overflow-auto rounded-xl border bg-white shadow-lg'>
-          {options.length > 0 ? (
-            options.map((item, index) => (
-              <button
-                key={index}
-                type='button'
-                onClick={() => {
-                  onSelect(item);
-                  setOpen(false);
-                }}
-                className='flex w-full items-start gap-3 px-4 py-3 text-left hover:bg-slate-50'
-              >
-                <div className='mt-0.5 rounded-full bg-blue-50 p-2'>
-                  <UserRound className='h-4 w-4 text-blue-600' />
-                </div>
-
-                <div className='min-w-0 flex-1'>
-                  <p className='truncate text-sm font-semibold text-slate-800'>
-                    {getOptionLabel(item)}
-                  </p>
-
-                  {getOptionDescription && (
-                    <p className='mt-0.5 truncate text-xs text-slate-500'>
-                      {getOptionDescription(item)}
-                    </p>
-                  )}
-                </div>
-              </button>
-            ))
-          ) : (
-            <div className='px-4 py-3 text-sm text-slate-500'>
-              Data tidak ditemukan.
-            </div>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant='outline'
+          role='combobox'
+          aria-expanded={open}
+          className={cn(
+            "w-full justify-between font-normal bg-slate-50",
+            !value && "text-slate-400",
+            error && "border-red-500 focus-visible:ring-red-500",
           )}
-        </div>
-      )}
+        >
+          <span className='truncate'>
+            {value ? selectedLabel || value : placeholder || `Cari ${type}...`}
+          </span>
+          <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
+        </Button>
+      </PopoverTrigger>
 
-      {!value && query.trim().length > 0 && query.trim().length < 2 && (
-        <p className='text-xs text-slate-400'>
-          Ketik minimal 2 karakter untuk mencari data.
-        </p>
-      )}
-    </div>
+      <PopoverContent
+        className='w-[var(--anchor-width,350px)] p-0'
+        align='start'
+      >
+        <Command shouldFilter={false}>
+          <div className='flex items-center border-b px-3'>
+            <Search className='mr-2 h-4 w-4 shrink-0 opacity-50' />
+            <CommandInput
+              placeholder={`Ketik nama ${type}...`}
+              value={searchQuery}
+              onValueChange={setSearchQuery}
+              className='border-0 focus:ring-0'
+            />
+            {loading && (
+              <Loader2 className='ml-2 h-4 w-4 animate-spin text-slate-400' />
+            )}
+          </div>
+
+          <CommandList>
+            {!loading && options.length === 0 && searchQuery && (
+              <CommandEmpty className='py-4 text-center text-sm text-slate-500'>
+                Data tidak ditemukan.
+              </CommandEmpty>
+            )}
+
+            <CommandGroup>
+              {options.map((option) => (
+                <CommandItem
+                  key={option.id}
+                  value={option.id}
+                  onSelect={() => {
+                    onChange(option.id, option.nama);
+                    setSelectedLabel(option.label);
+                    setOpen(false);
+                  }}
+                  className='cursor-pointer'
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      value === option.id ? "opacity-100" : "opacity-0",
+                    )}
+                  />
+                  <span className='truncate'>{option.label}</span>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 }

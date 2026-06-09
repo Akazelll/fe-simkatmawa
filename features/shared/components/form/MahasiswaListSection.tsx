@@ -44,23 +44,13 @@ export function MahasiswaListSection({
 
   const handleNamaChange = (index: number, value: string) => {
     update(index, "nama", value);
-
-    /**
-     * Jika user menghapus / mengganti nama secara manual,
-     * kosongkan NIM agar tidak tertinggal dari pilihan sebelumnya.
-     *
-     * Contoh:
-     * sebelumnya pilih "Adam Raga - A11..."
-     * lalu user ketik nama lain,
-     * maka NIM lama jangan tetap nyangkut.
-     */
     if (!value.trim()) {
       update(index, "nim", "");
     }
   };
 
   return (
-    <Card className='w-full shadow-sm rounded-2xl border-slate-200 overflow-hidden bg-white'>
+    <Card className='w-full shadow-sm rounded-2xl border-slate-200 bg-white'>
       <CardContent className='p-6 md:p-8 flex flex-col gap-5'>
         <div className='flex items-center justify-between gap-3'>
           <div className='flex items-center gap-3'>
