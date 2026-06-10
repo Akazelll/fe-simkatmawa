@@ -12,20 +12,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { RefreshCw, Trash2 } from "lucide-react";
-import { FailedQueueJob } from "@/lib/queue/types";
+import { FailedQueueJob } from "@/features/queue/types";
 import { formatDateTime } from "@/lib/utils/dateFormat";
 import { SubmissionTypeBadge } from "../../shared/components/SubmissionTypeBadge";
 import { toast } from "sonner";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-
-// Standar style yang konsisten di seluruh tabel
 const HEAD_CLASS =
   "h-12 text-[11px] font-bold tracking-wide uppercase text-slate-400 whitespace-nowrap";
 const CELL_BASE = "py-4 align-top text-sm text-slate-600";

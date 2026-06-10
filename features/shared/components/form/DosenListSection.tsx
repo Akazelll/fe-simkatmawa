@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DosenRow } from "@/features/shared/hooks/useFieldList";
+import { DosenNameAutocomplete } from "./DosenNameAutocomplete";
 
 interface Props {
   description?: string;
@@ -24,7 +25,7 @@ export function DosenListSection({
   update,
 }: Props) {
   return (
-    <Card className='w-full shadow-sm rounded-2xl border-slate-200 overflow-hidden bg-white'>
+    <Card className='w-full shadow-sm rounded-2xl border-slate-200 bg-white'>
       <CardContent className='p-6 md:p-8 flex flex-col gap-5'>
         <div className='flex items-center justify-between gap-3'>
           <div className='flex items-center gap-3'>
@@ -54,14 +55,14 @@ export function DosenListSection({
           {items.map((row, index) => (
             <div
               key={index}
-              className='flex flex-col gap-3 rounded-xl border border-slate-100 p-4 md:flex-row md:items-end md:gap-3 md:border-0 md:p-0 animate-in slide-in-from-top-1 duration-200'
+              className='relative flex flex-col gap-3 rounded-xl border border-slate-100 p-4 md:flex-row md:items-end md:gap-3 md:border-0 md:p-0 animate-in slide-in-from-top-1 duration-200'
+              style={{ zIndex: 50 - index }}
             >
               <div className='flex flex-col gap-1.5 md:flex-1'>
                 <Label className='text-slate-700 font-semibold text-xs'>
                   NIDN/NUPTK <span className='text-red-500'>*</span>
                 </Label>
                 <Input
-                  // Ubah dari row.nidn menjadi row.nuptk
                   value={row.nuptk || ""}
                   onChange={(e) => update(index, "nuptk", e.target.value)}
                   placeholder='NIDN/NUPTK'
@@ -74,9 +75,16 @@ export function DosenListSection({
                 <Label className='text-slate-700 font-semibold text-xs'>
                   Nama Dosen <span className='text-red-500'>*</span>
                 </Label>
-                <Input
+                <DosenNameAutocomplete
                   value={row.nama || ""}
-                  onChange={(e) => update(index, "nama", e.target.value)}
+                  onChange={(val) => {
+                    update(index, "nama", val);
+                    if (!val.trim()) update(index, "nuptk", "");
+                  }}
+                  onPick={(dosen) => {
+                    update(index, "nama", dosen.nama);
+                    update(index, "nuptk", dosen.nuptk || "");
+                  }}
                   placeholder='Nama Lengkap Dosen'
                   className={INPUT_CLASS}
                   required
@@ -88,7 +96,6 @@ export function DosenListSection({
                   URL Surat Tugas <span className='text-red-500'>*</span>
                 </Label>
                 <Input
-                  // Ubah dari row.suratTugas menjadi row.url_surat_tugas
                   value={row.url_surat_tugas || ""}
                   onChange={(e) =>
                     update(index, "url_surat_tugas", e.target.value)
@@ -104,7 +111,7 @@ export function DosenListSection({
                 type='button'
                 onClick={() => remove(index)}
                 variant='ghost'
-                disabled={items.length <= 1} // Mencegah hapus jika tinggal 1 (opsional tergantung aturan bisnis)
+                disabled={items.length <= 1}
                 className='h-11 md:h-12 w-full md:w-12 p-0 text-rose-500 hover:text-rose-600 hover:bg-rose-50 rounded-xl shrink-0 disabled:opacity-40 disabled:hover:bg-transparent'
               >
                 <Trash2 size={18} />

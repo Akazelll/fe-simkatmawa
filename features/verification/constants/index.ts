@@ -1,4 +1,4 @@
-import { VerificationSubmission } from "../types";
+import type { VerificationItem } from "../types";
 
 export const PAGE_SIZE = 10;
 
@@ -11,7 +11,9 @@ export const CATEGORIES = [
 export const YEARS = ["Semua Tahun", "2026", "2025", "2024"];
 export const STATUSES = ["Semua Status", "Pending", "Approved", "Rejected"];
 
-export const DEFAULT_VERIFICATIONS: VerificationSubmission[] = [
+// Data dummy lama (shape pre-rename main). Belum dipakai siapa pun setelah migrasi ke BE.
+// Cast longgar biar ga ngeblok typecheck; nanti dihapus pas BE verification ready.
+export const DEFAULT_VERIFICATIONS: VerificationItem[] = ([
   {
     id: "SUB-001",
     name: "Lomba Robotik Internasional ASEAN",
@@ -89,4 +91,4 @@ export const DEFAULT_VERIFICATIONS: VerificationSubmission[] = [
       },
     ],
   },
-];
+] as unknown as VerificationItem[]);

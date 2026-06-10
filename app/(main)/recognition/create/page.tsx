@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle } from "lucide-react";
 
@@ -15,17 +15,32 @@ import {
   DOSEN_INITIAL,
 } from "@/features/shared/hooks/useFieldList";
 import { RoleGuard } from "@/features/auth/components/RoleGuard";
+import { useAuth } from "@/features/auth/hooks/useAuth";
+import { CardSkeleton } from "@/features/shared/components/CardSkeleton";
 
 import { rekognisiService } from "@/features/recognition/services/rekognisiService";
 import { mapToRekognisiPayload } from "@/features/recognition/utils/rekognisiMapper";
 
 export default function CreateRecognitionPage() {
   const router = useRouter();
+  const { currentUser, isLoaded: isAuthLoaded } = useAuth();
   const mahasiswa = useFieldList(MAHASISWA_INITIAL);
   const dosen = useFieldList(DOSEN_INITIAL);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+
+  const prefilledRef = useRef(false);
+  useEffect(() => {
+    if (prefilledRef.current) return;
+    if (currentUser?.role !== "mahasiswa") return;
+    const nim = currentUser.identitas ?? "";
+    const nama = currentUser.name ?? "";
+    if (!nim && !nama) return;
+    if (nim) mahasiswa.update(0, "nim", nim);
+    if (nama) mahasiswa.update(0, "nama", nama);
+    prefilledRef.current = true;
+  }, [currentUser, mahasiswa]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -62,44 +77,56 @@ export default function CreateRecognitionPage() {
   };
 
   return (
-    <RoleGuard allowedRoles={["mahasiswa"]}>
-      <form
-        onSubmit={handleSubmit}
-        className='flex flex-col gap-6 animate-in fade-in duration-500 max-w-5xl mx-auto'
-      >
-        <FormPageHeader
-          title='Rekognisi'
-          description='Pengajuan data kegiatan rekognisi / non-lomba.'
-        />
-        <FormWelcomeBanner
-          badge='Tambah Rekognisi'
-          title='Form rekognisi terpadu'
-          description='Data mahasiswa dan dosen langsung diisi dalam form ini.'
-        />
+    <form
+      onSubmit={handleSubmit}
+      className='flex flex-col gap-6 animate-in fade-in duration-500 max-w-5xl w-full mx-auto p-4 md:p-0'
+    >
+      <FormPageHeader
+        title='Rekognisi'
+        description='Pengajuan data kegiatan rekognisi / non-lomba.'
+      />
+      <FormWelcomeBanner
+        badge='Tambah Rekognisi'
+        title='Form rekognisi terpadu'
+        description='Data mahasiswa dan dosen langsung diisi dalam form ini.'
+      />
 
-        {errorMsg && (
-          <div className='flex items-center gap-2 p-4 text-sm font-medium text-red-700 bg-red-50 rounded-xl'>
-            <AlertCircle className='w-5 h-5 shrink-0' />
-            <p>{errorMsg}</p>
+      <RoleGuard allowedRoles={["mahasiswa"]}>
+        {!isAuthLoaded ? (
+          <div className='space-y-6'>
+            <CardSkeleton lines={6} />
+            <CardSkeleton lines={4} />
+            <CardSkeleton lines={4} />
           </div>
+        ) : (
+          <>
+            {errorMsg && (
+              <div className='flex items-center gap-2 p-4 text-sm font-medium text-red-700 bg-red-50 rounded-xl border border-red-200'>
+                <AlertCircle className='w-5 h-5 shrink-0' />
+                <p>{errorMsg}</p>
+              </div>
+            )}
+
+            <RecognitionDetailSection />
+
+            <MahasiswaListSection
+              items={mahasiswa.items}
+              add={mahasiswa.add}
+              remove={mahasiswa.remove}
+              update={mahasiswa.update}
+            />
+
+            <DosenListSection
+              items={dosen.items}
+              add={dosen.add}
+              remove={dosen.remove}
+              update={dosen.update}
+            />
+
+            <FormFooter backHref='/recognition' />
+          </>
         )}
-
-        <RecognitionDetailSection />
-        <MahasiswaListSection
-          items={mahasiswa.items}
-          add={mahasiswa.add}
-          remove={mahasiswa.remove}
-          update={mahasiswa.update}
-        />
-        <DosenListSection
-          items={dosen.items}
-          add={dosen.add}
-          remove={dosen.remove}
-          update={dosen.update}
-        />
-
-        <FormFooter backHref='/recognition' />
-      </form>
-    </RoleGuard>
+      </RoleGuard>
+    </form>
   );
 }

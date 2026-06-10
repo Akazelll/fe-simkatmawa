@@ -11,6 +11,7 @@ import { RejectSubmissionModal } from "@/features/verification/components/Reject
 import { ApproveSubmissionModal } from "@/features/verification/components/ApproveSubmissionModal";
 import { verifikasiService } from "@/features/verification/services/verifikasiService";
 import { TipeKegiatan } from "@/features/verification/types";
+import { Skeleton } from "@/components/ui/skeleton"; 
 
 export default function VerificationDetailPage() {
   const params = useParams();
@@ -88,35 +89,34 @@ export default function VerificationDetailPage() {
     }
   };
 
-  if (isLoading) return <div className='p-6'>Memuat data...</div>;
-  if (!data) return <div className='p-6'>Data tidak ditemukan.</div>;
-
-  const mappedSubmission = {
-    name: data.lomba || data.nama || "Tanpa Nama",
-    status: data.status_internal,
-    category: data.kategori || "Tidak ada kategori",
-    level: data.level || "-",
-    organizer: data.penyelenggara || "-",
-    date: new Date(data.created_at),
-    submittedBy: data.mahasiswa?.[0]?.nama || "-",
-    nim: data.mahasiswa?.[0]?.nim || "-",
-    rejectionReason: data.alasan_penolakan,
-  };
+  const mappedSubmission = data
+    ? {
+        name: data.lomba || data.nama || "Tanpa Nama",
+        status: data.status_internal,
+        category: data.kategori || "Tidak ada kategori",
+        level: data.level || "-",
+        organizer: data.penyelenggara || "-",
+        date: new Date(data.created_at),
+        submittedBy: data.mahasiswa?.[0]?.nama || "-",
+        nim: data.mahasiswa?.[0]?.nim || "-",
+        rejectionReason: data.alasan_penolakan,
+      }
+    : null;
 
   const mappedDocuments = [];
-  if (data.url_sertifikat)
+  if (data?.url_sertifikat)
     mappedDocuments.push({
       id: 1,
       title: "Sertifikat",
       url: data.url_sertifikat,
     });
-  if (data.url_dokumen_undangan)
+  if (data?.url_dokumen_undangan)
     mappedDocuments.push({
       id: 2,
       title: "Dokumen Undangan",
       url: data.url_dokumen_undangan,
     });
-  if (data.url_peserta)
+  if (data?.url_peserta)
     mappedDocuments.push({
       id: 3,
       title: "Bukti Peserta",
@@ -132,38 +132,73 @@ export default function VerificationDetailPage() {
         description='Periksa detail informasi dan dokumen bukti sebelum melakukan verifikasi.'
       />
 
-      <SubmissionInfoCard submission={mappedSubmission} />
+      {isLoading ? (
+        <div className='space-y-6'>
+          <div className='border rounded-xl bg-white p-6 space-y-5 shadow-sm'>
+            <Skeleton className='h-7 w-1/3' />
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className='space-y-2'>
+                  <Skeleton className='h-4 w-24' />
+                  <Skeleton className='h-5 w-3/4' />
+                </div>
+              ))}
+            </div>
+          </div>
 
-      {mappedDocuments.length > 0 && (
-        <DocumentsCard documents={mappedDocuments} />
+          <div className='border rounded-xl bg-white p-6 space-y-5 shadow-sm'>
+            <Skeleton className='h-6 w-1/4' />
+            <div className='flex flex-col gap-3'>
+              <Skeleton className='h-16 w-full rounded-lg' />
+              <Skeleton className='h-16 w-full rounded-lg' />
+            </div>
+          </div>
+        </div>
+      ) : !data ? (
+        <div className='p-8 bg-white border rounded-xl text-center text-slate-500 shadow-sm'>
+          Data pengajuan tidak ditemukan atau telah dihapus.
+        </div>
+      ) : (
+        <>
+          <SubmissionInfoCard submission={mappedSubmission!} />
+
+          {mappedDocuments.length > 0 && (
+            <DocumentsCard documents={mappedDocuments} />
+          )}
+
+          {data.status_internal === "PENDING" && (
+            <div className='pt-4 border-t border-slate-200'>
+              <VerificationActions
+                submissionId={id}
+                onApprove={() => setIsApproveModalOpen(true)}
+                onReject={() => setIsRejectModalOpen(true)}
+                isProcessing={isProcessing}
+              />
+            </div>
+          )}
+        </>
       )}
 
-      {data.status_internal === "PENDING" && (
-        <div className='pt-4 border-t border-slate-200'>
-          <VerificationActions
-            submissionId={id}
-            onApprove={() => setIsApproveModalOpen(true)}
-            onReject={() => setIsRejectModalOpen(true)}
+      {/* MODALS */}
+      {mappedSubmission && (
+        <>
+          <ApproveSubmissionModal
+            isOpen={isApproveModalOpen}
+            onClose={() => setIsApproveModalOpen(false)}
+            title={mappedSubmission.name}
+            onApprove={submitApprove}
             isProcessing={isProcessing}
           />
-        </div>
+
+          <RejectSubmissionModal
+            isOpen={isRejectModalOpen}
+            onClose={() => setIsRejectModalOpen(false)}
+            title={mappedSubmission.name}
+            onReject={submitReject}
+            isProcessing={isProcessing}
+          />
+        </>
       )}
-
-      <ApproveSubmissionModal
-        isOpen={isApproveModalOpen}
-        onClose={() => setIsApproveModalOpen(false)}
-        title={mappedSubmission.name}
-        onApprove={submitApprove}
-        isProcessing={isProcessing}
-      />
-
-      <RejectSubmissionModal
-        isOpen={isRejectModalOpen}
-        onClose={() => setIsRejectModalOpen(false)}
-        title={mappedSubmission.name}
-        onReject={submitReject}
-        isProcessing={isProcessing}
-      />
     </div>
   );
 }

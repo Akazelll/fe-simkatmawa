@@ -1,5 +1,6 @@
 import { TrendingDown, TrendingUp } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { StatCardProps, StatVariant } from "../types";
 
@@ -45,7 +46,6 @@ export function StatCard({
   return (
     <Card className='border-slate-200 shadow-sm rounded-2xl overflow-hidden hover:shadow-md transition-shadow bg-white'>
       <CardContent className='p-6 flex items-center justify-between'>
-        {/* Kiri: Icon */}
         <div
           className={cn(
             "h-12 w-12 flex items-center justify-center rounded-xl shrink-0",
@@ -55,12 +55,24 @@ export function StatCard({
           <Icon size={22} />
         </div>
 
-        {/* Kanan: Info Submission (Value & Label) */}
         <div className='flex flex-col items-end text-right'>
           <div className={cn("text-3xl font-bold mb-1", styles.value)}>
             {value}
           </div>
           <div className={cn("text-sm font-medium", styles.label)}>{label}</div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+export function StatCardSkeleton() {
+  return (
+    <Card className='border-slate-200 shadow-sm rounded-2xl overflow-hidden bg-white'>
+      <CardContent className='p-6 flex items-center justify-between'>
+        <Skeleton className='h-12 w-12 rounded-xl shrink-0' />
+        <div className='flex flex-col items-end'>
+          <Skeleton className='h-8 w-16 mb-2' />
+          <Skeleton className='h-4 w-28' />
         </div>
       </CardContent>
     </Card>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { CertificateDetailSection } from "@/features/certificate/components/CertificatedetailSection";
@@ -15,16 +15,32 @@ import {
   DOSEN_INITIAL,
 } from "@/features/shared/hooks/useFieldList";
 import { RoleGuard } from "@/features/auth/components/RoleGuard";
+import { useAuth } from "@/features/auth/hooks/useAuth";
+import { CardSkeleton } from "@/features/shared/components/CardSkeleton"; // <-- Tambahkan import ini
 
 import { mapToSertifikasiPayload } from "@/features/certificate/utils/sertifikasiMapper";
 import { sertifikasiService } from "@/features/certificate/services/sertifikasiService";
 
 export default function CreateCertificatePage() {
   const router = useRouter();
+  // <-- Tambahkan isLoaded: isAuthLoaded di sini
+  const { currentUser, isLoaded: isAuthLoaded } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const mahasiswa = useFieldList(MAHASISWA_INITIAL);
   const dosen = useFieldList(DOSEN_INITIAL);
+  const prefilledRef = useRef(false);
+
+  useEffect(() => {
+    if (prefilledRef.current) return;
+    if (currentUser?.role !== "mahasiswa") return;
+    const nim = currentUser.identitas ?? "";
+    const nama = currentUser.name ?? "";
+    if (!nim && !nama) return;
+    if (nim) mahasiswa.update(0, "nim", nim);
+    if (nama) mahasiswa.update(0, "nama", nama);
+    prefilledRef.current = true;
+  }, [currentUser, mahasiswa]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -67,40 +83,50 @@ export default function CreateCertificatePage() {
   };
 
   return (
-    <RoleGuard allowedRoles={["mahasiswa"]}>
-      <form
-        onSubmit={handleSubmit}
-        className='flex flex-col gap-6 animate-in fade-in duration-500 max-w-5xl w-full mx-auto p-4 md:p-0'
-      >
-        <FormPageHeader
-          title='Sertifikasi'
-          description='Lengkapi data sertifikasi, mahasiswa, dan dosen pendamping dalam satu alur.'
-        />
+    <form
+      onSubmit={handleSubmit}
+      className='flex flex-col gap-6 animate-in fade-in duration-500 max-w-5xl w-full mx-auto p-4 md:p-0'
+    >
+      <FormPageHeader
+        title='Sertifikasi'
+        description='Lengkapi data sertifikasi, mahasiswa, dan dosen pendamping dalam satu alur.'
+      />
 
-        <FormWelcomeBanner
-          badge='Tambah Sertifikasi'
-          title='Form sertifikasi terpadu'
-          description='Data mahasiswa dan dosen kini diisi langsung di form ini, sehingga tidak perlu berpindah halaman setelah data sertifikasi tersimpan.'
-        />
+      <FormWelcomeBanner
+        badge='Tambah Sertifikasi'
+        title='Form sertifikasi terpadu'
+        description='Data mahasiswa dan dosen kini diisi langsung di form ini, sehingga tidak perlu berpindah halaman setelah data sertifikasi tersimpan.'
+      />
 
-        <CertificateDetailSection />
+      <RoleGuard allowedRoles={["mahasiswa"]}>
+        {!isAuthLoaded ? (
+          <div className='space-y-6'>
+            <CardSkeleton lines={6} />
+            <CardSkeleton lines={4} />
+            <CardSkeleton lines={4} />
+          </div>
+        ) : (
+          <>
+            <CertificateDetailSection />
 
-        <MahasiswaListSection
-          items={mahasiswa.items}
-          add={mahasiswa.add}
-          remove={mahasiswa.remove}
-          update={mahasiswa.update}
-        />
+            <MahasiswaListSection
+              items={mahasiswa.items}
+              add={mahasiswa.add}
+              remove={mahasiswa.remove}
+              update={mahasiswa.update}
+            />
 
-        <DosenListSection
-          items={dosen.items}
-          add={dosen.add}
-          remove={dosen.remove}
-          update={dosen.update}
-        />
+            <DosenListSection
+              items={dosen.items}
+              add={dosen.add}
+              remove={dosen.remove}
+              update={dosen.update}
+            />
 
-        <FormFooter backHref='/achievement'  />
-      </form>
-    </RoleGuard>
+            <FormFooter backHref='/certificate' />
+          </>
+        )}
+      </RoleGuard>
+    </form>
   );
 }

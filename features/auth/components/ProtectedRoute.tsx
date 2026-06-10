@@ -1,11 +1,10 @@
-// features/auth/components/ProtectedRoute.tsx
 "use client";
 
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "../hooks/useAuth";
-import { hasRole } from "@/lib/auth/permissions";
-import { UserRole } from "@/lib/auth/types";
+import { hasRole } from "@/features/auth/utils/permissions";
+import { UserRole } from "@/features/auth/types";
 
 export function ProtectedRoute({
   children,
@@ -22,7 +21,7 @@ export function ProtectedRoute({
     if (!isLoaded) return;
 
     if (!isAuthenticated) {
-      router.replace(`/login?redirect=${pathname}`);
+      router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
       return;
     }
 
@@ -32,17 +31,17 @@ export function ProtectedRoute({
   }, [isLoaded, isAuthenticated, currentUser, allowedRoles, router, pathname]);
 
   if (!isLoaded) {
-    // Tampilkan skeleton atau spinner loading minimalis
-    return (
-      <div className='min-h-screen flex items-center justify-center'>
-        Loading...
-      </div>
-    );
+    return <>{children}</>;
   }
 
-  if (!isAuthenticated) return null;
-  if (allowedRoles && currentUser && !hasRole(currentUser, allowedRoles))
+  
+  if (!isAuthenticated) {
     return null;
+  }
+
+  if (allowedRoles && currentUser && !hasRole(currentUser, allowedRoles)) {
+    return null;
+  }
 
   return <>{children}</>;
 }

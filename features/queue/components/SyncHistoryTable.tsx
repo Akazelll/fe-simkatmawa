@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { SyncHistoryItem } from "@/lib/queue/types";
+import { SyncHistoryItem } from "@/features/queue/types";
 import { formatDateTime } from "@/lib/utils/dateFormat";
 import { SubmissionTypeBadge } from "../../shared/components/SubmissionTypeBadge";
 import { QueueStatusBadge } from "./QueueStatusBadge";
