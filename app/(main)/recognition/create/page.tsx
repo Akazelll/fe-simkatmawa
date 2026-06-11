@@ -16,13 +16,14 @@ import {
 } from "@/features/shared/hooks/useFieldList";
 import { RoleGuard } from "@/features/auth/components/RoleGuard";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { CardSkeleton } from "@/features/shared/components/CardSkeleton";
 
 import { rekognisiService } from "@/features/recognition/services/rekognisiService";
 import { mapToRekognisiPayload } from "@/features/recognition/utils/rekognisiMapper";
 
 export default function CreateRecognitionPage() {
   const router = useRouter();
-  const { currentUser } = useAuth();
+  const { currentUser, isLoaded: isAuthLoaded } = useAuth();
   const mahasiswa = useFieldList(MAHASISWA_INITIAL);
   const dosen = useFieldList(DOSEN_INITIAL);
 
