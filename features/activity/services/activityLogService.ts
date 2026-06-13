@@ -4,6 +4,10 @@ export type ActivityLogQueryParams = {
   page?: number;
   per_page?: number;
   search?: string;
+  action?: string;
+  module?: string;
+  start_date?: string; 
+  end_date?: string; 
 };
 
 export const activityLogService = {

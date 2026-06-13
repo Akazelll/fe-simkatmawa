@@ -1,16 +1,11 @@
+// D:\Project\fe-simkatmawa\features\activity\constants\index.ts
 import { ActivityLog } from "../types";
-
-export const ACTIVITY_LOG_ACTION_OPTIONS = [
-  { label: "Dibuat", value: "created" },
-  { label: "Diubah", value: "updated" },
-  { label: "Dihapus", value: "deleted" },
-];
 
 export const DEFAULT_ACTIVITY_LOGS: ActivityLog[] = [
   {
     id: "1",
     timestamp: "19 Mei 2026, 10:00 WIB",
-    user: "Ridlo Fanata Widyadhana",
+    user: "Adam Raga",
     role: "mahasiswa",
     action: "created",
     module: "Prestasi Mandiri",
@@ -44,7 +39,7 @@ export const DEFAULT_ACTIVITY_LOGS: ActivityLog[] = [
   {
     id: "2",
     timestamp: "20 Mei 2026, 09:15 WIB",
-    user: "Ridlo Fanata Widyadhana",
+    user: "Adam Raga",
     role: "mahasiswa",
     action: "updated",
     module: "Prestasi Mandiri",
@@ -63,32 +58,18 @@ export const DEFAULT_ACTIVITY_LOGS: ActivityLog[] = [
   {
     id: "3",
     timestamp: "21 Mei 2026, 16:00 WIB",
-    user: "Ridlo Fanata Widyadhana",
+    user: "Adam Raga",
     role: "mahasiswa",
     action: "deleted",
-    module: "Prestasi Mandiri",
-    target: "Kejurnas Badminton 2026",
+    module: "Sertifikasi",
+    target: "Sertifikasi Web Developer",
     oldData: {
       level: "NAS",
-      kategori: "OLAHRAGA",
-      lomba: "Kejurnas Badminton 2026",
-      cabang: "Ganda Putra",
-      penyelenggara: "PBSI",
-      peringkat: "JUARA1",
-      kelompok_prestasi: "KELOMPOK",
-      bentuk: "LURING",
       status_internal: "PENDING",
       url_sertifikat: "https://drive.google.com/file/d/new456/view",
     },
     newData: {
       level: null,
-      kategori: null,
-      lomba: null,
-      cabang: null,
-      penyelenggara: null,
-      peringkat: null,
-      kelompok_prestasi: null,
-      bentuk: null,
       status_internal: null,
       url_sertifikat: null,
     },

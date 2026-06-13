@@ -1,9 +1,32 @@
-export type JobStatus = "pending" | "processing" | "failed" | "completed";
+export type QueueSubmissionType = "prestasi" | "sertifikat" | "rekognisi";
 
-export interface QueueJob {
+export type ActiveQueueStatus = "waiting" | "processing";
+
+export type SyncHistoryStatus = "success" | "failed";
+
+export interface ActiveQueueJob {
   id: string;
-  submission: string;
-  status: JobStatus;
+  type: QueueSubmissionType;
+  title: string;
+  studentName: string;
+  queuedAt: string;
+  status: ActiveQueueStatus;
+}
+
+export interface FailedQueueJob {
+  id: string;
+  type: QueueSubmissionType;
+  title: string;
+  failedAt: string;
+  reason: string;
   attempts: number;
-  createdAt: Date;
+}
+
+export interface SyncHistoryItem {
+  id: string;
+  type: QueueSubmissionType;
+  title: string;
+  kemdikbudId: string | null;
+  syncedAt: string | null;
+  status: SyncHistoryStatus;
 }

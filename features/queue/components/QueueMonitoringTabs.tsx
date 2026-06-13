@@ -5,7 +5,7 @@ import {
   ActiveQueueJob,
   FailedQueueJob,
   SyncHistoryItem,
-} from "@/lib/queue/types";
+} from "@/features/queue/types";
 import { QueueTable } from "./QueueTable";
 import { Pagination } from "@/features/shared/components/Pagination";
 import { PAGE_SIZE } from "@/features/shared/constants/pagination";
@@ -34,7 +34,6 @@ export function QueueMonitoringTabs({
     setCurrentPage(1);
   }, [statusFilter]);
 
-  // Map dan gabungkan semua data ke dalam format seragam
   const unifiedJobs = useMemo(() => {
     const active = activeJobs.map((job) => ({
       id: job.id,
@@ -42,20 +41,19 @@ export function QueueMonitoringTabs({
       title: job.title,
       studentName: job.studentName,
       date: job.queuedAt,
-      status: job.status, // "waiting" | "processing"
+      status: job.status,
     }));
 
     const failed = failedJobs.map((job) => ({
       id: job.id,
       type: job.type,
       title: job.title,
-      studentName: "-", // Failed data dari API mungkin tidak punya nama mhs
+      studentName: "-",
       date: job.failedAt,
       status: "failed",
       reason: job.reason,
     }));
 
-    // Urutkan berdasarkan tanggal terbaru
     return [...active, ...failed].sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
     );

@@ -6,7 +6,7 @@ export interface ActivityLog {
   timestamp: string;
   user: string;
   role: ActivityRole;
-  action: ActivityAction;
+  action: string;
   module: string;
   target: string;
   oldData: Record<string, string | null>;

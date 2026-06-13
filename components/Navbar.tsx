@@ -11,8 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useRouter } from "next/navigation";
-import { api } from "@/lib/api";
+import { api, tokenStorage } from "@/lib/api";
 import { Breadcrumbs } from "@/features/shared/components/Breadcrumbs";
 import { NotificationDropdown } from "@/features/notification/components/NotificationDropdown";
 import { useNotifications } from "@/features/notification/hooks/useNotifications";
@@ -26,7 +25,6 @@ interface UserData {
 }
 
 export function Navbar() {
-  const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
   const [user, setUser] = useState<UserData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -80,7 +78,10 @@ export function Navbar() {
       console.error("Gagal melakukan revoking token di server:", error);
     } finally {
       localStorage.removeItem("token");
-      router.push("/login");
+      if (tokenStorage) tokenStorage.clear();
+      document.cookie =
+        "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      window.location.href = "/login";
     }
   };
 
@@ -106,8 +107,10 @@ export function Navbar() {
     >
       <div className='flex items-center gap-4 min-w-0 flex-1'>
         <SidebarTrigger className='-ml-1 shrink-0' />
-        <div className='h-4 w-px bg-slate-200 shrink-0' />
-        <div className='min-w-0 overflow-hidden'>
+        {/* Tambahkan hidden sm:block pada garis pemisah */}
+        <div className='h-4 w-px bg-slate-200 shrink-0 hidden sm:block' />
+        {/* Tambahkan hidden sm:block pada pembungkus Breadcrumbs */}
+        <div className='min-w-0 overflow-hidden hidden sm:block'>
           <Breadcrumbs />
         </div>
       </div>

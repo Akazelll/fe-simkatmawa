@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link, Pencil } from "lucide-react";
-import { KemdikbudCredential } from "@/lib/settings/types";
+import { KemdikbudCredential } from "@/features/settings/types";
 import { PasswordMask } from "./PasswordMask";
 import { formatDateTime } from "@/lib/utils/dateFormat";
 

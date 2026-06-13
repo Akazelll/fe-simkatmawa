@@ -1,6 +1,5 @@
-import { KemdikbudCredential } from "@/lib/settings/types";
+import { KemdikbudCredential } from "@/features/settings/types";
 
-// Default state jika belum pernah disetting di localStorage
 export const defaultKemdikbudCredential: KemdikbudCredential = {
   email: "pusat@udinus.ac.id",
   hasPassword: true,

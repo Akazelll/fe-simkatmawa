@@ -5,7 +5,7 @@ import {
   ActiveQueueJob,
   FailedQueueJob,
   SyncHistoryItem,
-} from "@/lib/queue/types";
+} from "@/features/queue/types";
 import {
   dummyActiveQueueJobs,
   dummyFailedQueueJobs,

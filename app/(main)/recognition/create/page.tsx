@@ -30,9 +30,6 @@ export default function CreateRecognitionPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  // Prefill row 0 (Ketua) dengan data mahasiswa yang login.
-  // Fill NIM dan Nama secara terpisah supaya kalau salah satu kosong di BE,
-  // yang ada tetap keisi.
   const prefilledRef = useRef(false);
   useEffect(() => {
     if (prefilledRef.current) return;

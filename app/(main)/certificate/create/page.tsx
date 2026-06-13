@@ -28,11 +28,8 @@ export default function CreateCertificatePage() {
 
   const mahasiswa = useFieldList(MAHASISWA_INITIAL);
   const dosen = useFieldList(DOSEN_INITIAL);
-
-  // Prefill row 0 (Ketua) dengan data mahasiswa yang login.
-  // Fill NIM dan Nama secara terpisah supaya kalau salah satu kosong di BE,
-  // yang ada tetap keisi.
   const prefilledRef = useRef(false);
+
   useEffect(() => {
     if (prefilledRef.current) return;
     if (currentUser?.role !== "mahasiswa") return;

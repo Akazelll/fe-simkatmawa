@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { PageHeader } from "@/features/shared/components/PageHeader";
 import { BackLink } from "@/features/shared/components/BackLink";
@@ -11,7 +11,11 @@ import { RejectSubmissionModal } from "@/features/verification/components/Reject
 import { ApproveSubmissionModal } from "@/features/verification/components/ApproveSubmissionModal";
 import { verifikasiService } from "@/features/verification/services/verifikasiService";
 import { TipeKegiatan } from "@/features/verification/types";
-import { Skeleton } from "@/components/ui/skeleton"; 
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  mapSubmissionInfo,
+  mapSubmissionDocuments,
+} from "@/features/verification/utils/verificationMapper";
 
 export default function VerificationDetailPage() {
   const params = useParams();
@@ -59,7 +63,6 @@ export default function VerificationDetailPage() {
 
   const submitApprove = async () => {
     if (!type || !id) return;
-
     setIsProcessing(true);
     try {
       await verifikasiService.verify(apiType, id, { status: "APPROVE" });
@@ -89,39 +92,8 @@ export default function VerificationDetailPage() {
     }
   };
 
-  const mappedSubmission = data
-    ? {
-        name: data.lomba || data.nama || "Tanpa Nama",
-        status: data.status_internal,
-        category: data.kategori || "Tidak ada kategori",
-        level: data.level || "-",
-        organizer: data.penyelenggara || "-",
-        date: new Date(data.created_at),
-        submittedBy: data.mahasiswa?.[0]?.nama || "-",
-        nim: data.mahasiswa?.[0]?.nim || "-",
-        rejectionReason: data.alasan_penolakan,
-      }
-    : null;
-
-  const mappedDocuments = [];
-  if (data?.url_sertifikat)
-    mappedDocuments.push({
-      id: 1,
-      title: "Sertifikat",
-      url: data.url_sertifikat,
-    });
-  if (data?.url_dokumen_undangan)
-    mappedDocuments.push({
-      id: 2,
-      title: "Dokumen Undangan",
-      url: data.url_dokumen_undangan,
-    });
-  if (data?.url_peserta)
-    mappedDocuments.push({
-      id: 3,
-      title: "Bukti Peserta",
-      url: data.url_peserta,
-    });
+  const mappedSubmission = useMemo(() => mapSubmissionInfo(data), [data]);
+  const mappedDocuments = useMemo(() => mapSubmissionDocuments(data), [data]);
 
   return (
     <div className='space-y-6 p-6 max-w-5xl mx-auto animate-in fade-in duration-500'>
@@ -179,7 +151,6 @@ export default function VerificationDetailPage() {
         </>
       )}
 
-      {/* MODALS */}
       {mappedSubmission && (
         <>
           <ApproveSubmissionModal

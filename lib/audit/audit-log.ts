@@ -27,5 +27,5 @@ export function logAudit(data: Omit<AuditLogEntry, "id" | "createdAt">) {
   localStorage.setItem(
     "audit_logs",
     JSON.stringify(existingLogs.slice(0, 100)),
-  ); // Simpan 100 log terakhir
+  );
 }

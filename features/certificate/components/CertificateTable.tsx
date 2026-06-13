@@ -42,7 +42,6 @@ export function CertificateTable({ data, onChanged }: CertificateTableProps) {
       setDeleteTarget(null);
       onChanged?.();
     } catch {
-      // error global ditangani interceptor
     } finally {
       setIsDeleting(false);
     }
