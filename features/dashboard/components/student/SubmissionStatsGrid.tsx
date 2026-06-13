@@ -20,9 +20,9 @@ export function SubmissionStatsGrid() {
     const fetchCounts = async () => {
       try {
         const [prestasi, sertif, rekog] = await Promise.all([
-          prestasiService.getPrestasiList(),
-          sertifikasiService.getSertifikasiList(),
-          rekognisiService.getRekognisiList(),
+          prestasiService.getPrestasiList({ page: 1 }),
+          sertifikasiService.getSertifikasiList({ page: 1 }),
+          rekognisiService.getRekognisiList({ page: 1 }),
         ]);
 
         setStats({
