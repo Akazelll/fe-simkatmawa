@@ -36,8 +36,9 @@ export default function DashboardPage() {
     () => 8,
   );
 
-  const { data: dashboardData, isLoading } = useDashboard();
-  if (isAuthLoaded && hasRole(currentUser, "mahasiswa")) {
+  const isMahasiswa = isAuthLoaded && hasRole(currentUser, "mahasiswa");
+  const { data: dashboardData, isLoading } = useDashboard(isAuthLoaded && !isMahasiswa);
+  if (isMahasiswa) {
     return (
       <div className='flex flex-col gap-6 animate-in fade-in duration-500'>
         <h1 className='text-2xl font-bold text-slate-800'>

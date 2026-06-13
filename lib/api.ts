@@ -7,7 +7,10 @@ export const tokenStorage = {
   get: (): string | null => {
     if (typeof window === "undefined") return null;
 
-    return localStorage.getItem(TOKEN_KEY);
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token || token === "undefined" || token === "null") return null;
+
+    return token;
   },
 
   getUser: () => {
@@ -15,7 +18,7 @@ export const tokenStorage = {
 
     const user = localStorage.getItem(USER_KEY);
 
-    if (!user) return null;
+    if (!user || user === "undefined" || user === "null") return null;
 
     try {
       return JSON.parse(user);
