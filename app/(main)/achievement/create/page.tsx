@@ -17,9 +17,9 @@ import {
   MAHASISWA_INITIAL,
   DOSEN_INITIAL,
 } from "@/features/shared/hooks/useFieldList";
-
 import { RoleGuard } from "@/features/auth/components/RoleGuard";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { CardSkeleton } from "@/features/shared/components/CardSkeleton";
 
 import { prestasiService } from "@/features/achievement/services/prestasiService";
 import { mapToPrestasiPayload } from "@/features/achievement/utils/prestasiMapper";

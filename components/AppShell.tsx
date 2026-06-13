@@ -1,6 +1,6 @@
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-import { Navbar } from "@/components/Navbar";
+import { Navbar } from "@/components/navbar";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
