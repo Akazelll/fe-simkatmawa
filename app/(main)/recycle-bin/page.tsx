@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader } from "@/features/shared/components/PageHeader";
 import { FilterSection } from "@/features/shared/components/FilterSection";
 import { Pagination } from "@/features/shared/components/Pagination";
@@ -22,22 +22,45 @@ export default function RecycleBinPage() {
   const { trashedItems, isLoading, restoreItem, isRestoring } = useRecycleBin();
   const [selectedItem, setSelectedItem] = useState<TrashedItem | null>(null);
 
+  // Debugging: Melihat jumlah data yang benar-benar tersimpan di React State
+  useEffect(() => {
+    if (!isLoading) {
+      console.log(
+        "Total data di Recycle Bin Frontend:",
+        trashedItems.length,
+        trashedItems,
+      );
+    }
+  }, [trashedItems, isLoading]);
+
   const filter = usePaginationFilter<TrashedItem>({
-    data: trashedItems,
+    data: trashedItems || [],
     pageSize: PAGE_SIZE,
-    filterFn: (row, search, category, status) => {
-      const matchSearch = row.name.toLowerCase().includes(search.toLowerCase());
-      const matchType = category === "Semua Tipe" || row.type === category;
-      const matchStatus = status === "Semua Status" || row.status === status;
+    // Menambahkan parameter 'year' agar sesuai dengan hook usePaginationFilter Anda
+    filterFn: (row, search, category, status, year) => {
+      const matchSearch =
+        !search || row.name.toLowerCase().includes(search.toLowerCase());
+
+      // Menggunakan .startsWith("Semua") agar mentolerir "Semua Kategori" atau "Semua Tipe"
+      const matchType =
+        !category || category.startsWith("Semua") || row.type === category;
+
+      const matchStatus =
+        !status || status.startsWith("Semua") || row.status === status;
+
       return matchSearch && matchType && matchStatus;
     },
   });
 
   const handleRestore = () => {
     if (!selectedItem) return;
-    restoreItem(selectedItem.id, {
-      onSuccess: () => setSelectedItem(null),
-    });
+
+    restoreItem(
+      { type: selectedItem.originalType, id: selectedItem.id },
+      {
+        onSuccess: () => setSelectedItem(null),
+      },
+    );
   };
 
   return (
@@ -50,7 +73,7 @@ export default function RecycleBinPage() {
       <FilterSection
         search={filter.search}
         setSearch={filter.setSearch}
-        searchPlaceholder='Cari nama pengajuan...'
+        searchPlaceholder='Cari nama pengajuan atau akun...'
         category={filter.category}
         setCategory={filter.setCategory}
         categories={TYPES}
@@ -61,7 +84,7 @@ export default function RecycleBinPage() {
         statusLabel='Filter Status'
       />
 
-      <RoleGuard allowedRoles={["superadmin"]}>
+      <RoleGuard allowedRoles={["superadmin", "admin"]}>
         {!isAuthLoaded || isLoading ? (
           <div className='space-y-6'>
             <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
@@ -76,7 +99,6 @@ export default function RecycleBinPage() {
                 className='h-28 justify-center'
               />
             </div>
-
             <TableSkeleton />
           </div>
         ) : (

@@ -14,7 +14,7 @@ const getActionValue = (label: string) => {
   if (label === "Dibuat") return "created";
   if (label === "Diubah") return "updated";
   if (label === "Dihapus") return "deleted";
-  return undefined;
+  return "";
 };
 
 const getActionLabel = (value?: string) => {
@@ -25,10 +25,10 @@ const getActionLabel = (value?: string) => {
 };
 
 const getCategoryValue = (label: string) => {
-  if (label === "Prestasi") return "prestasi";
+  if (label === "Prestasi") return "prestasi_mandiri";
   if (label === "Sertifikasi") return "sertifikasi";
   if (label === "Rekognisi") return "rekognisi";
-  return undefined;
+  return "";
 };
 
 const getCategoryLabel = (value?: string) => {
