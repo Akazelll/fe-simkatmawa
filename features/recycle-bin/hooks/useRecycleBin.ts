@@ -15,16 +15,20 @@ export function useRecycleBin() {
   });
 
   const restoreMutation = useMutation({
-    mutationFn: (id: string) => recycleBinApi.restoreItem(id),
-    onSuccess: (_, id) => {
-      toast.success("Berhasil direstore", {
-        description: `Data ${id} telah dikembalikan ke tabel aktif.`,
+    // Mutation sekarang menerima object { type, id }
+    mutationFn: ({ type, id }: { type: string; id: string | number }) =>
+      recycleBinApi.restoreItem(type, id),
+    onSuccess: (_, variables) => {
+      toast.success("Berhasil dipulihkan", {
+        description: `Data telah dikembalikan secara permanen ke tabel aktif.`,
       });
+      // Refresh ulang data tabel Recycle Bin
       queryClient.invalidateQueries({ queryKey: ["recycle-bin"] });
     },
-    onError: () => {
+    onError: (error: any) => {
       toast.error("Gagal melakukan restore", {
-        description: "Terjadi kesalahan pada server.",
+        description:
+          error?.response?.data?.message || "Terjadi kesalahan pada server.",
       });
     },
   });
