@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { api, tokenStorage } from "@/lib/api";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { Breadcrumbs } from "@/features/shared/components/Breadcrumbs";
 import { NotificationDropdown } from "@/features/notification/components/NotificationDropdown";
 import { useNotifications } from "@/features/notification/hooks/useNotifications";
@@ -26,8 +27,9 @@ interface UserData {
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [user, setUser] = useState<UserData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { currentUser, isLoaded, logout: handleLogout } = useAuth();
+  const user = currentUser as UserData | null;
+  const isLoading = !isLoaded;
 
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const notifWrapRef = useRef<HTMLDivElement>(null);
@@ -51,39 +53,6 @@ export function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await api.get("/auth/me");
-        if (response.data?.success) {
-          setUser(response.data.data);
-        } else {
-          setUser(response.data);
-        }
-      } catch (error) {
-        console.error("Gagal mengambil sesi pengguna:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUser();
-  }, []);
-
-  const handleLogout = async () => {
-    try {
-      await api.post("/auth/logout");
-    } catch (error) {
-      console.error("Gagal melakukan revoking token di server:", error);
-    } finally {
-      localStorage.removeItem("token");
-      if (tokenStorage) tokenStorage.clear();
-      document.cookie =
-        "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-      window.location.href = "/login";
-    }
-  };
 
   const getInitials = (name?: string) => {
     if (!name) return "--";

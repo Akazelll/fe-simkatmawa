@@ -9,12 +9,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Trash2, AlertTriangle, AlertCircle } from "lucide-react";
-import { userService } from "../services/userService";
+import { userService } from "@/features/user-management/services/userService";
 
 interface DeleteUserModalProps {
   isOpen: boolean;
   onClose: () => void;
-  user: any; // Bisa diganti dengan interface User yang lebih spesifik
+  user: any;
   onSuccess: () => void;
 }
 
@@ -97,9 +97,8 @@ export function DeleteUserModal({
                 Tindakan Permanen
               </span>
               <p className='text-[13px] text-rose-700 leading-relaxed'>
-                Data pengguna ini akan dihapus secara permanen dari sistem dan
-                tidak dapat dipulihkan. Pengguna ini juga tidak akan bisa lagi
-                mengakses sistem SIMKATMAWA.
+                Data pengguna ini akan dimasukkan ke dalam Recycle Bin sistem.
+                Pengguna ini tidak akan bisa lagi mengakses sistem SIMKATMAWA.
               </p>
             </div>
           </div>

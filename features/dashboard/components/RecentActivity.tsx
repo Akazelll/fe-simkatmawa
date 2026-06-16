@@ -24,7 +24,7 @@ export function RecentActivity({ logs }: { logs?: any[] }) {
     <Card className='border-slate-200 shadow-sm rounded-2xl bg-white h-full'>
       <CardHeader>
         <CardTitle className='text-base font-semibold text-slate-800'>
-          Recent Activity
+          Aktivitas Terbaru
         </CardTitle>
       </CardHeader>
       <CardContent>
