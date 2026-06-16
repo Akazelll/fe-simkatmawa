@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { AlertCircle } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -17,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { userService } from "../services/userService";
 
 export function UserModal({ isOpen, onClose, user, onSuccess }: any) {
   const isEdit = !!user;
@@ -27,15 +29,19 @@ export function UserModal({ isOpen, onClose, user, onSuccess }: any) {
     password: "",
   });
   const [isProcessing, setIsProcessing] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     if (isOpen) {
+      setErrorMsg("");
+      const initialRole =
+        user?.roles?.[0]?.name || user?.role || "admin";
       setFormData(
         user
           ? {
               name: user.name || "",
               email: user.email || "",
-              role: user.role || "admin",
+              role: initialRole,
               password: "",
             }
           : { name: "", email: "", role: "admin", password: "" },
@@ -46,11 +52,36 @@ export function UserModal({ isOpen, onClose, user, onSuccess }: any) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
+    setErrorMsg("");
     try {
+      const payload: Record<string, any> = {
+        name: formData.name,
+        email: formData.email,
+        role: formData.role,
+      };
+      // Password cuma dikirim saat create (atau saat user mau ganti pas edit)
+      if (!isEdit || formData.password) {
+        payload.password = formData.password;
+      }
+
+      const response = isEdit
+        ? await userService.updateUser(user.id, payload)
+        : await userService.createUser(payload);
+
+      if (response?.success === false) {
+        setErrorMsg(response.message || "Gagal menyimpan data pengguna.");
+        return;
+      }
+
       onSuccess();
       onClose();
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      const beMsg =
+        error.response?.data?.message ||
+        (error.response?.status === 422
+          ? "Terdapat kesalahan pada input form. Silakan periksa kembali."
+          : "Gagal menyimpan data pengguna.");
+      setErrorMsg(beMsg);
     } finally {
       setIsProcessing(false);
     }
@@ -68,6 +99,12 @@ export function UserModal({ isOpen, onClose, user, onSuccess }: any) {
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className='space-y-4 py-4'>
+          {errorMsg && (
+            <div className='flex items-center gap-2 p-3 text-sm font-medium text-red-700 bg-red-50 rounded-xl border border-red-200'>
+              <AlertCircle className='w-4 h-4 shrink-0' />
+              <p>{errorMsg}</p>
+            </div>
+          )}
           <div className='space-y-2'>
             <Label className='text-xs font-semibold text-slate-600'>
               Nama Lengkap

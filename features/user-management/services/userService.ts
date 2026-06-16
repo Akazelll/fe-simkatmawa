@@ -15,25 +15,25 @@ export const userService = {
     if (params.search) query.append("search", params.search);
     if (params.role && params.role !== "all") query.append("role", params.role);
 
-    const response = await api.get(`/admin/users?${query.toString()}`);
+    const response = await api.get(`/superadmin/users?${query.toString()}`);
     return response.data;
   },
 
   // POST: Menambah pengguna baru (Admin)
   createUser: async (payload: any) => {
-    const response = await api.post("/admin/users", payload);
+    const response = await api.post("/superadmin/users", payload);
     return response.data;
   },
 
   // PUT: Mengubah data pengguna
   updateUser: async (id: number | string, payload: any) => {
-    const response = await api.put(`/admin/users/${id}`, payload);
+    const response = await api.put(`/superadmin/users/${id}`, payload);
     return response.data;
   },
 
   // DELETE: Menghapus pengguna
   deleteUser: async (id: number | string) => {
-    const response = await api.delete(`/admin/users/${id}`);
+    const response = await api.delete(`/superadmin/users/${id}`);
     return response.data;
   },
 };
