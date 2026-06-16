@@ -10,14 +10,13 @@ import {
 import { APPROVAL_CONFIG } from "../constants";
 
 export function ApprovalRateChart({ data }: { data?: any[] }) {
-  // Jika data kosong, tampilkan fallback array kosong
   const chartData = data || [];
 
   return (
     <Card className='border-slate-200 shadow-sm rounded-2xl bg-white'>
       <CardHeader>
         <CardTitle className='text-base font-semibold text-slate-800'>
-          Approval Rate by Category
+          Tingkat Persetujuan berdasarkan Kategori
         </CardTitle>
       </CardHeader>
       <CardContent>

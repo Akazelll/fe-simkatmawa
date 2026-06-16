@@ -13,7 +13,6 @@ export function useUsers({ page, search, role }: UseUsersProps) {
   const [data, setData] = useState<any[]>([]);
   const [meta, setMeta] = useState<any>(null);
 
-  // State untuk menyimpan total admin & mahasiswa
   const [stats, setStats] = useState({ totalAdmin: 0, totalMahasiswa: 0 });
 
   const [isLoading, setIsLoading] = useState(true);
@@ -42,8 +41,6 @@ export function useUsers({ page, search, role }: UseUsersProps) {
   }, [page, search, role]);
 
   useEffect(() => {
-    // Implementasi Debounce: Tunggu 300ms setelah user berhenti mengetik/berinteraksi
-    // sebelum benar-benar memanggil API
     const timeoutId = setTimeout(() => {
       fetchUsers();
     }, 300);

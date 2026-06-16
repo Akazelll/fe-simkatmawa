@@ -1,12 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { RoleSelect } from "./RoleSelect";
 
 export interface UserFormData {
   name: string;
@@ -57,20 +51,12 @@ export function UserFormFields({
 
       <div className='flex flex-col gap-2'>
         <Label htmlFor='role' className='text-sm font-semibold text-slate-700'>
-          Role
+          Role Akses
         </Label>
-        <Select
+        <RoleSelect
           value={formData.role || ""}
-          onValueChange={(val: any) => onChange("role", val || "")}
-        >
-          <SelectTrigger className='h-11 rounded-xl bg-slate-50/50 border-slate-200 focus:ring-[#0F4C81]/20 shadow-none'>
-            <SelectValue placeholder='Pilih Role' />
-          </SelectTrigger>
-          <SelectContent className='rounded-xl border-slate-200'>
-            <SelectItem value='Admin'>Admin</SelectItem>
-            <SelectItem value='Superadmin'>Superadmin</SelectItem>
-          </SelectContent>
-        </Select>
+          onChange={(val) => onChange("role", val || "")}
+        />
       </div>
 
       <div className='flex flex-col gap-2'>

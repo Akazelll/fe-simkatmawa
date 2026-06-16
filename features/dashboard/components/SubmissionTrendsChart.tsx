@@ -16,7 +16,7 @@ export function SubmissionTrendsChart({ data }: { data?: any[] }) {
     <Card className='border-slate-200 shadow-sm rounded-2xl bg-white'>
       <CardHeader>
         <CardTitle className='text-base font-semibold text-slate-800'>
-          Submission Trends
+          Tren Pengajuan
         </CardTitle>
       </CardHeader>
       <CardContent>
