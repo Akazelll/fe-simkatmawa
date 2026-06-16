@@ -1,153 +1,154 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { userService } from "@/features/user-management/services/userService";
+import { toast } from "sonner";
+import { UserFormFields, UserFormData } from "./UserFormFields";
 
-export function UserModal({ isOpen, onClose, user, onSuccess }: any) {
+interface UserModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  user: any | null;
+  onSuccess: () => void;
+}
+
+export function UserModal({
+  isOpen,
+  onClose,
+  user,
+  onSuccess,
+}: UserModalProps) {
   const isEdit = !!user;
-  const [formData, setFormData] = useState({
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [formData, setFormData] = useState<UserFormData>({
     name: "",
     email: "",
-    role: "admin",
+    role: "",
     password: "",
   });
-  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
-    if (isOpen) {
-      setFormData(
-        user
-          ? {
-              name: user.name || "",
-              email: user.email || "",
-              role: user.role || "admin",
-              password: "",
-            }
-          : { name: "", email: "", role: "admin", password: "" },
-      );
-    }
-  }, [isOpen, user]);
+    if (user && isOpen) {
+      const userRole = user.roles?.[0]?.name || user.role || "";
+      const capitalizedRole =
+        userRole.charAt(0).toUpperCase() + userRole.slice(1);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+      setFormData({
+        name: user.name || "",
+        email: user.email || "",
+        role: capitalizedRole,
+        password: "",
+      });
+    } else if (isOpen) {
+      setFormData({ name: "", email: "", role: "", password: "" });
+    }
+  }, [user, isOpen]);
+
+  const handleFieldChange = (field: keyof UserFormData, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = async () => {
+    if (!formData.name || !formData.email || !formData.role) {
+      toast.error("Validasi Gagal", {
+        description: "Semua kolom wajib diisi.",
+      });
+      return;
+    }
+
+    if (!isEdit && !formData.password) {
+      toast.error("Validasi Gagal", {
+        description: "Password wajib diisi untuk pengguna baru.",
+      });
+      return;
+    }
+
     setIsProcessing(true);
     try {
+      const payload: any = {
+        name: formData.name,
+        email: formData.email,
+        role: formData.role.toLowerCase(),
+      };
+
+      if (formData.password) {
+        payload.password = formData.password;
+      }
+
+      if (isEdit) {
+        await userService.updateUser(user.id, payload);
+        toast.success("Berhasil diperbarui", {
+          description: `Data pengguna ${formData.name} telah disimpan.`,
+        });
+      } else {
+        await userService.createUser(payload);
+        toast.success("Berhasil ditambahkan", {
+          description: `Pengguna ${formData.name} berhasil dibuat.`,
+        });
+      }
+
       onSuccess();
       onClose();
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.error("Error submitting user:", error);
+      toast.error("Gagal menyimpan data", {
+        description:
+          error?.response?.data?.message || "Terjadi kesalahan pada server.",
+      });
     } finally {
       setIsProcessing(false);
     }
   };
 
   return (
-    <Dialog
-      open={isOpen}
-      onOpenChange={(open) => !open && !isProcessing && onClose()}
-    >
-      <DialogContent className='sm:max-w-md rounded-2xl'>
+    <Dialog open={isOpen} onOpenChange={(open) => !isProcessing && onClose()}>
+      <DialogContent className='sm:max-w-md rounded-2xl p-6 border-slate-200'>
         <DialogHeader>
-          <DialogTitle className='text-lg font-bold text-slate-900'>
-            {isEdit ? "Edit Pengguna" : "Tambah Admin"}
+          <DialogTitle className='text-xl font-bold text-slate-800'>
+            {isEdit ? "Update Pengguna" : "Tambah Admin Baru"}
           </DialogTitle>
+          <DialogDescription className='text-sm text-slate-500'>
+            {isEdit
+              ? `Perbarui informasi akun untuk ${formData.name || "pengguna ini"}.`
+              : "Isi detail di bawah untuk menambahkan pengguna admin baru."}
+          </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className='space-y-4 py-4'>
-          <div className='space-y-2'>
-            <Label className='text-xs font-semibold text-slate-600'>
-              Nama Lengkap
-            </Label>
-            <Input
-              required
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              className='h-10 rounded-xl'
-            />
-          </div>
-          <div className='space-y-2'>
-            <Label className='text-xs font-semibold text-slate-600'>
-              Email
-            </Label>
-            <Input
-              required
-              type='email'
-              value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
-              className='h-10 rounded-xl'
-            />
-          </div>
-          <div className='space-y-2'>
-            <Label className='text-xs font-semibold text-slate-600'>Role</Label>
-            <Select
-              value={formData.role}
-              onValueChange={
-                (val) => setFormData({ ...formData, role: val || "admin" }) // <-- PERBAIKAN DI SINI
-              }
-              disabled={isEdit && user?.role === "mahasiswa"}
-            >
-              <SelectTrigger className='h-10 rounded-xl'>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='admin'>Admin</SelectItem>
-                <SelectItem value='superadmin'>Superadmin</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          {!isEdit && (
-            <div className='space-y-2'>
-              <Label className='text-xs font-semibold text-slate-600'>
-                Password
-              </Label>
-              <Input
-                required
-                type='password'
-                value={formData.password}
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
-                className='h-10 rounded-xl'
-              />
-            </div>
-          )}
-          <div className='flex justify-end gap-3 pt-4'>
-            <Button
-              type='button'
-              variant='outline'
-              onClick={onClose}
-              disabled={isProcessing}
-              className='rounded-xl h-10'
-            >
-              Batal
-            </Button>
-            <Button
-              type='submit'
-              disabled={isProcessing}
-              className='rounded-xl h-10 bg-[#0F4C81] text-white hover:bg-[#0c3e6b]'
-            >
-              {isProcessing ? "Menyimpan..." : "Simpan"}
-            </Button>
-          </div>
-        </form>
+
+        {/* Memanggil komponen Form terpisah di sini */}
+        <UserFormFields
+          formData={formData}
+          onChange={handleFieldChange}
+          isEdit={isEdit}
+        />
+
+        <DialogFooter className='gap-2 sm:gap-0 pt-2 border-t border-slate-100'>
+          <Button
+            type='button'
+            variant='ghost'
+            onClick={onClose}
+            disabled={isProcessing}
+            className='rounded-xl font-semibold text-slate-500 hover:bg-slate-100'
+          >
+            Batal
+          </Button>
+          <Button
+            type='button'
+            onClick={handleSubmit}
+            disabled={isProcessing}
+            className='bg-[#0F4C81] hover:bg-[#0c3e6b] text-white rounded-xl font-bold px-8 shadow-sm'
+          >
+            {isProcessing ? "Menyimpan..." : "Simpan Data"}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
