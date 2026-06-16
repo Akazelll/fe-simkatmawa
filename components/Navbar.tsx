@@ -147,7 +147,7 @@ export function Navbar() {
 
         <DropdownMenu>
           <DropdownMenuTrigger className='flex items-center gap-3 cursor-pointer group hover:bg-slate-50 p-1.5 pr-2 rounded-xl transition-colors border-none bg-transparent outline-none'>
-            <div className='flex flex-col items-end text-right hidden sm:flex'>
+            <div className='flex-col items-end text-right hidden sm:flex'>
               <p className='text-sm font-bold text-slate-800 leading-none group-hover:text-[#0F4C81] transition-colors line-clamp-1 max-w-[180px]'>
                 {isLoading ? "Memuat..." : user?.name}
               </p>

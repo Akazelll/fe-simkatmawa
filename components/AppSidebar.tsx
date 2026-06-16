@@ -191,7 +191,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             {navItems.map((item) => {
               const isOpen = openMenus[item.label] ?? false;
               const isActive = item.href ? isPathActive(item.href) : false;
-              const isChildActive = item.children?.some((child) =>(child: any) =>
+              const isChildActive = item.children?.some((child) =>
                 isPathActive(child.href),
               );
 
