@@ -9,11 +9,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Trash2, AlertTriangle } from "lucide-react";
+import { userService } from "@/features/user-management/services/userService";
+import { toast } from "sonner";
 
 interface DeleteUserModalProps {
   isOpen: boolean;
   onClose: () => void;
-  user: any; // Bisa diganti dengan interface User yang lebih spesifik
+  user: any;
   onSuccess: () => void;
 }
 
@@ -30,15 +32,19 @@ export function DeleteUserModal({
 
     setIsProcessing(true);
     try {
-      // TODO: Panggil API Delete UserService di sini
-      // contoh: await userService.deleteUser(user.id);
+      await userService.deleteUser(user.id);
 
-      // Simulasi delay API
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      toast.success("Berhasil dihapus", {
+        description: `Pengguna ${user.name} telah dihapus secara permanen.`,
+      });
 
       onSuccess();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Gagal menghapus pengguna:", error);
+      toast.error("Gagal menghapus data", {
+        description:
+          error?.response?.data?.message || "Terjadi kesalahan pada server.",
+      });
     } finally {
       setIsProcessing(false);
     }
@@ -87,9 +93,8 @@ export function DeleteUserModal({
                 Tindakan Permanen
               </span>
               <p className='text-[13px] text-rose-700 leading-relaxed'>
-                Data pengguna ini akan dihapus secara permanen dari sistem dan
-                tidak dapat dipulihkan. Pengguna ini juga tidak akan bisa lagi
-                mengakses sistem SIMKATMAWA.
+                Data pengguna ini akan dimasukkan ke dalam Recycle Bin sistem.
+                Pengguna ini tidak akan bisa lagi mengakses sistem SIMKATMAWA.
               </p>
             </div>
           </div>
