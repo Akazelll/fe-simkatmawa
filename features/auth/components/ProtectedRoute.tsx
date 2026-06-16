@@ -31,7 +31,16 @@ export function ProtectedRoute({
   }, [isLoaded, isAuthenticated, currentUser, allowedRoles, router, pathname]);
 
   if (!isLoaded) {
-    return <>{children}</>;
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#f0f2f5]">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#1a2b5e] border-t-transparent" />
+          <p className="text-sm font-medium text-slate-500 animate-pulse">
+            Memverifikasi sesi...
+          </p>
+        </div>
+      </div>
+    );
   }
 
   

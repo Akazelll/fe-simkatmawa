@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,13 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { RoleSelect } from "./RoleSelect";
 
 interface AddAdminModalProps {
   isOpen: boolean;
@@ -23,6 +20,8 @@ interface AddAdminModalProps {
 }
 
 export function AddAdminModal({ isOpen, onClose }: AddAdminModalProps) {
+  const [role, setRole] = useState("");
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className='sm:max-w-md rounded-2xl p-6 border-slate-200'>
@@ -41,14 +40,15 @@ export function AddAdminModal({ isOpen, onClose }: AddAdminModalProps) {
               htmlFor='name'
               className='text-sm font-semibold text-slate-700'
             >
-              Nama
+              Nama Lengkap
             </Label>
             <Input
               id='name'
-              placeholder='Contoh: Adam Raga'
+              placeholder='Contoh: Udinus Semarang'
               className='h-11 rounded-xl bg-slate-50/50 border-slate-200 focus-visible:ring-[#0F4C81]/20'
             />
           </div>
+
           <div className='flex flex-col gap-2'>
             <Label
               htmlFor='email'
@@ -63,6 +63,7 @@ export function AddAdminModal({ isOpen, onClose }: AddAdminModalProps) {
               className='h-11 rounded-xl bg-slate-50/50 border-slate-200 focus-visible:ring-[#0F4C81]/20'
             />
           </div>
+
           <div className='flex flex-col gap-2'>
             <Label
               htmlFor='role'
@@ -70,16 +71,9 @@ export function AddAdminModal({ isOpen, onClose }: AddAdminModalProps) {
             >
               Role
             </Label>
-            <Select>
-              <SelectTrigger className='h-11 rounded-xl bg-slate-50/50 border-slate-200 focus:ring-[#0F4C81]/20 shadow-none'>
-                <SelectValue placeholder='Pilih Role' />
-              </SelectTrigger>
-              <SelectContent className='rounded-xl border-slate-200'>
-                <SelectItem value='Admin'>Admin</SelectItem>
-                <SelectItem value='Superadmin'>Superadmin</SelectItem>
-              </SelectContent>
-            </Select>
+            <RoleSelect value={role} onChange={setRole} />
           </div>
+
           <div className='flex flex-col gap-2'>
             <Label
               htmlFor='password'

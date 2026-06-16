@@ -96,7 +96,6 @@ const STEPS: Step[] = [
   },
 ];
 
-// Geometri buat desktop curvy timeline
 const VB_W = 1200;
 const VB_H = 460;
 const PAD_X = 80;
@@ -163,7 +162,6 @@ export function WorkflowInfographic() {
       </CardHeader>
 
       <CardContent>
-        {/* MOBILE: vertical timeline */}
         <div className='flex flex-col gap-1 lg:hidden'>
           {STEPS.map((step, i) => {
             const isLast = i === STEPS.length - 1;
@@ -193,12 +191,10 @@ export function WorkflowInfographic() {
           })}
         </div>
 
-        {/* DESKTOP: wavy S-curve timeline */}
         <div
           className='hidden lg:block relative w-full'
           style={{ height: `${VB_H}px` }}
         >
-          {/* Wavy SVG curve */}
           <svg
             viewBox={`0 0 ${VB_W} ${VB_H}`}
             className='absolute inset-0 w-full h-full'
@@ -225,13 +221,11 @@ export function WorkflowInfographic() {
             />
           </svg>
 
-          {/* Circles + text overlay */}
           {STEPS.map((step, i) => {
             const { cx, cy } = COORDS[i];
             const isHigh = cy === HIGH_Y;
             const circleLeft = (cx / VB_W) * 100;
             const circleTop = (cy / VB_H) * 100;
-            // Text label: above high circles, below low circles
             const textTop = isHigh
               ? `${circleTop - TEXT_OFFSET_PCT}%`
               : `${circleTop + TEXT_OFFSET_PCT}%`;
@@ -241,7 +235,6 @@ export function WorkflowInfographic() {
 
             return (
               <div key={step.number}>
-                {/* Text label */}
                 <div
                   className='absolute'
                   style={{
@@ -253,7 +246,6 @@ export function WorkflowInfographic() {
                   <StepText step={step} />
                 </div>
 
-                {/* Circle */}
                 <div
                   className='absolute'
                   style={{

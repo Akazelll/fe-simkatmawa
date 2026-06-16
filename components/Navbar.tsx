@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Bell, ChevronDown, LogOut } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -12,7 +12,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { api, tokenStorage } from "@/lib/api";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { Breadcrumbs } from "@/features/shared/components/Breadcrumbs";
+import { NotificationDropdown } from "@/features/notification/components/NotificationDropdown";
+import { useNotifications } from "@/features/notification/hooks/useNotifications";
 
 interface UserData {
   id: string | number;
@@ -24,8 +27,23 @@ interface UserData {
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [user, setUser] = useState<UserData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { currentUser, isLoaded, logout: handleLogout } = useAuth();
+  const user = currentUser as UserData | null;
+  const isLoading = !isLoaded;
+
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const notifWrapRef = useRef<HTMLDivElement>(null);
+  const notif = useNotifications();
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (!notifWrapRef.current?.contains(e.target as Node)) {
+        setIsNotifOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -35,39 +53,6 @@ export function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await api.get("/auth/me");
-        if (response.data?.success) {
-          setUser(response.data.data);
-        } else {
-          setUser(response.data);
-        }
-      } catch (error) {
-        console.error("Gagal mengambil sesi pengguna:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUser();
-  }, []);
-
-  const handleLogout = async () => {
-    try {
-      await api.post("/auth/logout");
-    } catch (error) {
-      console.error("Gagal melakukan revoking token di server:", error);
-    } finally {
-      localStorage.removeItem("token");
-      if (tokenStorage) tokenStorage.clear();
-      document.cookie =
-        "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-      window.location.href = "/login";
-    }
-  };
 
   const getInitials = (name?: string) => {
     if (!name) return "--";
@@ -91,21 +76,41 @@ export function Navbar() {
     >
       <div className='flex items-center gap-4 min-w-0 flex-1'>
         <SidebarTrigger className='-ml-1 shrink-0' />
-        <div className='h-4 w-px bg-slate-200 shrink-0' />
-        <div className='min-w-0 overflow-hidden'>
+        {/* Tambahkan hidden sm:block pada garis pemisah */}
+        <div className='h-4 w-px bg-slate-200 shrink-0 hidden sm:block' />
+        {/* Tambahkan hidden sm:block pada pembungkus Breadcrumbs */}
+        <div className='min-w-0 overflow-hidden hidden sm:block'>
           <Breadcrumbs />
         </div>
       </div>
 
       <div className='flex items-center gap-4 sm:gap-6'>
-        <Button
-          variant='ghost'
-          size='icon'
-          className='relative text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full'
-        >
-          <Bell size={20} />
-          <span className='absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border border-white'></span>
-        </Button>
+        <div ref={notifWrapRef} className='relative'>
+          <Button
+            variant='ghost'
+            size='icon'
+            onClick={() => setIsNotifOpen((o) => !o)}
+            aria-label='Notifikasi'
+            className='relative text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full'
+          >
+            <Bell size={20} />
+            {notif.unreadCount > 0 && (
+              <span className='absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 inline-flex items-center justify-center text-[10px] font-bold text-white bg-red-500 rounded-full border-2 border-white'>
+                {notif.unreadCount > 9 ? "9+" : notif.unreadCount}
+              </span>
+            )}
+          </Button>
+
+          {isNotifOpen && (
+            <NotificationDropdown
+              items={notif.items}
+              isLoading={notif.isLoading}
+              onClose={() => setIsNotifOpen(false)}
+              onMarkAsRead={notif.markAsRead}
+              onMarkAllAsRead={notif.markAllAsRead}
+            />
+          )}
+        </div>
 
         <div className='h-8 w-px bg-slate-200 hidden sm:block'></div>
 

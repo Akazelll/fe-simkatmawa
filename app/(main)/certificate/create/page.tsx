@@ -16,14 +16,13 @@ import {
 } from "@/features/shared/hooks/useFieldList";
 import { RoleGuard } from "@/features/auth/components/RoleGuard";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { CardSkeleton } from "@/features/shared/components/CardSkeleton"; // <-- Tambahkan import ini
+import { CardSkeleton } from "@/features/shared/components/CardSkeleton";
 
 import { mapToSertifikasiPayload } from "@/features/certificate/utils/sertifikasiMapper";
 import { sertifikasiService } from "@/features/certificate/services/sertifikasiService";
 
 export default function CreateCertificatePage() {
   const router = useRouter();
-  // <-- Tambahkan isLoaded: isAuthLoaded di sini
   const { currentUser, isLoaded: isAuthLoaded } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
