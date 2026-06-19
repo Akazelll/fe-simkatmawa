@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback } from "react";
 import { PageHeader } from "@/features/shared/components/PageHeader";
 import { FilterSection } from "@/features/shared/components/FilterSection";
 import { Pagination } from "@/features/shared/components/Pagination";
@@ -14,6 +15,26 @@ export default function PrestasiPage() {
   const { data, meta, isLoading, error, params, updateParams, refetch } =
     usePrestasiList({ page: 1 });
 
+  // Handler dibuat stabil (referensi tetap) agar FilterSection yang di-memo tidak ikut re-render.
+  const handleSearch = useCallback(
+    (val: string) => updateParams({ search: val }),
+    [updateParams],
+  );
+  const handleCategory = useCallback(
+    (val: string) =>
+      updateParams({ level: val === "Semua Kategori" ? undefined : val }),
+    [updateParams],
+  );
+  const handleStatus = useCallback(
+    (val: string) =>
+      updateParams({ status: val === "Semua Status" ? undefined : val }),
+    [updateParams],
+  );
+  const handlePageChange = useCallback(
+    (page: number) => updateParams({ page }),
+    [updateParams],
+  );
+
   return (
     <div className='flex flex-col gap-6 animate-in fade-in duration-500'>
       <PageHeader
@@ -23,16 +44,12 @@ export default function PrestasiPage() {
 
       <FilterSection
         search={params.search || ""}
-        setSearch={(val) => updateParams({ search: val })}
+        setSearch={handleSearch}
         category={params.level || "Semua Kategori"}
-        setCategory={(val) =>
-          updateParams({ level: val === "Semua Kategori" ? undefined : val })
-        }
+        setCategory={handleCategory}
         categories={KATEGORI}
         status={params.status || "Semua Status"}
-        setStatus={(val) =>
-          updateParams({ status: val === "Semua Status" ? undefined : val })
-        }
+        setStatus={handleStatus}
         statuses={STATUSES}
       />
 
@@ -54,7 +71,7 @@ export default function PrestasiPage() {
               <Pagination
                 page={meta.current_page}
                 totalPages={meta.last_page}
-                goTo={(page) => updateParams({ page })}
+                goTo={handlePageChange}
               />
             )}
           </>
