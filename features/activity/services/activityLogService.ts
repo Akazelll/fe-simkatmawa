@@ -66,3 +66,47 @@ export const activityLogService = {
     return response.data;
   },
 };
+
+/**
+ * Mengambil SELURUH activity log dengan menelusuri setiap halaman paginasi.
+ *
+ * Backend (be-simkatmawa) tidak menyediakan endpoint export maupun filter
+ * tanggal — index hanya menerima `per_page` & `search` lalu mengembalikan
+ * data terpaginasi. Untuk keperluan export kita kumpulkan semua halaman di
+ * sisi klien, baru difilter berdasarkan rentang tanggal secara lokal.
+ */
+export const fetchAllActivityLogs = async ({
+  isAdmin,
+  perPage = 100,
+  search,
+  maxPages = 50,
+}: {
+  isAdmin: boolean;
+  perPage?: number;
+  search?: string;
+  maxPages?: number;
+}): Promise<any[]> => {
+  const fetchPage = isAdmin
+    ? activityLogService.getAdminActivityLog
+    : activityLogService.getMyActivityLog;
+
+  const collected: any[] = [];
+  let page = 1;
+  let lastPage = 1;
+
+  do {
+    const response = await fetchPage({ page, per_page: perPage, search });
+
+    const items = Array.isArray(response?.data) ? response.data : [];
+    collected.push(...items);
+
+    // Berhenti jika halaman terakhir tidak penuh — termination yang aman
+    // walau `meta` tidak ada pada response.
+    if (items.length < perPage) break;
+
+    lastPage = Number(response?.meta?.last_page) || page;
+    page += 1;
+  } while (page <= lastPage && page <= maxPages);
+
+  return collected;
+};
