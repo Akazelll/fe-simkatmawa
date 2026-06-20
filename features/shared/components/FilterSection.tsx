@@ -1,7 +1,9 @@
 "use client";
 
+import { memo, useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useDebounce } from "@/features/shared/hooks/useDebounce";
 import {
   Select,
   SelectContent,
@@ -14,6 +16,7 @@ interface FilterSectionProps {
   search?: string;
   setSearch?: (val: string) => void;
   searchPlaceholder?: string;
+  searchDebounceMs?: number;
 
   category?: string;
   setCategory?: (val: string) => void;
@@ -29,13 +32,13 @@ interface FilterSectionProps {
   setStatus?: (val: string) => void;
   statuses?: string[];
   statusLabel?: string;
-  
 }
 
-export function FilterSection({
+function FilterSectionComponent({
   search,
   setSearch,
   searchPlaceholder = "Search submissions...",
+  searchDebounceMs = 400,
 
   category,
   setCategory,
@@ -52,6 +55,25 @@ export function FilterSection({
   statuses,
   statusLabel = "Filter by Status",
 }: FilterSectionProps) {
+  // Input search dikelola lokal supaya tiap ketukan TIDAK me-render halaman.
+  // Nilai baru baru dipropagasi ke parent setelah debounce.
+  const [searchValue, setSearchValue] = useState(search ?? "");
+  const debouncedSearch = useDebounce(searchValue, searchDebounceMs);
+
+  // Sinkronkan kembali kalau parent mengubah nilai search dari luar (mis. reset).
+  useEffect(() => {
+    setSearchValue(search ?? "");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
+
+  // Kirim nilai yang sudah didebounce ke parent.
+  useEffect(() => {
+    if (!setSearch) return;
+    if (debouncedSearch === (search ?? "")) return;
+    setSearch(debouncedSearch);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch]);
+
   return (
     <div className='w-full rounded-2xl border border-slate-200 bg-white p-6'>
       <div className='flex flex-col gap-4 lg:flex-row lg:items-center'>
@@ -62,8 +84,8 @@ export function FilterSection({
               className='absolute left-4 top-1/2 z-10 -translate-y-1/2 text-slate-400'
             />
             <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
               placeholder={searchPlaceholder}
               className='h-12 w-full rounded-2xl border-slate-200 bg-[#FAFAFA] pl-12 pr-4 text-sm leading-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0'
             />
@@ -133,3 +155,5 @@ export function FilterSection({
     </div>
   );
 }
+
+export const FilterSection = memo(FilterSectionComponent);

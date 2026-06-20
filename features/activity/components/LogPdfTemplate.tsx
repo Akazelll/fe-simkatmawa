@@ -154,12 +154,14 @@ interface LogPdfTemplateProps {
   logs: any[];
   dateRange: { from: Date; to: Date };
   exporterName: string;
+  reportSubtitle?: string;
 }
 
 export function LogPdfTemplate({
   logs,
   dateRange,
   exporterName,
+  reportSubtitle = "Laporan Aktivitas Sistem Mahasiswa",
 }: LogPdfTemplateProps) {
   const exportDate = new Date();
 
@@ -174,9 +176,7 @@ export function LogPdfTemplate({
             <Text style={styles.subtitle}>
               Sistem Informasi Pemeringkatan Kemahasiswaan
             </Text>
-            <Text style={styles.subtitle}>
-              Laporan Aktivitas Sistem Mahasiswa
-            </Text>
+            <Text style={styles.subtitle}>{reportSubtitle}</Text>
           </View>
         </View>
 

@@ -14,13 +14,16 @@ export function usePrestasiList(
 ) {
   const [data, setData] = useState<Prestasi[]>([]);
   const [meta, setMeta] = useState<PaginationMeta | null>(null);
+  // isLoading: hanya untuk load pertama (tampilkan skeleton penuh).
+  // isFetching: untuk refetch berikutnya (filter/pagination) tanpa membuang data lama.
   const [isLoading, setIsLoading] = useState(true);
+  const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState("");
 
   const [params, setParams] = useState<PrestasiQueryParams>(initialParams);
 
   const fetchPrestasi = useCallback(async () => {
-    setIsLoading(true);
+    setIsFetching(true);
     setError("");
     try {
       const response = await prestasiService.getPrestasiList(params);
@@ -33,7 +36,8 @@ export function usePrestasiList(
     } catch (err: any) {
       setError(err.response?.data?.message || "Terjadi kesalahan pada server");
     } finally {
-      setIsLoading(false);
+      setIsFetching(false);
+      setIsLoading(false); // setelah fetch pertama selesai, skeleton penuh tidak muncul lagi
     }
   }, [params]);
 
@@ -41,15 +45,23 @@ export function usePrestasiList(
     fetchPrestasi();
   }, [fetchPrestasi]);
 
-  // Fungsi untuk update filter/pencarian
-  const updateParams = (newParams: Partial<PrestasiQueryParams>) => {
-    setParams((prev) => ({ ...prev, ...newParams, page: newParams.page || 1 }));
-  };
+  // Fungsi untuk update filter/pencarian (referensi stabil agar handler di halaman bisa di-memo)
+  const updateParams = useCallback(
+    (newParams: Partial<PrestasiQueryParams>) => {
+      setParams((prev) => ({
+        ...prev,
+        ...newParams,
+        page: newParams.page || 1,
+      }));
+    },
+    [],
+  );
 
   return {
     data,
     meta,
     isLoading,
+    isFetching,
     error,
     params,
     updateParams,

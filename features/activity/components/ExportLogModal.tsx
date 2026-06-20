@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { pdf } from "@react-pdf/renderer";
-import { format, parseISO } from "date-fns";
+import { parseISO } from "date-fns";
 
 import {
   Dialog,
@@ -13,9 +13,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { DateRangeInput } from "@/features/shared/components/DateRangeInput";
 import { LogPdfTemplate } from "./LogPdfTemplate";
-import { activityLogService } from "@/features/activity/services/activityLogService";
+import { fetchAllActivityLogs } from "@/features/activity/services/activityLogService";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { normalizeActivityLogs } from "@/features/activity/utils/activityLogExportMapper";
+import { filterActivityLogsByDateRange } from "@/features/activity/utils/activityLogDateFilter";
 import { createActivityLogExportFileName } from "@/features/activity/utils/activityLogExportFile";
 
 export function ExportLogModal({
@@ -29,6 +30,9 @@ export function ExportLogModal({
   const [loading, setLoading] = useState(false);
   const { currentUser } = useAuth();
 
+  const isAdmin =
+    currentUser?.role === "admin" || currentUser?.role === "superadmin";
+
   const handleExport = async () => {
     if (!date.start || !date.end) return;
 
@@ -36,22 +40,32 @@ export function ExportLogModal({
 
     const from = parseISO(date.start);
     const to = parseISO(date.end);
-    const exporterName = currentUser?.name || "Mahasiswa";
+    const exporterName = currentUser?.name || (isAdmin ? "Admin" : "Mahasiswa");
+    const reportSubtitle = isAdmin
+      ? "Laporan Aktivitas Sistem"
+      : "Laporan Aktivitas Akun Mahasiswa";
 
     try {
-      const response = await activityLogService.getMyActivityLog({
-        start_date: format(from, "yyyy-MM-dd"),
-        end_date: format(to, "yyyy-MM-dd"),
-        per_page: 100,
-      });
+      // Backend tidak mendukung filter tanggal, jadi kita ambil semua halaman
+      // lalu filter rentang tanggal di sisi klien.
+      const rawLogs = await fetchAllActivityLogs({ isAdmin });
 
-      const formattedLogs = normalizeActivityLogs(response, exporterName);
+      const normalizedLogs = normalizeActivityLogs(
+        { data: rawLogs },
+        exporterName,
+      );
+      const formattedLogs = filterActivityLogsByDateRange(
+        normalizedLogs,
+        date.start,
+        date.end,
+      );
 
       const blob = await pdf(
         <LogPdfTemplate
           logs={formattedLogs}
           dateRange={{ from, to }}
           exporterName={exporterName}
+          reportSubtitle={reportSubtitle}
         />,
       ).toBlob();
 
