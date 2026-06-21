@@ -16,6 +16,8 @@ import { TableSkeleton } from "@/features/shared/components/TableSkeleton";
 export default function ActivityLogPage() {
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const { currentUser, isLoaded: isAuthLoaded } = useAuth();
+
+  // Fetching data menggunakan hook custom
   const { data, meta, isLoading, error, params, updateParams } = useActivityLog(
     {
       page: 1,
@@ -64,11 +66,12 @@ export default function ActivityLogPage() {
         ) : (
           <>
             <ActivityLogTable data={data} />
+
+            {/* PERBAIKAN: Menggunakan props 'meta' dan 'onPageChange' yang baru */}
             {meta && meta.last_page > 1 && (
               <Pagination
-                page={meta.current_page}
-                totalPages={meta.last_page}
-                goTo={(page) => updateParams({ page })}
+                meta={meta}
+                onPageChange={(page) => updateParams({ page })}
               />
             )}
           </>

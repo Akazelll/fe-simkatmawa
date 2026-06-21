@@ -22,15 +22,21 @@ export default function SertifikatPage() {
 
       <FilterSection
         search={params.search || ""}
-        setSearch={(val) => updateParams({ search: val })}
+        setSearch={(val) => updateParams({ search: val, page: 1 })}
         category={params.level || "Semua Kategori"}
         setCategory={(val) =>
-          updateParams({ level: val === "Semua Kategori" ? undefined : val })
+          updateParams({
+            level: val === "Semua Kategori" ? undefined : val,
+            page: 1,
+          })
         }
         categories={KATEGORI}
         status={params.status || "Semua Status"}
         setStatus={(val) =>
-          updateParams({ status: val === "Semua Status" ? undefined : val })
+          updateParams({
+            status: val === "Semua Status" ? undefined : val,
+            page: 1,
+          })
         }
         statuses={STATUSES}
       />
@@ -48,11 +54,11 @@ export default function SertifikatPage() {
           <>
             <CertificateTable data={data} onChanged={refetch} />
 
+            {/* PERBAIKAN: Menggunakan props 'meta' dan 'onPageChange' */}
             {meta && meta.last_page > 1 && (
               <Pagination
-                page={meta.current_page}
-                totalPages={meta.last_page}
-                goTo={(page) => updateParams({ page })}
+                meta={meta}
+                onPageChange={(page) => updateParams({ page })}
               />
             )}
           </>

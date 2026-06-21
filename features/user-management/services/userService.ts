@@ -1,24 +1,28 @@
 import { api } from "@/lib/api";
-import { PAGE_SIZE } from "@/features/shared/constants/pagination";
-
-interface GetUsersParams {
-  page?: number;
-  search?: string;
-  role?: string;
-  limit?: number;
-}
+import { PaginatedResponse } from "@/features/shared/types/pagination";
 
 export const userService = {
-  getUsers: async (params: GetUsersParams) => {
+  getUsers: async (params: {
+    page?: number;
+    search?: string;
+    role?: string;
+  }): Promise<PaginatedResponse<any> & { stats?: any }> => {
     const query = new URLSearchParams();
     if (params.page) query.append("page", params.page.toString());
     if (params.search) query.append("search", params.search);
     if (params.role && params.role !== "all") query.append("role", params.role);
-    // BE endpoint users membaca `limit` untuk ukuran halaman.
-    query.append("limit", String(params.limit ?? PAGE_SIZE));
 
     const response = await api.get(`/superadmin/users?${query.toString()}`);
-    return response.data;
+
+    const payload = response.data.data?.data
+      ? response.data.data
+      : response.data;
+
+    return {
+      data: payload.data || [],
+      meta: payload.meta || null,
+      stats: response.data.data?.stats || response.data.stats || null,
+    };
   },
 
   createUser: async (payload: any) => {
@@ -26,12 +30,12 @@ export const userService = {
     return response.data;
   },
 
-  updateUser: async (id: number | string, payload: any) => {
+  updateUser: async (id: string | number, payload: any) => {
     const response = await api.put(`/superadmin/users/${id}`, payload);
     return response.data;
   },
 
-  deleteUser: async (id: number | string) => {
+  deleteUser: async (id: string | number) => {
     const response = await api.delete(`/superadmin/users/${id}`);
     return response.data;
   },

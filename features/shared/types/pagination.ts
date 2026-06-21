@@ -1,8 +1,15 @@
-// Metadata pagination standar dari backend (Laravel paginator / envelope kontrak API).
-// Semua endpoint list mengembalikan keempat field ini di dalam `response.meta`.
-export type PaginationMeta = {
+// features/shared/types/pagination.ts
+
+export interface PaginationMeta {
   current_page: number;
+  from: number | null;
   last_page: number;
   per_page: number;
+  to: number | null;
   total: number;
-};
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  meta: PaginationMeta;
+}

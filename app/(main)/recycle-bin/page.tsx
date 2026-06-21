@@ -128,7 +128,9 @@ export default function RecycleBinPage() {
             {items.length > 0 ? (
               <div
                 className={
-                  isFetching ? "opacity-60 transition-opacity" : "transition-opacity"
+                  isFetching
+                    ? "opacity-60 transition-opacity"
+                    : "transition-opacity"
                 }
               >
                 <RecycleBinTable
@@ -136,12 +138,9 @@ export default function RecycleBinPage() {
                   onRestoreClick={(item) => setSelectedItem(item)}
                 />
 
+                {/* PERBAIKAN: Menggunakan props 'meta' dan 'onPageChange' terbaru */}
                 {meta && meta.last_page > 1 && (
-                  <Pagination
-                    page={meta.current_page}
-                    totalPages={meta.last_page}
-                    goTo={setPage}
-                  />
+                  <Pagination meta={meta} onPageChange={setPage} />
                 )}
               </div>
             ) : (

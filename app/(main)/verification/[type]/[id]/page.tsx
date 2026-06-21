@@ -92,8 +92,14 @@ export default function VerificationDetailPage() {
     }
   };
 
-  const mappedSubmission = useMemo(() => mapSubmissionInfo(data), [data]);
-  const mappedDocuments = useMemo(() => mapSubmissionDocuments(data), [data]);
+  // PERBAIKAN: Tambahkan validasi null/undefined sebelum melakukan mapping
+  const mappedSubmission = useMemo(() => {
+    return data ? mapSubmissionInfo(data) : null;
+  }, [data]);
+
+  const mappedDocuments = useMemo(() => {
+    return data ? mapSubmissionDocuments(data) : [];
+  }, [data]);
 
   return (
     <div className='space-y-6 p-6 max-w-5xl mx-auto animate-in fade-in duration-500'>
@@ -132,6 +138,7 @@ export default function VerificationDetailPage() {
         </div>
       ) : (
         <>
+          {/* Tambahkan assertion (!) karena kita tahu mappedSubmission pasti ada jika masuk ke blok ini */}
           <SubmissionInfoCard submission={mappedSubmission!} />
 
           {mappedDocuments.length > 0 && (
@@ -151,6 +158,7 @@ export default function VerificationDetailPage() {
         </>
       )}
 
+      {/* Memastikan modal hanya dirender jika data sudah siap */}
       {mappedSubmission && (
         <>
           <ApproveSubmissionModal

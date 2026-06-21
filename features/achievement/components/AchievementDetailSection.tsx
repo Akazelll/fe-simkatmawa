@@ -1,5 +1,3 @@
-// features/achievement/components/AchievementDetailSection.tsx
-
 import {
   Trophy,
   Package,
@@ -299,7 +297,6 @@ export function AchievementDetailSection({
             />
           </div>
 
-          {/* KETERANGAN */}
           <div className='flex flex-col gap-1.5 md:col-span-2'>
             <Label htmlFor='keterangan' className={LABEL_CLASS}>
               Keterangan

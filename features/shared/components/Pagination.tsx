@@ -1,12 +1,24 @@
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 
+// Menyesuaikan Props agar menerima objek meta dari Laravel Backend
 interface PaginationProps {
-  page: number;
-  totalPages: number;
-  goTo: (p: number) => void;
+  meta?: {
+    current_page: number;
+    last_page: number;
+    total: number;
+  } | null;
+  onPageChange: (page: number) => void;
 }
 
-export function Pagination({ page, totalPages, goTo }: PaginationProps) {
+export function Pagination({ meta, onPageChange }: PaginationProps) {
+  // Jika meta tidak ada atau data kosong, jangan render paginasi
+  if (!meta || meta.total === 0) return null;
+
+  // Ekstrak nilai dari meta backend
+  const page = meta.current_page;
+  const totalPages = meta.last_page;
+  const goTo = onPageChange;
+
   // Fungsi untuk menentukan deretan angka halaman yang akan ditampilkan
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];
