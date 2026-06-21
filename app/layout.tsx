@@ -1,6 +1,7 @@
 import { Manrope } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/components/providers/query-provider";
+import { ReactScan } from "@/components/ReactScan";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -24,6 +25,7 @@ export default function RootLayout({
   return (
     <html lang='id' className={manrope.variable} suppressHydrationWarning>
       <body className='font-sans' suppressHydrationWarning>
+        {process.env.NODE_ENV === "development" && <ReactScan />}
         <QueryProvider>{children}</QueryProvider>
       </body>
     </html>

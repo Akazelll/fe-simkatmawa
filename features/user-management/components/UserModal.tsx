@@ -35,7 +35,6 @@ export function UserModal({
     role: "",
     password: "",
   });
-
   useEffect(() => {
     if (user && isOpen) {
       const userRole = user.roles?.[0]?.name || user.role || "";

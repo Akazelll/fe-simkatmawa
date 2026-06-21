@@ -70,7 +70,7 @@ export function UserTable({
             data.map((user) => {
               const roleName =
                 user.roles?.[0]?.name || user.role || "Tanpa Role";
-              const isActive = user.is_active !== false;
+              const isActive = user.status === "active";
 
               return (
                 <TableRow

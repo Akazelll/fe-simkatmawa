@@ -95,7 +95,7 @@ export function Navbar() {
           >
             <Bell size={20} />
             {notif.unreadCount > 0 && (
-              <span className='absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 inline-flex items-center justify-center text-[10px] font-bold text-white bg-red-500 rounded-full border-2 border-white'>
+              <span className='absolute -top-0.5 -right-0.5 min-w-4.5 h-4.5 px-1 inline-flex items-center justify-center text-[10px] font-bold text-white bg-red-500 rounded-full border-2 border-white'>
                 {notif.unreadCount > 9 ? "9+" : notif.unreadCount}
               </span>
             )}
@@ -116,8 +116,8 @@ export function Navbar() {
 
         <DropdownMenu>
           <DropdownMenuTrigger className='flex items-center gap-3 cursor-pointer group hover:bg-slate-50 p-1.5 pr-2 rounded-xl transition-colors border-none bg-transparent outline-none'>
-            <div className='flex flex-col items-end text-right hidden sm:flex'>
-              <p className='text-sm font-bold text-slate-800 leading-none group-hover:text-[#0F4C81] transition-colors line-clamp-1 max-w-[180px]'>
+            <div className='flex-col items-end text-right hidden sm:flex'>
+              <p className='text-sm font-bold text-slate-800 leading-none group-hover:text-[#0F4C81] transition-colors line-clamp-1 max-w-45'>
                 {isLoading ? "Memuat..." : user?.name}
               </p>
               <p className='text-[11px] text-slate-500 mt-1 tracking-wider'>
