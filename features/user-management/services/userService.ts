@@ -1,9 +1,11 @@
 import { api } from "@/lib/api";
+import { PAGE_SIZE } from "@/features/shared/constants/pagination";
 
 interface GetUsersParams {
   page?: number;
   search?: string;
   role?: string;
+  limit?: number;
 }
 
 export const userService = {
@@ -12,6 +14,8 @@ export const userService = {
     if (params.page) query.append("page", params.page.toString());
     if (params.search) query.append("search", params.search);
     if (params.role && params.role !== "all") query.append("role", params.role);
+    // BE endpoint users membaca `limit` untuk ukuran halaman.
+    query.append("limit", String(params.limit ?? PAGE_SIZE));
 
     const response = await api.get(`/superadmin/users?${query.toString()}`);
     return response.data;

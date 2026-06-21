@@ -5,12 +5,13 @@ import {
   RekognisiQueryParams,
 } from "../services/rekognisiService";
 import { Rekognisi } from "../types";
+import { PaginationMeta } from "@/features/shared/types/pagination";
 
 export function useRekognisiList(
   initialParams: RekognisiQueryParams = { page: 1 },
 ) {
   const [data, setData] = useState<Rekognisi[]>([]);
-  const [meta, setMeta] = useState<any>(null);
+  const [meta, setMeta] = useState<PaginationMeta | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [params, setParams] = useState<RekognisiQueryParams>(initialParams);
