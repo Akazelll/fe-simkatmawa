@@ -45,11 +45,11 @@ export default function HistoryPage() {
             <>
               <HistoryTable data={data} />
 
+              {/* PERBAIKAN: Menggunakan props yang sesuai dengan komponen Pagination baru */}
               {meta && meta.last_page > 1 && (
                 <Pagination
-                  page={meta.current_page}
-                  totalPages={meta.last_page}
-                  goTo={(newPage) => setCurrentPage(newPage)}
+                  meta={meta}
+                  onPageChange={(newPage) => setCurrentPage(newPage)}
                 />
               )}
             </>

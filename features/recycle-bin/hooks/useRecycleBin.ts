@@ -1,28 +1,30 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  keepPreviousData,
+} from "@tanstack/react-query";
 import { toast } from "sonner";
-import { recycleBinApi } from "../services/api";
+import { recycleBinApi, GetTrashedParams } from "../services/api";
 
-export function useRecycleBin() {
+export function useRecycleBin(params: GetTrashedParams) {
   const queryClient = useQueryClient();
 
-  const {
-    data: trashedItems = [],
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["recycle-bin"],
-    queryFn: recycleBinApi.getTrashedItems,
+  const { data, isLoading, isFetching, isError } = useQuery({
+    queryKey: ["recycle-bin", params],
+    queryFn: () => recycleBinApi.getTrashedItems(params),
+    // Pertahankan data lama saat ganti tipe/halaman supaya tabel tidak "loncat".
+    placeholderData: keepPreviousData,
   });
 
   const restoreMutation = useMutation({
-    // Mutation sekarang menerima object { type, id }
     mutationFn: ({ type, id }: { type: string; id: string | number }) =>
       recycleBinApi.restoreItem(type, id),
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       toast.success("Berhasil dipulihkan", {
-        description: `Data telah dikembalikan secara permanen ke tabel aktif.`,
+        description: "Data telah dikembalikan ke tabel aktif.",
       });
-      // Refresh ulang data tabel Recycle Bin
+      // Refresh seluruh tipe trash (key prefix).
       queryClient.invalidateQueries({ queryKey: ["recycle-bin"] });
     },
     onError: (error: any) => {
@@ -34,8 +36,11 @@ export function useRecycleBin() {
   });
 
   return {
-    trashedItems,
+    items: data?.items ?? [],
+    meta: data?.meta ?? null,
+    totalTrash: data?.totalTrash ?? 0,
     isLoading,
+    isFetching,
     isError,
     restoreItem: restoreMutation.mutate,
     isRestoring: restoreMutation.isPending,

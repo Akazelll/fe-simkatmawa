@@ -3,17 +3,21 @@
 import { useState, useEffect, useCallback } from "react";
 import { verifikasiService } from "@/features/verification/services/verifikasiService";
 import { TipeKegiatan } from "@/features/verification/types";
+import { PaginationMeta } from "@/features/shared/types/pagination";
+import { PAGE_SIZE } from "@/features/shared/constants/pagination";
 
 export function useHistoryList(tipeKegiatan: TipeKegiatan, page: number = 1) {
   const [data, setData] = useState<any[]>([]);
-  const [meta, setMeta] = useState<any>(null);
+  const [meta, setMeta] = useState<PaginationMeta | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchList = useCallback(async () => {
     setIsLoading(true);
     try {
+      // BE endpoint history membaca `limit` untuk ukuran halaman.
       const response = await verifikasiService.getList(tipeKegiatan, {
         page,
+        limit: PAGE_SIZE,
         status: "APPROVED_UNSYNCED,APPROVED_SYNCED,REJECTED",
       });
 

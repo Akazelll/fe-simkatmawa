@@ -3,20 +3,25 @@
 import { useState, useEffect, useCallback } from "react";
 import { verifikasiService } from "../services/verifikasiService";
 import { TipeKegiatan } from "../types";
+import { PaginationMeta } from "@/features/shared/types/pagination";
+import { PAGE_SIZE } from "@/features/shared/constants/pagination";
 
 export function useVerifikasiList(
   tipeKegiatan: TipeKegiatan,
   page: number = 1,
 ) {
   const [data, setData] = useState<any[]>([]);
-  const [meta, setMeta] = useState<any>(null); // Tambahkan state meta
+  const [meta, setMeta] = useState<PaginationMeta | null>(null); // Tambahkan state meta
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchList = useCallback(async () => {
     setIsLoading(true);
     try {
-      // Kirim parameter page ke service API
-      const response = await verifikasiService.getList(tipeKegiatan, { page });
+      // Kirim parameter page + limit (BE endpoint pengajuan membaca `limit`).
+      const response = await verifikasiService.getList(tipeKegiatan, {
+        page,
+        limit: PAGE_SIZE,
+      });
 
       const mappedData = (response.data || []).map((item: any) => ({
         ...item,

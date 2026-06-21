@@ -59,7 +59,6 @@ export function QueueMonitoringTabs({
     );
   }, [activeJobs, failedJobs]);
 
-  // Filter berdasarkan dropdown
   const filteredJobs = useMemo(() => {
     if (statusFilter === "Menunggu")
       return unifiedJobs.filter((job) => job.status === "waiting");
@@ -70,7 +69,6 @@ export function QueueMonitoringTabs({
     return unifiedJobs; // "Semua Status"
   }, [unifiedJobs, statusFilter]);
 
-  // Pagination
   const paginate = (data: any[], page: number) => {
     const startIndex = (page - 1) * PAGE_SIZE;
     return data.slice(startIndex, startIndex + PAGE_SIZE);
@@ -83,6 +81,12 @@ export function QueueMonitoringTabs({
 
   const totalPages = Math.ceil(filteredJobs.length / PAGE_SIZE);
 
+  const paginationMeta = {
+    current_page: currentPage,
+    last_page: totalPages,
+    total: filteredJobs.length,
+  };
+
   return (
     <div className='space-y-4 animate-in fade-in duration-300'>
       <QueueTable
@@ -94,12 +98,9 @@ export function QueueMonitoringTabs({
           statusFilter === "Gagal" || statusFilter === "Semua Status"
         }
       />
+
       {totalPages > 1 && (
-        <Pagination
-          page={currentPage}
-          totalPages={totalPages}
-          goTo={setCurrentPage}
-        />
+        <Pagination meta={paginationMeta} onPageChange={setCurrentPage} />
       )}
     </div>
   );

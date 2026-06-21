@@ -15,21 +15,29 @@ export default function PrestasiPage() {
   const { data, meta, isLoading, error, params, updateParams, refetch } =
     usePrestasiList({ page: 1 });
 
-  // Handler dibuat stabil (referensi tetap) agar FilterSection yang di-memo tidak ikut re-render.
   const handleSearch = useCallback(
-    (val: string) => updateParams({ search: val }),
+    (val: string) => updateParams({ search: val, page: 1 }),
     [updateParams],
   );
+
   const handleCategory = useCallback(
     (val: string) =>
-      updateParams({ level: val === "Semua Kategori" ? undefined : val }),
+      updateParams({
+        level: val === "Semua Kategori" ? undefined : val,
+        page: 1,
+      }),
     [updateParams],
   );
+
   const handleStatus = useCallback(
     (val: string) =>
-      updateParams({ status: val === "Semua Status" ? undefined : val }),
+      updateParams({
+        status: val === "Semua Status" ? undefined : val,
+        page: 1,
+      }),
     [updateParams],
   );
+
   const handlePageChange = useCallback(
     (page: number) => updateParams({ page }),
     [updateParams],
@@ -68,11 +76,7 @@ export default function PrestasiPage() {
             <AchievementTable data={data} onChanged={refetch} />
 
             {meta && meta.last_page > 1 && (
-              <Pagination
-                page={meta.current_page}
-                totalPages={meta.last_page}
-                goTo={handlePageChange}
-              />
+              <Pagination meta={meta} onPageChange={handlePageChange} />
             )}
           </>
         )}

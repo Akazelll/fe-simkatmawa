@@ -1,18 +1,13 @@
 import { api } from "@/lib/api";
 
+// Re-export tipe meta pagination bersama agar import lama tetap berfungsi.
+export type { PaginationMeta } from "@/features/shared/types/pagination";
+
 export type PrestasiQueryParams = {
   status?: string;
   level?: string;
   search?: string;
   page?: number;
-};
-
-// Sesuaikan dengan struktur meta pagination dari Laravel
-export type PaginationMeta = {
-  current_page: number;
-  last_page: number;
-  per_page: number;
-  total: number;
 };
 
 export const prestasiService = {

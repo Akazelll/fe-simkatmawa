@@ -28,6 +28,11 @@ export default function VerificationTypePage() {
     isLoading,
   } = useVerifikasiList(apiType, currentPage);
 
+  const handleSortChange = (val: string) => {
+    setSortOrder(val);
+    setCurrentPage(1);
+  };
+
   const sortedData = useMemo(() => {
     if (!pendingSubmissions) return [];
 
@@ -51,9 +56,6 @@ export default function VerificationTypePage() {
 
   return (
     <div className='space-y-6 p-6 animate-in fade-in duration-500'>
-      {/* ========================================== */}
-      {/* BAGIAN STATIS: Langsung Render Tanpa Nunggu */}
-      {/* ========================================== */}
       <div className='space-y-1'>
         <h1 className='text-2xl font-bold capitalize text-slate-900'>
           Verifikasi {type}
@@ -66,14 +68,11 @@ export default function VerificationTypePage() {
 
       <FilterSection
         status={sortOrder}
-        setStatus={setSortOrder}
+        setStatus={handleSortChange}
         statuses={["Terbaru ", "Terlama"]}
         statusLabel='Urutkan Tanggal'
       />
 
-      {/* ========================================== */}
-      {/* BAGIAN DINAMIS: Skeleton Table saat Loading */}
-      {/* ========================================== */}
       <div className='space-y-4'>
         {isLoading ? (
           <TableSkeleton />
@@ -82,11 +81,7 @@ export default function VerificationTypePage() {
             <VerificationTable data={sortedData} />
 
             {meta && meta.last_page > 1 && (
-              <Pagination
-                page={meta.current_page}
-                totalPages={meta.last_page}
-                goTo={(newPage) => setCurrentPage(newPage)}
-              />
+              <Pagination meta={meta} onPageChange={setCurrentPage} />
             )}
           </>
         )}

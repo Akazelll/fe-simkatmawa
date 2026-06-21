@@ -1,52 +1,57 @@
 import { api } from "@/lib/api";
-import { TrashedItem, SubmissionType } from "../types";
+import { PAGE_SIZE } from "@/features/shared/constants/pagination";
+import { TrashedItem, SubmissionType, TrashedListResult } from "../types";
+
+const TYPE_LABELS: Record<string, SubmissionType> = {
+  prestasi: "Prestasi",
+  sertifikasi: "Sertifikasi",
+  rekognisi: "Rekognisi",
+  user: "Akun Pengguna",
+};
+
+// Normalisasi 1 item trash dari backend (format kegiatan & user disamakan).
+const mapTrashedItem = (item: any, type: string): TrashedItem => ({
+  id: item.id,
+  name: item.nama_kegiatan || item.name || "Tanpa Nama",
+  type: TYPE_LABELS[type] ?? "Prestasi",
+  status: item.status_terakhir || item.role || "-",
+  deletedAt: item.deleted_at || "",
+  deletedBy: item.dihapus_oleh || "-",
+  originalType: type,
+  owner: item.pemilik || item.email || "",
+});
+
+export interface GetTrashedParams {
+  type: string;
+  page?: number;
+  search?: string;
+  status?: string;
+}
 
 export const recycleBinApi = {
-  getTrashedItems: async (): Promise<TrashedItem[]> => {
-    const endpoints = [
-      { key: "prestasi", label: "Prestasi" },
-      { key: "sertifikasi", label: "Sertifikasi" },
-      { key: "rekognisi", label: "Rekognisi" },
-      { key: "user", label: "Akun Pengguna" },
-    ];
+  // Server-side pagination per tipe — endpoint membaca page, limit, search, status.
+  getTrashedItems: async ({
+    type,
+    page = 1,
+    search,
+    status,
+  }: GetTrashedParams): Promise<TrashedListResult> => {
+    const params: Record<string, string | number> = { page, limit: PAGE_SIZE };
+    if (search) params.search = search;
+    if (status) params.status = status;
 
-    // Gunakan map untuk mengembalikan array promise, lalu await semuanya
-    const results = await Promise.all(
-      endpoints.map(async ({ key, label }) => {
-        try {
-          const response = await api.get(`/superadmin/trash/${key}?limit=200`);
+    const response = await api.get(`/superadmin/trash/${type}`, { params });
+    const body = response.data;
 
-          // CEK LOG INI DI BROWSER -> INSPECT -> CONSOLE
-          console.log(`[Trash API - ${key}] Response:`, response.data);
+    const items: TrashedItem[] = Array.isArray(body?.data)
+      ? body.data.map((item: any) => mapTrashedItem(item, type))
+      : [];
 
-          if (response.data?.success && Array.isArray(response.data?.data)) {
-            return response.data.data.map((item: any) => ({
-              id: item.id,
-              name: item.nama_kegiatan || item.name || "Tanpa Nama",
-              type: label as SubmissionType,
-              status: item.status_terakhir || item.role || "-",
-              deletedAt: item.deleted_at || new Date().toISOString(),
-              deletedBy: item.dihapus_oleh || "-",
-              originalType: key,
-              owner: item.pemilik || item.email || "",
-            }));
-          }
-          return [];
-        } catch (error) {
-          console.error(`[Trash API] Gagal mengambil data ${key}:`, error);
-          return [];
-        }
-      }),
-    );
+    // `stats.total_trash_{type}` = total terhapus (tanpa filter) untuk kartu statistik.
+    const totalTrash =
+      body?.stats?.[`total_trash_${type}`] ?? body?.meta?.total ?? items.length;
 
-    // Gabungkan array dari ke-4 request tadi menjadi 1 array tunggal
-    const flatResults = results.flat();
-
-    // Urutkan berdasarkan tanggal terhapus
-    return flatResults.sort(
-      (a, b) =>
-        new Date(b.deletedAt).getTime() - new Date(a.deletedAt).getTime(),
-    );
+    return { items, meta: body?.meta ?? null, totalTrash };
   },
 
   restoreItem: async (type: string, id: string | number): Promise<void> => {
