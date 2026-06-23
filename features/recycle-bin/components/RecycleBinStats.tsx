@@ -1,5 +1,27 @@
 import { Trash2, RefreshCcw } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+
+export function RecycleBinStatsSkeleton() {
+  return (
+    <div className='grid grid-cols-1 md:grid-cols-2 gap-5'>
+      {[0, 1].map((i) => (
+        <Card
+          key={i}
+          className='border-slate-200 shadow-sm rounded-2xl bg-white'
+        >
+          <CardContent className='p-6 flex items-center gap-4'>
+            <Skeleton className='size-12 rounded-xl shrink-0' />
+            <div className='flex flex-col gap-2'>
+              <Skeleton className='h-4 w-32' />
+              <Skeleton className='h-7 w-12' />
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+}
 
 export function RecycleBinStats({ count }: { count: number }) {
   return (

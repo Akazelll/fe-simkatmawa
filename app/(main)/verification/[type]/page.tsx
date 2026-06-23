@@ -2,12 +2,16 @@
 
 import { useState, useMemo } from "react";
 import { useParams } from "next/navigation";
-import { VerificationTable } from "@/features/verification/components/VerificationTable";
+import {
+  VerificationTable,
+  VERIFICATION_TABLE_COLUMNS,
+} from "@/features/verification/components/VerificationTable";
 import { Pagination } from "@/features/shared/components/Pagination";
 import { FilterSection } from "@/features/shared/components/FilterSection";
 import { useVerifikasiList } from "@/features/verification/hooks/useVerifikasiList";
 import { TipeKegiatan } from "@/features/verification/types";
 import { TableSkeleton } from "@/features/shared/components/TableSkeleton";
+import { useSkeletonRows } from "@/features/shared/hooks/useSkeletonRows";
 
 type VerificationType = "prestasi" | "sertifikat" | "rekognisi";
 
@@ -27,6 +31,12 @@ export default function VerificationTypePage() {
     meta,
     isLoading,
   } = useVerifikasiList(apiType, currentPage);
+
+  const skeletonRows = useSkeletonRows(
+    `verification:${apiType}`,
+    pendingSubmissions?.length,
+    !isLoading,
+  );
 
   const handleSortChange = (val: string) => {
     setSortOrder(val);
@@ -75,7 +85,10 @@ export default function VerificationTypePage() {
 
       <div className='space-y-4'>
         {isLoading ? (
-          <TableSkeleton />
+          <TableSkeleton
+            columns={VERIFICATION_TABLE_COLUMNS}
+            rows={skeletonRows}
+          />
         ) : (
           <>
             <VerificationTable data={sortedData} />

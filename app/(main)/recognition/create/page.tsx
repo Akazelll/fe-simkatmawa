@@ -16,7 +16,7 @@ import {
 } from "@/features/shared/hooks/useFieldList";
 import { RoleGuard } from "@/features/auth/components/RoleGuard";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { CardSkeleton } from "@/features/shared/components/CardSkeleton";
+import { FormSkeleton } from "@/features/shared/components/FormSkeleton";
 
 import { rekognisiService } from "@/features/recognition/services/rekognisiService";
 import { mapToRekognisiPayload } from "@/features/recognition/utils/rekognisiMapper";
@@ -93,11 +93,7 @@ export default function CreateRecognitionPage() {
 
       <RoleGuard allowedRoles={["mahasiswa"]}>
         {!isAuthLoaded ? (
-          <div className='space-y-6'>
-            <CardSkeleton lines={6} />
-            <CardSkeleton lines={4} />
-            <CardSkeleton lines={4} />
-          </div>
+          <FormSkeleton />
         ) : (
           <>
             {errorMsg && (

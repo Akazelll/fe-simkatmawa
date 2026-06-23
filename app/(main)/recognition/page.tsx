@@ -3,15 +3,21 @@
 import { PageHeader } from "@/features/shared/components/PageHeader";
 import { FilterSection } from "@/features/shared/components/FilterSection";
 import { Pagination } from "@/features/shared/components/Pagination";
-import { RecognitionTable } from "@/features/recognition/components/RecognitionTable";
+import {
+  RecognitionTable,
+  RECOGNITION_TABLE_COLUMNS,
+} from "@/features/recognition/components/RecognitionTable";
 import { KATEGORI, STATUSES } from "@/features/recognition/constants";
 import { AlertCircle } from "lucide-react";
 import { useRekognisiList } from "@/features/recognition/hooks/useRekognisiList";
 import { TableSkeleton } from "@/features/shared/components/TableSkeleton";
+import { useSkeletonRows } from "@/features/shared/hooks/useSkeletonRows";
 
 export default function RekognisiPage() {
   const { data, meta, isLoading, error, params, updateParams, refetch } =
     useRekognisiList({ page: 1 });
+
+  const skeletonRows = useSkeletonRows("recognition", data.length, !isLoading);
 
   return (
     <div className='flex flex-col gap-6 animate-in fade-in duration-500'>
@@ -50,7 +56,11 @@ export default function RekognisiPage() {
 
       <div className='space-y-4'>
         {isLoading ? (
-          <TableSkeleton />
+          <TableSkeleton
+            columns={RECOGNITION_TABLE_COLUMNS}
+            rows={skeletonRows}
+            header
+          />
         ) : (
           <>
             <RecognitionTable data={data} onChanged={refetch} />

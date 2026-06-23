@@ -4,16 +4,22 @@ import { useCallback } from "react";
 import { PageHeader } from "@/features/shared/components/PageHeader";
 import { FilterSection } from "@/features/shared/components/FilterSection";
 import { Pagination } from "@/features/shared/components/Pagination";
-import { AchievementTable } from "@/features/achievement/components/AchievementTable";
+import {
+  AchievementTable,
+  ACHIEVEMENT_TABLE_COLUMNS,
+} from "@/features/achievement/components/AchievementTable";
 import { KATEGORI, STATUSES } from "@/features/achievement/constants";
 import { usePrestasiList } from "@/features/achievement/hooks/usePrestasiList";
 import { AlertCircle } from "lucide-react";
 
 import { TableSkeleton } from "@/features/shared/components/TableSkeleton";
+import { useSkeletonRows } from "@/features/shared/hooks/useSkeletonRows";
 
 export default function PrestasiPage() {
   const { data, meta, isLoading, error, params, updateParams, refetch } =
     usePrestasiList({ page: 1 });
+
+  const skeletonRows = useSkeletonRows("achievement", data.length, !isLoading);
 
   const handleSearch = useCallback(
     (val: string) => updateParams({ search: val, page: 1 }),
@@ -70,7 +76,11 @@ export default function PrestasiPage() {
 
       <div className='space-y-4'>
         {isLoading ? (
-          <TableSkeleton />
+          <TableSkeleton
+            columns={ACHIEVEMENT_TABLE_COLUMNS}
+            rows={skeletonRows}
+            header
+          />
         ) : (
           <>
             <AchievementTable data={data} onChanged={refetch} />

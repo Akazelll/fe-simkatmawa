@@ -17,10 +17,21 @@ import {
 import { ActivityLog } from "../types";
 import { ActivityLogDetailModal } from "./ActivityLogDetailModal";
 import { Eye } from "lucide-react";
+import type { SkeletonColumn } from "@/features/shared/components/TableSkeleton";
 
 const HEAD_CLASS =
   "h-12 text-[11px] font-bold tracking-wide uppercase text-slate-400 whitespace-nowrap";
 const CELL_BASE = "py-4 align-middle text-sm text-slate-600";
+
+// Konfigurasi skeleton — disinkronkan dengan kolom tabel di bawah (6 kolom).
+export const ACTIVITY_TABLE_COLUMNS: SkeletonColumn[] = [
+  { width: "w-[15%]", cell: "h-4 w-24" }, // Waktu
+  { width: "w-[20%]", cell: "h-4 w-28" }, // Pelaku
+  { width: "w-[15%]", pill: true }, // Aksi (badge)
+  { width: "w-[15%]", cell: "h-4 w-20" }, // Modul
+  { width: "w-[25%]" }, // Target
+  { width: "w-[10%]", align: "center", cell: "h-8 w-20 rounded-lg" }, // Detail
+];
 
 export function ActivityLogTable({ data }: { data: ActivityLog[] }) {
   const [selectedLog, setSelectedLog] = useState<ActivityLog | null>(null);

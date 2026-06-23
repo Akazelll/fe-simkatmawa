@@ -10,7 +10,7 @@ import { rekognisiService } from "@/features/recognition/services/rekognisiServi
 import { Rekognisi } from "@/features/recognition/types";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { CardSkeleton } from "@/features/shared/components/CardSkeleton";
+import { DetailSkeleton } from "@/features/shared/components/DetailSkeleton";
 
 export default function RekognisiDetailPage() {
   const router = useRouter();
@@ -77,10 +77,7 @@ export default function RekognisiDetailPage() {
 
       <RoleGuard allowedRoles={["mahasiswa"]}>
         {!isAuthLoaded || isLoading ? (
-          <div className='space-y-6'>
-            <CardSkeleton lines={6} />
-            <CardSkeleton lines={4} />
-          </div>
+          <DetailSkeleton />
         ) : (
           data && <RekognisiDetailView data={data} />
         )}

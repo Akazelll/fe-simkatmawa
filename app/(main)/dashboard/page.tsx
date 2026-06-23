@@ -50,15 +50,15 @@ export default function DashboardPage() {
             <div className='space-y-6'>
               <div>
                 <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'>
-                  {[1, 2, 3].map((i) => (
-                    <StatCardSkeleton key={`mhs-top-${i}`} />
+                  {(["navy", "amber", "emerald"] as const).map((variant, i) => (
+                    <StatCardSkeleton key={`mhs-top-${i}`} variant={variant} />
                   ))}
                 </div>
               </div>
               <div>
                 <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'>
-                  {[4, 5, 6].map((i) => (
-                    <StatCardSkeleton key={`mhs-bot-${i}`} />
+                  {(["rose", "navy", "emerald"] as const).map((variant, i) => (
+                    <StatCardSkeleton key={`mhs-bot-${i}`} variant={variant} />
                   ))}
                 </div>
               </div>

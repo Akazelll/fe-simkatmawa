@@ -2,13 +2,17 @@
 
 import { useState } from "react";
 import { PageHeader } from "@/features/shared/components/PageHeader";
-import { VerificationTable } from "@/features/verification/components/VerificationTable";
+import {
+  VerificationTable,
+  VERIFICATION_TABLE_COLUMNS,
+} from "@/features/verification/components/VerificationTable";
 import { useVerifikasiList } from "@/features/verification/hooks/useVerifikasiList";
 import { TipeKegiatan } from "@/features/verification/types";
 import { RoleGuard } from "@/features/auth/components/RoleGuard";
 
 import { FilterSection } from "@/features/shared/components/FilterSection";
 import { TableSkeleton } from "@/features/shared/components/TableSkeleton";
+import { useSkeletonRows } from "@/features/shared/hooks/useSkeletonRows";
 
 export default function VerificationPage() {
   const [typeFilter, setTypeFilter] = useState("Prestasi");
@@ -16,6 +20,12 @@ export default function VerificationPage() {
   const apiTypeFormat = typeFilter.toLowerCase() as TipeKegiatan;
 
   const { data, isLoading } = useVerifikasiList(apiTypeFormat);
+
+  const skeletonRows = useSkeletonRows(
+    `verification:${apiTypeFormat}`,
+    data.length,
+    !isLoading,
+  );
 
   return (
     <RoleGuard allowedRoles={["admin", "superadmin"]}>
@@ -32,7 +42,14 @@ export default function VerificationPage() {
         />
 
         <div className='space-y-4'>
-          {isLoading ? <TableSkeleton /> : <VerificationTable data={data} />}
+          {isLoading ? (
+            <TableSkeleton
+              columns={VERIFICATION_TABLE_COLUMNS}
+              rows={skeletonRows}
+            />
+          ) : (
+            <VerificationTable data={data} />
+          )}
         </div>
       </div>
     </RoleGuard>

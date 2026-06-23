@@ -3,15 +3,21 @@
 import { PageHeader } from "@/features/shared/components/PageHeader";
 import { FilterSection } from "@/features/shared/components/FilterSection";
 import { Pagination } from "@/features/shared/components/Pagination";
-import { CertificateTable } from "@/features/certificate/components/CertificateTable";
+import {
+  CertificateTable,
+  CERTIFICATE_TABLE_COLUMNS,
+} from "@/features/certificate/components/CertificateTable";
 import { KATEGORI, STATUSES } from "@/features/certificate/constants";
 import { AlertCircle } from "lucide-react";
 import { useSertifikasiList } from "@/features/certificate/hooks/useSertifikasiList";
 import { TableSkeleton } from "@/features/shared/components/TableSkeleton";
+import { useSkeletonRows } from "@/features/shared/hooks/useSkeletonRows";
 
 export default function SertifikatPage() {
   const { data, meta, isLoading, error, params, updateParams, refetch } =
     useSertifikasiList({ page: 1 });
+
+  const skeletonRows = useSkeletonRows("certificate", data.length, !isLoading);
 
   return (
     <div className='flex flex-col gap-6 animate-in fade-in duration-500'>
@@ -49,7 +55,11 @@ export default function SertifikatPage() {
       )}
       <div className='space-y-4'>
         {isLoading ? (
-          <TableSkeleton />
+          <TableSkeleton
+            columns={CERTIFICATE_TABLE_COLUMNS}
+            rows={skeletonRows}
+            header
+          />
         ) : (
           <>
             <CertificateTable data={data} onChanged={refetch} />

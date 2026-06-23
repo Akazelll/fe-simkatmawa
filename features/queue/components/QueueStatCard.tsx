@@ -2,6 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Clock, RefreshCw, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Props {
   stats: {
@@ -32,6 +33,29 @@ export function QueueStatCards({ stats }: Props) {
               <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{card.label}</span>
               <span className="text-2xl font-extrabold text-slate-800 leading-tight my-0.5">{card.count}</span>
               <span className="text-[11px] font-medium text-slate-400 truncate">{card.desc}</span>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+// Skeleton yang meniru layout QueueStatCards (ikon kotak + label + angka + deskripsi).
+export function QueueStatCardsSkeleton() {
+  return (
+    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
+      {[1, 2, 3, 4].map((i) => (
+        <Card
+          key={i}
+          className='border border-slate-100 shadow-sm rounded-2xl bg-white overflow-hidden'
+        >
+          <CardContent className='p-5 flex items-center gap-4'>
+            <Skeleton className='h-11 w-11 rounded-xl shrink-0' />
+            <div className='flex flex-col gap-1.5 min-w-0'>
+              <Skeleton className='h-3 w-16' />
+              <Skeleton className='h-6 w-10' />
+              <Skeleton className='h-3 w-24' />
             </div>
           </CardContent>
         </Card>

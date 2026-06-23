@@ -5,8 +5,14 @@ import { PageHeader } from "@/features/shared/components/PageHeader";
 import { FilterSection } from "@/features/shared/components/FilterSection";
 import { Pagination } from "@/features/shared/components/Pagination";
 import { RoleGuard } from "@/features/auth/components/RoleGuard";
-import { RecycleBinStats } from "@/features/recycle-bin/components/RecycleBinStats";
-import { RecycleBinTable } from "@/features/recycle-bin/components/RecycleBinTable";
+import {
+  RecycleBinStats,
+  RecycleBinStatsSkeleton,
+} from "@/features/recycle-bin/components/RecycleBinStats";
+import {
+  RecycleBinTable,
+  RECYCLE_BIN_TABLE_COLUMNS,
+} from "@/features/recycle-bin/components/RecycleBinTable";
 import { RestoreDialog } from "@/features/recycle-bin/components/RestoreDialog";
 import { EmptyTrashState } from "@/features/recycle-bin/components/EmptyTrashState";
 import { useRecycleBin } from "@/features/recycle-bin/hooks/useRecycleBin";
@@ -14,7 +20,7 @@ import { TrashedItem } from "@/features/recycle-bin/types";
 import { TRASH_TYPES, STATUSES } from "@/features/recycle-bin/constants";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { TableSkeleton } from "@/features/shared/components/TableSkeleton";
-import { CardSkeleton } from "@/features/shared/components/CardSkeleton";
+import { useSkeletonRows } from "@/features/shared/hooks/useSkeletonRows";
 
 const TYPE_LABELS = TRASH_TYPES.map((t) => t.label);
 
@@ -83,6 +89,12 @@ export default function RecycleBinPage() {
 
   const showInitialSkeleton = !isAuthLoaded || isLoading;
 
+  const skeletonRows = useSkeletonRows(
+    `recycle-bin:${activeType}`,
+    items.length,
+    !showInitialSkeleton,
+  );
+
   return (
     <div className='flex flex-col gap-6 p-6 animate-in fade-in duration-500'>
       <PageHeader
@@ -107,19 +119,11 @@ export default function RecycleBinPage() {
       <RoleGuard allowedRoles={["superadmin", "admin"]}>
         {showInitialSkeleton ? (
           <div className='space-y-6'>
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-              <CardSkeleton
-                hasHeader={false}
-                lines={2}
-                className='h-28 justify-center'
-              />
-              <CardSkeleton
-                hasHeader={false}
-                lines={2}
-                className='h-28 justify-center'
-              />
-            </div>
-            <TableSkeleton />
+            <RecycleBinStatsSkeleton />
+            <TableSkeleton
+              columns={RECYCLE_BIN_TABLE_COLUMNS}
+              rows={skeletonRows}
+            />
           </div>
         ) : (
           <div className='space-y-6'>

@@ -13,10 +13,20 @@ import {
 } from "@/components/ui/table";
 import { StatusBadge } from "@/features/shared/components/StatusBadge";
 import { useRouter } from "next/navigation";
+import type { SkeletonColumn } from "@/features/shared/components/TableSkeleton";
 
 const HEAD_CLASS =
   "h-12 text-[11px] font-bold tracking-wide uppercase text-slate-400 whitespace-nowrap";
 const CELL_BASE = "py-4 align-top text-sm text-slate-600";
+
+// Konfigurasi skeleton — disinkronkan dengan kolom tabel di bawah (5 kolom).
+export const VERIFICATION_TABLE_COLUMNS: SkeletonColumn[] = [
+  { width: "w-[25%]" }, // Nama Pengajuan
+  { width: "w-[25%]", cell: "h-4 w-32" }, // Mahasiswa
+  { width: "w-[15%]", cell: "h-4 w-24" }, // Tanggal
+  { width: "w-[15%]", pill: true }, // Status
+  { width: "w-[20%]", align: "right", cell: "h-8 w-24 rounded-lg" }, // Aksi
+];
 
 interface VerificationTableProps {
   data: any[]; // Bisa diganti dengan VerificationItem

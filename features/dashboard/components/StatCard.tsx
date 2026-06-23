@@ -54,14 +54,29 @@ export function StatCard({
     </Card>
   );
 }
-export function StatCardSkeleton() {
+export function StatCardSkeleton({
+  variant = "navy",
+}: {
+  variant?: StatVariant;
+}) {
+  const gradient = VARIANT_GRADIENTS[variant];
+
   return (
-    <Card className='border-slate-200 shadow-sm rounded-2xl overflow-hidden bg-white'>
-      <CardContent className='p-6 flex items-center justify-between'>
-        <Skeleton className='h-12 w-12 rounded-xl shrink-0' />
-        <div className='flex flex-col items-end'>
-          <Skeleton className='h-8 w-16 mb-2' />
-          <Skeleton className='h-4 w-28' />
+    <Card
+      className={cn(
+        "relative overflow-hidden rounded-2xl border-0 text-white shadow-md ring-0 bg-linear-to-br",
+        gradient,
+      )}
+    >
+      <CardContent className='relative p-6'>
+        {/* Watermark bulat meniru ikon di pojok kanan bawah */}
+        <div className='absolute -bottom-3 -right-2 h-22 w-22 rounded-full bg-white/10' />
+
+        <div className='relative z-10'>
+          {/* value -> meniru text-3xl leading-none */}
+          <Skeleton className='h-8 w-20 rounded-lg bg-white/30' />
+          {/* label -> meniru mt-2 text-sm */}
+          <Skeleton className='mt-2 h-4 w-28 rounded-md bg-white/25' />
         </div>
       </CardContent>
     </Card>
