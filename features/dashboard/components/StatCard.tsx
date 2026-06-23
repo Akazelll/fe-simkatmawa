@@ -4,30 +4,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { StatCardProps, StatVariant } from "../types";
 
-const VARIANT_STYLES: Record<
-  StatVariant,
-  { iconWrap: string; value: string; label: string }
-> = {
-  navy: {
-    iconWrap: "bg-slate-100 text-[#0F4C81]",
-    value: "text-[#0F4C81]",
-    label: "text-slate-500",
-  },
-  amber: {
-    iconWrap: "bg-amber-50 text-amber-500",
-    value: "text-amber-500",
-    label: "text-amber-500",
-  },
-  emerald: {
-    iconWrap: "bg-emerald-50 text-emerald-600",
-    value: "text-emerald-600",
-    label: "text-emerald-600",
-  },
-  rose: {
-    iconWrap: "bg-rose-50 text-rose-600",
-    value: "text-rose-600",
-    label: "text-rose-600",
-  },
+const VARIANT_GRADIENTS: Record<StatVariant, string> = {
+  navy: "from-[#1769aa] to-[#0F4C81]",
+  amber: "from-amber-400 to-orange-500",
+  emerald: "from-emerald-400 to-green-500",
+  rose: "from-rose-400 to-red-500",
 };
 
 export function StatCard({
@@ -37,29 +18,37 @@ export function StatCard({
   trend,
   variant,
 }: StatCardProps) {
-  const styles = VARIANT_STYLES[variant];
+  const gradient = VARIANT_GRADIENTS[variant];
   const isUp = trend >= 0;
   const TrendIcon = isUp ? TrendingUp : TrendingDown;
-  const trendColor = isUp ? "text-emerald-600" : "text-rose-500";
   const sign = isUp ? "+" : "";
 
   return (
-    <Card className='border-slate-200 shadow-sm rounded-2xl overflow-hidden hover:shadow-md transition-shadow bg-white'>
-      <CardContent className='p-6 flex items-center justify-between'>
-        <div
-          className={cn(
-            "h-12 w-12 flex items-center justify-center rounded-xl shrink-0",
-            styles.iconWrap,
-          )}
-        >
-          <Icon size={22} />
-        </div>
+    <Card
+      className={cn(
+        "relative overflow-hidden rounded-2xl border-0 text-white shadow-md ring-0 bg-linear-to-br",
+        "cursor-pointer transition-transform duration-200 ease-out hover:scale-[1.03] hover:shadow-lg",
+        gradient,
+      )}
+    >
+      <CardContent className='relative p-6'>
+        {/* Watermark icon di pojok kanan bawah */}
+        <Icon
+          className='absolute -bottom-3 -right-2 text-white/15'
+          size={88}
+          strokeWidth={1.5}
+        />
 
-        <div className='flex flex-col items-end text-right'>
-          <div className={cn("text-3xl font-bold mb-1", styles.value)}>
-            {value}
-          </div>
-          <div className={cn("text-sm font-medium", styles.label)}>{label}</div>
+        <div className='relative z-10'>
+          <div className='text-3xl font-bold leading-none'>{value}</div>
+          <p className='mt-2 text-sm font-semibold text-white/95'>{label}</p>
+          {trend !== 0 && (
+            <div className='mt-3 flex items-center gap-1.5 text-xs font-medium text-white/80'>
+              <TrendIcon size={14} />
+              {sign}
+              {trend}%
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
