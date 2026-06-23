@@ -6,7 +6,10 @@ import { hasRole } from "@/features/auth/utils/permissions";
 import { StatsGrid } from "@/features/dashboard/components/StatsGrid";
 import { SubmissionTrendsChart } from "@/features/dashboard/components/SubmissionTrendsChart";
 import { ApprovalRateChart } from "@/features/dashboard/components/ApprovalRateChart";
-import { RecentActivity } from "@/features/dashboard/components/RecentActivity";
+import {
+  RecentActivity,
+  RecentActivitySkeleton,
+} from "@/features/dashboard/components/RecentActivity";
 import { WorkflowInfographic } from "@/features/dashboard/components/student/WorkflowInfographic";
 import { SubmissionStatsGrid } from "@/features/dashboard/components/student/SubmissionStatsGrid";
 import { RecentSubmissions } from "@/features/dashboard/components/student/RecentSubmissions";
@@ -14,6 +17,7 @@ import { PageHeader } from "@/features/shared/components/PageHeader";
 import { useDashboard } from "@/features/dashboard/hooks/useDashboard";
 import { CardSkeleton } from "@/features/shared/components/CardSkeleton";
 import { TableSkeleton } from "@/features/shared/components/TableSkeleton";
+import { ChartSkeleton } from "@/features/shared/components/ChartSkeleton";
 import { StatCardSkeleton } from "@/features/dashboard/components/StatCard";
 
 const getGreeting = (hour: number) => {
@@ -91,12 +95,12 @@ export default function DashboardPage() {
       {isPageLoading ? (
         <>
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-5'>
-            <CardSkeleton lines={5} className='h-[350px]' />
-            <CardSkeleton lines={5} className='h-[350px]' />
+            <ChartSkeleton variant='area' />
+            <ChartSkeleton variant='bar' />
           </div>
 
           <div className='grid grid-cols-1'>
-            <TableSkeleton />
+            <RecentActivitySkeleton />
           </div>
         </>
       ) : (
