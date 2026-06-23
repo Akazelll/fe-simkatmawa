@@ -8,7 +8,7 @@ import { PrestasiEditForm } from "@/features/achievement/components/PrestasiEdit
 import { prestasiService } from "@/features/achievement/services/prestasiService";
 import { Prestasi } from "@/features/achievement/types";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { CardSkeleton } from "@/features/shared/components/CardSkeleton";
+import { FormSkeleton } from "@/features/shared/components/FormSkeleton";
 import { FormPageHeader } from "@/features/shared/components/form/FormPageHeader";
 
 export default function EditPrestasiPage() {
@@ -57,11 +57,7 @@ export default function EditPrestasiPage() {
 
       <RoleGuard allowedRoles={["mahasiswa"]}>
         {!isAuthLoaded || isLoading ? (
-          <div className='space-y-6'>
-            <CardSkeleton lines={6} />
-            <CardSkeleton lines={4} />
-            <CardSkeleton lines={4} />
-          </div>
+          <FormSkeleton />
         ) : (
           data && <PrestasiEditForm detail={data} />
         )}

@@ -12,10 +12,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatDateTime } from "@/lib/utils/dateFormat";
+import type { SkeletonColumn } from "@/features/shared/components/TableSkeleton";
 
 const HEAD_CLASS =
   "h-12 text-[11px] font-bold tracking-wide uppercase text-slate-400 whitespace-nowrap";
 const CELL_BASE = "py-4 align-middle text-sm text-slate-600";
+
+// Konfigurasi skeleton — disinkronkan dengan kolom tabel di bawah (5 kolom).
+export const QUEUE_TABLE_COLUMNS: SkeletonColumn[] = [
+  { cell: "h-4 w-40" }, // Pengajuan
+  { cell: "h-4 w-28" }, // Mahasiswa
+  { cell: "h-4 w-24" }, // Waktu
+  { pill: true }, // Status
+  { align: "right", actions: 2 }, // Aksi
+];
 
 interface QueueTableProps {
   jobs: any[];

@@ -12,6 +12,7 @@ import { ApproveSubmissionModal } from "@/features/verification/components/Appro
 import { verifikasiService } from "@/features/verification/services/verifikasiService";
 import { TipeKegiatan } from "@/features/verification/types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   mapSubmissionInfo,
   mapSubmissionDocuments,
@@ -112,25 +113,37 @@ export default function VerificationDetailPage() {
 
       {isLoading ? (
         <div className='space-y-6'>
-          <div className='border rounded-xl bg-white p-6 space-y-5 shadow-sm'>
-            <Skeleton className='h-7 w-1/3' />
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className='space-y-2'>
-                  <Skeleton className='h-4 w-24' />
-                  <Skeleton className='h-5 w-3/4' />
-                </div>
-              ))}
-            </div>
-          </div>
+          {/* Skeleton SubmissionInfoCard */}
+          <Card className='border-slate-200 shadow-sm rounded-2xl bg-white overflow-hidden'>
+            <CardContent className='p-6 md:p-8 space-y-6'>
+              <div className='flex flex-col gap-4 border-b border-slate-100 pb-5 sm:flex-row sm:items-start sm:justify-between'>
+                <Skeleton className='h-6 w-64 max-w-full' />
+                <Skeleton className='h-6 w-24 shrink-0 rounded-full' />
+              </div>
+              <div className='grid grid-cols-1 gap-x-12 gap-y-6 md:grid-cols-2'>
+                {[0, 1, 2, 3, 4].map((i) => (
+                  <div key={i} className='flex flex-col gap-2'>
+                    <Skeleton className='h-3 w-24' />
+                    <Skeleton className='h-4 w-3/4' />
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
-          <div className='border rounded-xl bg-white p-6 space-y-5 shadow-sm'>
-            <Skeleton className='h-6 w-1/4' />
-            <div className='flex flex-col gap-3'>
-              <Skeleton className='h-16 w-full rounded-lg' />
-              <Skeleton className='h-16 w-full rounded-lg' />
-            </div>
-          </div>
+          {/* Skeleton DocumentsCard */}
+          <Card className='border-slate-200 shadow-sm rounded-2xl bg-white'>
+            <CardContent className='p-6 md:p-8'>
+              <div className='mb-6 flex flex-col gap-2'>
+                <Skeleton className='h-5 w-40' />
+                <Skeleton className='h-4 w-72 max-w-full' />
+              </div>
+              <div className='flex flex-col gap-2.5'>
+                <Skeleton className='h-16 w-full rounded-xl' />
+                <Skeleton className='h-16 w-full rounded-xl' />
+              </div>
+            </CardContent>
+          </Card>
         </div>
       ) : !data ? (
         <div className='p-8 bg-white border rounded-xl text-center text-slate-500 shadow-sm'>

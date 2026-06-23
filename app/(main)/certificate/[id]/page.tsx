@@ -10,7 +10,7 @@ import { sertifikasiService } from "@/features/certificate/services/sertifikasiS
 import { Certificate } from "@/features/certificate/types";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { CardSkeleton } from "@/features/shared/components/CardSkeleton";
+import { DetailSkeleton } from "@/features/shared/components/DetailSkeleton";
 
 export default function SertifikatDetailPage() {
   const router = useRouter();
@@ -77,10 +77,7 @@ export default function SertifikatDetailPage() {
 
       <RoleGuard allowedRoles={["mahasiswa"]}>
         {!isAuthLoaded || isLoading ? (
-          <div className='space-y-6'>
-            <CardSkeleton lines={6} />
-            <CardSkeleton lines={4} />
-          </div>
+          <DetailSkeleton />
         ) : (
           data && <SertifikatDetailView data={data} />
         )}

@@ -7,7 +7,7 @@ import { useKemdikbudCredential } from "@/features/settings/hooks/useKemdikbudCr
 import { KemdikbudIntegrationCard } from "@/features/settings/components/KemdikbudIntegrationCard";
 import { UpdateKemdikbudCredentialModal } from "@/features/settings/components/UpdateKemdikbudCredentialModal";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { CardSkeleton } from "@/features/shared/components/CardSkeleton";
+import { FormSkeleton } from "@/features/shared/components/FormSkeleton";
 
 export default function SettingsPage() {
   const { isLoaded: isAuthLoaded } = useAuth();
@@ -26,12 +26,11 @@ export default function SettingsPage() {
       />
       <RoleGuard allowedRoles={["superadmin"]}>
         {!isAuthLoaded || !isCredentialLoaded ? (
-          <div className='w-full'>
-            <CardSkeleton
-              lines={6}
-              className='mx-auto max-w-3xl min-h-[380px]'
-            />
-          </div>
+          <FormSkeleton
+            sections={[5]}
+            footer={false}
+            className='mx-auto max-w-3xl'
+          />
         ) : (
           credential && (
             <>

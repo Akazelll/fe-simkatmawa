@@ -4,13 +4,17 @@ import { useState } from "react";
 import { PageHeader } from "@/features/shared/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Pagination } from "@/features/shared/components/Pagination";
-import { UserTable } from "@/features/user-management/components/UserTable";
+import {
+  UserTable,
+  USER_TABLE_COLUMNS,
+} from "@/features/user-management/components/UserTable";
 import { UserModal } from "@/features/user-management/components/UserModal";
 import { DeleteUserModal } from "@/features/user-management/components/DeleteUserModal";
 import { useUsers } from "@/features/user-management/hooks/useUsers";
 import { TotalUserCard } from "@/features/user-management/components/TotalUserCard";
 import { FilterSection } from "@/features/shared/components/FilterSection";
 import { TableSkeleton } from "@/features/shared/components/TableSkeleton";
+import { useSkeletonRows } from "@/features/shared/hooks/useSkeletonRows";
 
 export default function UserManagementPage() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -28,6 +32,8 @@ export default function UserManagementPage() {
     search,
     role: apiRoleFormat,
   });
+
+  const skeletonRows = useSkeletonRows("users", data.length, !isLoading);
 
   const handleSearchChange = (val: string) => {
     setSearch(val);
@@ -68,7 +74,7 @@ export default function UserManagementPage() {
 
       <div className='space-y-4'>
         {isLoading ? (
-          <TableSkeleton />
+          <TableSkeleton columns={USER_TABLE_COLUMNS} rows={skeletonRows} />
         ) : (
           <>
             <UserTable

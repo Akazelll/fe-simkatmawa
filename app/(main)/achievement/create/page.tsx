@@ -10,7 +10,7 @@ import { DosenListSection } from "@/features/shared/components/form/DosenListSec
 import { FormWelcomeBanner } from "@/features/shared/components/form/FormWelcomeBanner";
 import { FormFooter } from "@/features/shared/components/form/FormFooter";
 import { FormPageHeader } from "@/features/shared/components/form/FormPageHeader";
-import { CardSkeleton } from "@/features/shared/components/CardSkeleton";
+import { FormSkeleton } from "@/features/shared/components/FormSkeleton";
 
 import {
   useFieldList,
@@ -115,11 +115,7 @@ export default function CreatePrestasiPage() {
 
       <RoleGuard allowedRoles={["mahasiswa"]}>
         {!isAuthLoaded ? (
-          <div className='space-y-6'>
-            <CardSkeleton lines={6} />
-            <CardSkeleton lines={4} />
-            <CardSkeleton lines={4} />
-          </div>
+          <FormSkeleton />
         ) : (
           <>
             {errorMsg && (

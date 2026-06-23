@@ -4,7 +4,10 @@ import { useState } from "react";
 import { Download, AlertCircle } from "lucide-react";
 import { PageHeader } from "@/features/shared/components/PageHeader";
 import { Pagination } from "@/features/shared/components/Pagination";
-import { ActivityLogTable } from "@/features/activity/components/ActivityLogTable";
+import {
+  ActivityLogTable,
+  ACTIVITY_TABLE_COLUMNS,
+} from "@/features/activity/components/ActivityLogTable";
 import { ActivityLogFilter } from "@/features/activity/components/ActivityLogFilter";
 import { PAGE_SIZE } from "@/features/shared/constants/pagination";
 import { ExportLogButton } from "@/features/activity/components/ExportLogButton";
@@ -12,6 +15,7 @@ import { ExportLogModal } from "@/features/activity/components/ExportLogModal";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useActivityLog } from "@/features/activity/hooks/useActivityLog";
 import { TableSkeleton } from "@/features/shared/components/TableSkeleton";
+import { useSkeletonRows } from "@/features/shared/hooks/useSkeletonRows";
 
 export default function ActivityLogPage() {
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
@@ -27,6 +31,12 @@ export default function ActivityLogPage() {
 
   const isAdmin =
     currentUser?.role === "admin" || currentUser?.role === "superadmin";
+
+  const skeletonRows = useSkeletonRows(
+    "activity",
+    data.length,
+    !isLoading && isAuthLoaded,
+  );
 
   return (
     <div className='flex flex-col gap-6 animate-in fade-in duration-500'>
@@ -62,7 +72,7 @@ export default function ActivityLogPage() {
 
       <div className='space-y-4'>
         {isLoading || !isAuthLoaded ? (
-          <TableSkeleton />
+          <TableSkeleton columns={ACTIVITY_TABLE_COLUMNS} rows={skeletonRows} />
         ) : (
           <>
             <ActivityLogTable data={data} />

@@ -2,13 +2,17 @@
 
 import { useState } from "react";
 import { useQueueMonitoring } from "@/features/queue/hooks/useQueueMonitoring";
-import { QueueStatCards } from "@/features/queue/components/QueueStatCard";
+import {
+  QueueStatCards,
+  QueueStatCardsSkeleton,
+} from "@/features/queue/components/QueueStatCard";
+import { QUEUE_TABLE_COLUMNS } from "@/features/queue/components/QueueTable";
 import { QueueMonitoringTabs } from "@/features/queue/components/QueueMonitoringTabs";
 import { RoleGuard } from "@/features/auth/components/RoleGuard";
 
 import { FilterSection } from "@/features/shared/components/FilterSection";
 import { TableSkeleton } from "@/features/shared/components/TableSkeleton";
-import { CardSkeleton } from "@/features/shared/components/CardSkeleton";
+import { useSkeletonRows } from "@/features/shared/hooks/useSkeletonRows";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function QueueMonitoringPage() {
@@ -24,6 +28,8 @@ export default function QueueMonitoringPage() {
     deleteFailedJob,
     retryAllFailedJobs,
   } = useQueueMonitoring();
+
+  const skeletonRows = useSkeletonRows("queue", activeJobs?.length, isLoaded);
 
   return (
     <div className='p-6 space-y-6 max-w-7xl mx-auto animate-in fade-in duration-500'>
@@ -50,16 +56,7 @@ export default function QueueMonitoringPage() {
       <RoleGuard allowedRoles={["admin", "superadmin"]}>
         {!isLoaded ? (
           <div className='space-y-6'>
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
-              {[1, 2, 3, 4].map((i) => (
-                <CardSkeleton
-                  key={i}
-                  hasHeader={false}
-                  lines={2}
-                  className='h-28 justify-center'
-                />
-              ))}
-            </div>
+            <QueueStatCardsSkeleton />
 
             <div className='pt-2 space-y-4'>
               <div className='flex gap-2'>
@@ -67,7 +64,7 @@ export default function QueueMonitoringPage() {
                 <Skeleton className='h-10 w-32 rounded-lg' />
                 <Skeleton className='h-10 w-32 rounded-lg' />
               </div>
-              <TableSkeleton />
+              <TableSkeleton columns={QUEUE_TABLE_COLUMNS} rows={skeletonRows} />
             </div>
           </div>
         ) : (
