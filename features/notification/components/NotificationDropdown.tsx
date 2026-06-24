@@ -4,14 +4,19 @@ import { useRouter } from "next/navigation";
 import {
   CheckCircle2,
   XCircle,
-  CloudCheck,
+  Upload,
+  PencilLine,
   CloudOff,
+  AlertTriangle,
+  Activity,
+  Bell,
   Loader2,
   BellOff,
   LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { AppNotification, NotificationType, SubmissionType } from "../types";
+import { AppNotification, NotificationCategory, NotificationType } from "../types";
+import { resolveActionUrl } from "../utils/resolveActionUrl";
 import { timeAgo } from "../utils/timeAgo";
 
 interface Props {
@@ -22,39 +27,23 @@ interface Props {
   onMarkAllAsRead: () => void;
 }
 
-interface TypeStyle {
-  icon: LucideIcon;
-  iconColor: string;
-  iconBg: string;
-}
-
-const TYPE_STYLE: Record<NotificationType, TypeStyle> = {
-  submission_approved: {
-    icon: CheckCircle2,
-    iconColor: "text-emerald-600",
-    iconBg: "bg-emerald-50",
-  },
-  submission_rejected: {
-    icon: XCircle,
-    iconColor: "text-rose-600",
-    iconBg: "bg-rose-50",
-  },
-  submission_synced: {
-    icon: CloudCheck,
-    iconColor: "text-sky-600",
-    iconBg: "bg-sky-50",
-  },
-  submission_sync_failed: {
-    icon: CloudOff,
-    iconColor: "text-orange-600",
-    iconBg: "bg-orange-50",
-  },
+// Warna ditentukan oleh `type` (lihat dokumentasi notifikasi §3).
+const TYPE_STYLE: Record<NotificationType, { iconColor: string; iconBg: string }> = {
+  success: { iconColor: "text-emerald-600", iconBg: "bg-emerald-50" },
+  warning: { iconColor: "text-amber-600", iconBg: "bg-amber-50" },
+  error: { iconColor: "text-rose-600", iconBg: "bg-rose-50" },
+  info: { iconColor: "text-sky-600", iconBg: "bg-sky-50" },
 };
 
-const SUBMISSION_PATH: Record<SubmissionType, string> = {
-  prestasi: "/achievement",
-  sertifikasi: "/certificate",
-  rekognisi: "/recognition",
+// Ikon ditentukan oleh `category`, dengan fallback `Bell`.
+const CATEGORY_ICON: Record<NotificationCategory, LucideIcon> = {
+  submission_sent: Upload,
+  submission_approved: CheckCircle2,
+  submission_rejected: XCircle,
+  revision_resubmitted: PencilLine,
+  queue_alert: CloudOff,
+  system_alert: AlertTriangle,
+  queue_monitor: Activity,
 };
 
 export function NotificationDropdown({
@@ -65,12 +54,12 @@ export function NotificationDropdown({
   onMarkAllAsRead,
 }: Props) {
   const router = useRouter();
-  const hasUnread = items.some((n) => !n.read_at);
+  const hasUnread = items.some((n) => !n.is_read);
 
   const handlePick = (n: AppNotification) => {
-    if (!n.read_at) onMarkAsRead(n.id);
-    const base = SUBMISSION_PATH[n.data.submission_type];
-    router.push(`${base}/${n.data.submission_id}`);
+    if (!n.is_read) onMarkAsRead(n.id);
+    const to = resolveActionUrl(n.action_url);
+    if (to) router.push(to);
     onClose();
   };
 
@@ -102,9 +91,9 @@ export function NotificationDropdown({
         ) : (
           <ul className='divide-y divide-slate-100'>
             {items.slice(0, 10).map((n) => {
-              const style = TYPE_STYLE[n.type];
-              const Icon = style.icon;
-              const isUnread = !n.read_at;
+              const style = TYPE_STYLE[n.type] ?? TYPE_STYLE.info;
+              const Icon = CATEGORY_ICON[n.category] ?? Bell;
+              const isUnread = !n.is_read;
               return (
                 <li key={n.id}>
                   <button
