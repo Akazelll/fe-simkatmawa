@@ -1,39 +1,37 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { STATUS_BADGE_CONFIG } from "@/features/queue/constants";
+import type { SyncQueueStatus } from "@/features/queue/types";
 
 interface Props {
-  status: "waiting" | "processing" | "success" | "failed";
+  status: SyncQueueStatus;
+  // Label dari backend (status_label) lebih diutamakan bila tersedia.
+  label?: string | null;
+  className?: string;
 }
 
-export function QueueStatusBadge({ status }: Props) {
-  const configs = {
-    waiting: {
-      label: "Menunggu",
-      styles: "bg-yellow-50 text-yellow-700 border-yellow-200",
-    },
-    processing: {
-      label: "Diproses",
-      styles: "bg-blue-50 text-blue-700 border-blue-200 animate-pulse",
-    },
-    success: {
-      label: "Berhasil",
-      styles: "bg-green-50 text-green-700 border-green-200",
-    },
-    failed: {
-      label: "Gagal",
-      styles: "bg-red-50 text-red-700 border-red-200",
-    },
-  };
-
-  const current = configs[status];
+// Desain disamakan dengan StatusBadge bersama: rounded-md, uppercase, bold,
+// tracking-wide, dengan ikon di kiri.
+export function QueueStatusBadge({ status, label, className }: Props) {
+  const config = STATUS_BADGE_CONFIG[status] ?? STATUS_BADGE_CONFIG.pending;
+  const Icon = config.icon;
 
   return (
-    <Badge
-      variant='outline'
-      className={`font-semibold rounded-full px-2 py-0.5 text-[11px] ${current.styles}`}
+    <div
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-[11px] font-bold tracking-wide uppercase",
+        config.className,
+        className,
+      )}
     >
-      {current.label}
-    </Badge>
+      <Icon
+        className={cn(
+          "h-3.5 w-3.5 stroke-[2.5]",
+          status === "processing" && "animate-spin",
+        )}
+      />
+      <span>{label || config.label}</span>
+    </div>
   );
 }
