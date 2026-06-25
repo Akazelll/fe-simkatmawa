@@ -8,6 +8,10 @@ import {
   RECOGNITION_TABLE_COLUMNS,
 } from "@/features/recognition/components/RecognitionTable";
 import { KATEGORI, STATUSES } from "@/features/recognition/constants";
+import {
+  mapMahasiswaStatusFilter,
+  mahasiswaStatusParamToLabel,
+} from "@/features/shared/constants/submissionStatus";
 import { AlertCircle } from "lucide-react";
 import { useRekognisiList } from "@/features/recognition/hooks/useRekognisiList";
 import { TableSkeleton } from "@/features/shared/components/TableSkeleton";
@@ -37,10 +41,10 @@ export default function RekognisiPage() {
           })
         }
         categories={KATEGORI}
-        status={params.status || "Semua Status"}
+        status={mahasiswaStatusParamToLabel(params.status)}
         setStatus={(val) =>
           updateParams({
-            status: val === "Semua Status" ? undefined : val,
+            status: mapMahasiswaStatusFilter(val),
             page: 1,
           })
         }

@@ -1,76 +1,75 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import {
+import { useState, useEffect, useCallback } from "react";
+import { toast } from "sonner";
+import { settingsService } from "../services/settingsService";
+import type {
   KemdikbudCredential,
   UpdateKemdikbudCredentialPayload,
 } from "@/features/settings/types";
-import { defaultKemdikbudCredential } from "../data/DefaultKemdikbudCredential";
-import { useAuth } from "@/features/auth/hooks/useAuth";
 
 export function useKemdikbudCredential() {
-  const { currentUser } = useAuth();
   const [credential, setCredential] = useState<KemdikbudCredential | null>(
     null,
   );
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [error, setError] = useState("");
 
-  useEffect(() => {
-    const stored = localStorage.getItem("simkatmawa_kemdikbud_credential");
-    if (stored) {
-      setCredential(JSON.parse(stored));
-    } else {
-      setCredential(defaultKemdikbudCredential);
+  const fetchCredential = useCallback(async () => {
+    try {
+      const res = await settingsService.getKemdikbud();
+      if (res?.success) {
+        setCredential(res.data ?? null);
+        setError("");
+      } else {
+        setError(res?.message || "Gagal memuat kredensial Kemdiktisaintek");
+      }
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Terjadi kesalahan pada server");
+    } finally {
+      setIsLoaded(true);
     }
-    setIsLoaded(true);
   }, []);
 
-  const updateCredential = (payload: UpdateKemdikbudCredentialPayload) => {
-    if (!currentUser) return;
+  useEffect(() => {
+    fetchCredential();
+  }, [fetchCredential]);
 
-    const now = new Date().toISOString();
-
-    const newCredential: KemdikbudCredential = {
-      email: payload.email,
-      hasPassword: true,
-      updatedAt: now,
-      updatedBy: currentUser.name,
-    };
-
-    // 1. Simpan Kredensial Baru (Untuk dummy simulasi, disamarkan aslinya di backend)
-    setCredential(newCredential);
-    localStorage.setItem(
-      "simkatmawa_kemdikbud_credential",
-      JSON.stringify(newCredential),
-    );
-
-    // 2. Catat log aktivitas (tanpa menyimpan password)
-    const existingLogs = JSON.parse(localStorage.getItem("audit_logs") || "[]");
-    const logEntry = {
-      id: crypto.randomUUID(),
-      actorId: currentUser.id,
-      actorName: currentUser.name,
-      actorRole: currentUser.role,
-      action: "settings.kemdikbud_credential.updated",
-      subjectType: "settings",
-      subjectId: "kemdikbud-credential",
-      description: "Superadmin memperbarui kredensial API Kemdiktisaintek",
-      metadata: {
-        emailBefore: credential?.email,
-        emailAfter: payload.email,
-        tokenInvalidated: true,
-      },
-      createdAt: now,
-    };
-    localStorage.setItem(
-      "audit_logs",
-      JSON.stringify([logEntry, ...existingLogs].slice(0, 100)),
-    );
-  };
+  // Mengembalikan boolean agar modal tahu kapan boleh ditutup.
+  const updateCredential = useCallback(
+    async (payload: UpdateKemdikbudCredentialPayload): Promise<boolean> => {
+      setIsUpdating(true);
+      try {
+        const res = await settingsService.updateKemdikbud({
+          email: payload.email,
+          password: payload.password,
+        });
+        if (res?.success === false) {
+          toast.error(res?.message || "Gagal memperbarui kredensial");
+          return false;
+        }
+        toast.success(res?.message || "Kredensial berhasil diperbarui.");
+        await fetchCredential();
+        return true;
+      } catch (err: any) {
+        toast.error(
+          err?.response?.data?.message || "Terjadi kesalahan pada server",
+        );
+        return false;
+      } finally {
+        setIsUpdating(false);
+      }
+    },
+    [fetchCredential],
+  );
 
   return {
     credential,
     isLoaded,
+    isUpdating,
+    error,
     updateCredential,
+    refetch: fetchCredential,
   };
 }

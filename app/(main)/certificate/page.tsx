@@ -8,6 +8,10 @@ import {
   CERTIFICATE_TABLE_COLUMNS,
 } from "@/features/certificate/components/CertificateTable";
 import { KATEGORI, STATUSES } from "@/features/certificate/constants";
+import {
+  mapMahasiswaStatusFilter,
+  mahasiswaStatusParamToLabel,
+} from "@/features/shared/constants/submissionStatus";
 import { AlertCircle } from "lucide-react";
 import { useSertifikasiList } from "@/features/certificate/hooks/useSertifikasiList";
 import { TableSkeleton } from "@/features/shared/components/TableSkeleton";
@@ -37,10 +41,10 @@ export default function SertifikatPage() {
           })
         }
         categories={KATEGORI}
-        status={params.status || "Semua Status"}
+        status={mahasiswaStatusParamToLabel(params.status)}
         setStatus={(val) =>
           updateParams({
-            status: val === "Semua Status" ? undefined : val,
+            status: mapMahasiswaStatusFilter(val),
             page: 1,
           })
         }

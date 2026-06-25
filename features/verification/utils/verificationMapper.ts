@@ -1,77 +1,36 @@
-export interface MappedSubmission {
-  name: string;
-  status: string;
-  category: string;
-  level: string;
-  organizer: string;
-  date: Date;
-  submittedBy: string;
-  nim: string;
-  rejectionReason?: string;
-}
-
-export interface MappedDocument {
-  id: string | number;
-  title: string;
-  url: string;
-}
-
-export function mapSubmissionInfo(data: any): MappedSubmission | null {
+/**
+ * Normalisasi respons detail admin (RAW model) menjadi bentuk yang kompatibel
+ * dengan komponen DetailView (Prestasi/Sertifikat/Rekognisi) milik mahasiswa.
+ *
+ * Endpoint admin (VerifikasiController::show) mengembalikan model mentah, jadi:
+ * - `dosen[].url_surat_tugas` ada di dalam `pivot` → diratakan.
+ * - tidak ada computed `tahun` → diturunkan dari `tgl_sertifikat`.
+ * - `created_by` berupa integer id (bukan objek {id,name}) → dibuang.
+ * Bentuk Resource (mahasiswa) juga tetap aman karena field-nya superset.
+ */
+export function normalizeSubmissionDetail(data: any): any {
   if (!data) return null;
 
+  const tahun =
+    data.tahun ??
+    (data.tgl_sertifikat ? String(data.tgl_sertifikat).slice(0, 4) : "");
+
   return {
-    name:
-      data.lomba ||
-      data.nama ||
-      data.aktivitas ||
-      data.nama_sertifikasi ||
-      "Tanpa Nama",
-    status: data.status_internal,
-    category: data.kategori || "Tidak ada kategori",
-    level: data.level || "-",
-    organizer: data.penyelenggara || "-",
-    date: new Date(data.created_at),
-    submittedBy: data.mahasiswa?.[0]?.nama || "-",
-    nim: data.mahasiswa?.[0]?.nim || "-",
-    rejectionReason: data.alasan_penolakan,
+    ...data,
+    tahun,
+    mahasiswa: Array.isArray(data.mahasiswa)
+      ? data.mahasiswa.map((m: any) => ({ nim: m.nim, nama: m.nama }))
+      : [],
+    dosen: Array.isArray(data.dosen)
+      ? data.dosen.map((d: any) => ({
+          nuptk: d.nuptk,
+          nama: d.nama,
+          url_surat_tugas: d.url_surat_tugas ?? d.pivot?.url_surat_tugas ?? "",
+        }))
+      : [],
+    created_by:
+      data.created_by && typeof data.created_by === "object"
+        ? data.created_by
+        : undefined,
   };
-}
-
-export function mapSubmissionDocuments(data: any): MappedDocument[] {
-  if (!data) return [];
-
-  const documents: MappedDocument[] = [];
-  let docId = 1;
-
-  const pushDoc = (title: string, url: string | undefined | null) => {
-    if (url) {
-      documents.push({ id: docId++, title, url });
-    }
-  };
-
-  pushDoc(
-    "URL Kompetisi / Publikasi",
-    data.url_kompetisi || data.url_publikasi,
-  );
-  pushDoc("URL Sertifikasi", data.url_sertifikasi);
-  pushDoc("Bukti Peserta / Tautan", data.url_peserta);
-  pushDoc("Dokumen Sertifikat", data.url_sertifikat);
-  pushDoc("Foto UPP (Dokumentasi)", data.url_foto_upp);
-  pushDoc(
-    "Dokumen Undangan / Tugas",
-    data.url_dokumen_undangan || data.url_dokumen_tugas,
-  );
-
-  pushDoc("Surat Tugas", data.url_surat_tugas);
-
-  if (data.dosen && Array.isArray(data.dosen)) {
-    data.dosen.forEach((d: any, idx: number) => {
-      const suratTugasUrl = d.url_surat_tugas || d.pivot?.url_surat_tugas;
-      if (suratTugasUrl) {
-        pushDoc(`Surat Tugas Dosen (${d.nama || idx + 1})`, suratTugasUrl);
-      }
-    });
-  }
-
-  return documents;
 }

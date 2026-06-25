@@ -14,11 +14,12 @@ export function useHistoryList(tipeKegiatan: TipeKegiatan, page: number = 1) {
   const fetchList = useCallback(async () => {
     setIsLoading(true);
     try {
-      // BE endpoint history membaca `limit` untuk ukuran halaman.
-      const response = await verifikasiService.getList(tipeKegiatan, {
+      // Endpoint history khusus (/admin/history/{tipe}). Tanpa param `status`,
+      // BE menampilkan semua pengajuan yang sudah diproses (non-PENDING),
+      // termasuk SYNC_SUCCESS — sehingga data tetap ada setelah sinkronisasi.
+      const response = await verifikasiService.getHistory(tipeKegiatan, {
         page,
         limit: PAGE_SIZE,
-        status: "APPROVED_UNSYNCED,APPROVED_SYNCED,REJECTED",
       });
 
       const mappedData = (response.data || []).map((item: any) => ({

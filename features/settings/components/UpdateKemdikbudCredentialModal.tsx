@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,} from "@/components/ui/dialog";
@@ -13,30 +13,29 @@ interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   currentEmail?: string;
-  onSubmit: (payload: UpdateKemdikbudCredentialPayload) => void;
+  isSubmitting?: boolean;
+  onSubmit: (payload: UpdateKemdikbudCredentialPayload) => Promise<boolean>;
 }
 
 type FormErrors = {
   email: string;
   password: string;
-  confirmPassword: string;
 };
 
 const initialErrors: FormErrors = {
   email: "",
   password: "",
-  confirmPassword: "",
 };
 
 export function UpdateKemdikbudCredentialModal({
   open,
   onOpenChange,
   currentEmail,
+  isSubmitting = false,
   onSubmit,
 }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState<FormErrors>(initialErrors);
 
   useEffect(() => {
@@ -44,7 +43,6 @@ export function UpdateKemdikbudCredentialModal({
 
     setEmail(currentEmail ?? "");
     setPassword("");
-    setConfirmPassword("");
     setErrors(initialErrors);
   }, [open, currentEmail]);
 
@@ -63,36 +61,33 @@ export function UpdateKemdikbudCredentialModal({
       newErrors.password = "Password minimal 8 karakter.";
     }
 
-    if (!confirmPassword) {
-      newErrors.confirmPassword = "Konfirmasi password wajib diisi.";
-    } else if (password !== confirmPassword) {
-      newErrors.confirmPassword = "Password tidak cocok.";
-    }
-
     setErrors(newErrors);
 
-    return (
-      !newErrors.email && !newErrors.password && !newErrors.confirmPassword
-    );
+    return !newErrors.email && !newErrors.password;
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!validateForm()) return;
+    if (isSubmitting || !validateForm()) return;
 
-    onSubmit({
+    const ok = await onSubmit({
       email: email.trim(),
       password,
-      confirmPassword,
     });
 
-    toast.success("Kredensial berhasil diperbarui.");
-    onOpenChange(false);
+    // Toast sukses/gagal ditangani hook; modal hanya ditutup bila berhasil.
+    if (ok) onOpenChange(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        if (isSubmitting) return; // jangan tutup saat proses simpan berjalan
+        onOpenChange(next);
+      }}
+    >
       <DialogContent className='w-[calc(100vw-2rem)] overflow-hidden rounded-2xl p-0 sm:max-w-[560px]'>
         <form onSubmit={handleSubmit}>
           <DialogHeader className='space-y-2 px-6 pb-4 pt-6'>
@@ -159,32 +154,6 @@ export function UpdateKemdikbudCredentialModal({
                   </p>
                 ) : null}
               </div>
-
-              <div className='space-y-1.5'>
-                <Label
-                  htmlFor='confirm-password'
-                  className='text-sm font-bold text-slate-700'
-                >
-                  Konfirmasi Password
-                </Label>
-                <Input
-                  id='confirm-password'
-                  type='password'
-                  placeholder='Ulangi password baru'
-                  value={confirmPassword}
-                  onChange={(event) => setConfirmPassword(event.target.value)}
-                  className={`h-11 rounded-xl text-sm ${
-                    errors.confirmPassword
-                      ? "border-red-500 focus-visible:ring-red-500"
-                      : ""
-                  }`}
-                />
-                {errors.confirmPassword ? (
-                  <p className='text-xs font-semibold text-red-500'>
-                    {errors.confirmPassword}
-                  </p>
-                ) : null}
-              </div>
             </div>
           </div>
 
@@ -196,6 +165,7 @@ export function UpdateKemdikbudCredentialModal({
                 size='sm'
                 className='h-9 rounded-lg px-4 text-xs font-bold'
                 onClick={() => onOpenChange(false)}
+                disabled={isSubmitting}
               >
                 Batal
               </Button>
@@ -203,9 +173,16 @@ export function UpdateKemdikbudCredentialModal({
               <Button
                 type='submit'
                 size='sm'
+                disabled={isSubmitting}
                 className='h-9 rounded-lg bg-[#1a2b5e] px-4 text-xs font-bold text-white hover:bg-[#111d42]'
               >
-                Simpan Perubahan
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className='h-3.5 w-3.5 animate-spin' /> Menyimpan...
+                  </>
+                ) : (
+                  "Simpan Perubahan"
+                )}
               </Button>
             </div>
           </div>
