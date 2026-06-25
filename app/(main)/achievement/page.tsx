@@ -9,6 +9,10 @@ import {
   ACHIEVEMENT_TABLE_COLUMNS,
 } from "@/features/achievement/components/AchievementTable";
 import { KATEGORI, STATUSES } from "@/features/achievement/constants";
+import {
+  mapMahasiswaStatusFilter,
+  mahasiswaStatusParamToLabel,
+} from "@/features/shared/constants/submissionStatus";
 import { usePrestasiList } from "@/features/achievement/hooks/usePrestasiList";
 import { AlertCircle } from "lucide-react";
 
@@ -38,7 +42,7 @@ export default function PrestasiPage() {
   const handleStatus = useCallback(
     (val: string) =>
       updateParams({
-        status: val === "Semua Status" ? undefined : val,
+        status: mapMahasiswaStatusFilter(val),
         page: 1,
       }),
     [updateParams],
@@ -62,7 +66,7 @@ export default function PrestasiPage() {
         category={params.level || "Semua Kategori"}
         setCategory={handleCategory}
         categories={KATEGORI}
-        status={params.status || "Semua Status"}
+        status={mahasiswaStatusParamToLabel(params.status)}
         setStatus={handleStatus}
         statuses={STATUSES}
       />

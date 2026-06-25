@@ -1,6 +1,7 @@
 import { ExternalLink } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { StatusBadge } from "@/features/shared/components/StatusBadge";
+import { SubmissionMetaCard } from "@/features/shared/components/SubmissionMetaCard";
 import { RejectionReasonButton } from "@/features/shared/components/RejectionReasonButton";
 import { Rekognisi } from "../types";
 
@@ -66,7 +67,13 @@ function DocLink({ label, url }: { label: string; url?: string | null }) {
   );
 }
 
-export function RekognisiDetailView({ data }: { data: Rekognisi }) {
+export function RekognisiDetailView({
+  data,
+  audience = "mahasiswa",
+}: {
+  data: Rekognisi;
+  audience?: "admin" | "mahasiswa";
+}) {
   return (
     <div className='flex flex-col gap-6'>
       <Card className='border-slate-200 shadow-sm rounded-2xl bg-white'>
@@ -82,7 +89,7 @@ export function RekognisiDetailView({ data }: { data: Rekognisi }) {
               </p>
             </div>
             <div className='flex flex-col items-end gap-1.5 shrink-0'>
-              <StatusBadge status={data.status_internal} />
+              <StatusBadge status={data.status_internal} audience={audience} />
               {data.status_internal === "REJECTED" &&
                 data.alasan_penolakan && (
                   <RejectionReasonButton reason={data.alasan_penolakan} />
@@ -181,6 +188,13 @@ export function RekognisiDetailView({ data }: { data: Rekognisi }) {
           </CardContent>
         </Card>
       )}
+
+      <SubmissionMetaCard
+        createdAt={data.created_at}
+        approvedAt={data.approved_at}
+        pusatKemdikbudId={data.pusat_kemdikbud_id}
+        createdByName={data.created_by?.name}
+      />
     </div>
   );
 }

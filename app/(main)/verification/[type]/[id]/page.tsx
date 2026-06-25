@@ -4,8 +4,6 @@ import { useEffect, useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { PageHeader } from "@/features/shared/components/PageHeader";
 import { BackLink } from "@/features/shared/components/BackLink";
-import { SubmissionInfoCard } from "@/features/verification/components/SubmissionInfoCard";
-import { DocumentsCard } from "@/features/verification/components/DocumentsCard";
 import { VerificationActions } from "@/features/verification/components/VerificationActions";
 import { RejectSubmissionModal } from "@/features/verification/components/RejectSubmissionModal";
 import { ApproveSubmissionModal } from "@/features/verification/components/ApproveSubmissionModal";
@@ -13,10 +11,10 @@ import { verifikasiService } from "@/features/verification/services/verifikasiSe
 import { TipeKegiatan } from "@/features/verification/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  mapSubmissionInfo,
-  mapSubmissionDocuments,
-} from "@/features/verification/utils/verificationMapper";
+import { normalizeSubmissionDetail } from "@/features/verification/utils/verificationMapper";
+import { PrestasiDetailView } from "@/features/achievement/components/PrestasiDetailView";
+import { SertifikatDetailView } from "@/features/certificate/components/SertifikatDetailView";
+import { RekognisiDetailView } from "@/features/recognition/components/RekognisiDetailView";
 
 export default function VerificationDetailPage() {
   const params = useParams();
@@ -93,14 +91,13 @@ export default function VerificationDetailPage() {
     }
   };
 
-  // PERBAIKAN: Tambahkan validasi null/undefined sebelum melakukan mapping
-  const mappedSubmission = useMemo(() => {
-    return data ? mapSubmissionInfo(data) : null;
-  }, [data]);
+  // Normalisasi data mentah dari endpoint admin agar kompatibel dengan DetailView.
+  const detail = useMemo(
+    () => (data ? normalizeSubmissionDetail(data) : null),
+    [data],
+  );
 
-  const mappedDocuments = useMemo(() => {
-    return data ? mapSubmissionDocuments(data) : [];
-  }, [data]);
+  const submissionName = detail?.lomba || detail?.nama || "Pengajuan";
 
   return (
     <div className='space-y-6 p-6 max-w-5xl mx-auto animate-in fade-in duration-500'>
@@ -113,15 +110,15 @@ export default function VerificationDetailPage() {
 
       {isLoading ? (
         <div className='space-y-6'>
-          {/* Skeleton SubmissionInfoCard */}
+          {/* Skeleton kartu detail */}
           <Card className='border-slate-200 shadow-sm rounded-2xl bg-white overflow-hidden'>
             <CardContent className='p-6 md:p-8 space-y-6'>
               <div className='flex flex-col gap-4 border-b border-slate-100 pb-5 sm:flex-row sm:items-start sm:justify-between'>
                 <Skeleton className='h-6 w-64 max-w-full' />
                 <Skeleton className='h-6 w-24 shrink-0 rounded-full' />
               </div>
-              <div className='grid grid-cols-1 gap-x-12 gap-y-6 md:grid-cols-2'>
-                {[0, 1, 2, 3, 4].map((i) => (
+              <div className='grid grid-cols-1 gap-x-12 gap-y-6 md:grid-cols-3'>
+                {[0, 1, 2, 3, 4, 5].map((i) => (
                   <div key={i} className='flex flex-col gap-2'>
                     <Skeleton className='h-3 w-24' />
                     <Skeleton className='h-4 w-3/4' />
@@ -131,34 +128,34 @@ export default function VerificationDetailPage() {
             </CardContent>
           </Card>
 
-          {/* Skeleton DocumentsCard */}
           <Card className='border-slate-200 shadow-sm rounded-2xl bg-white'>
             <CardContent className='p-6 md:p-8'>
-              <div className='mb-6 flex flex-col gap-2'>
-                <Skeleton className='h-5 w-40' />
-                <Skeleton className='h-4 w-72 max-w-full' />
-              </div>
-              <div className='flex flex-col gap-2.5'>
-                <Skeleton className='h-16 w-full rounded-xl' />
-                <Skeleton className='h-16 w-full rounded-xl' />
+              <Skeleton className='mb-6 h-5 w-40' />
+              <div className='grid grid-cols-1 gap-6 md:grid-cols-4'>
+                {[0, 1, 2, 3].map((i) => (
+                  <Skeleton key={i} className='h-12 w-full rounded-xl' />
+                ))}
               </div>
             </CardContent>
           </Card>
         </div>
-      ) : !data ? (
+      ) : !detail ? (
         <div className='p-8 bg-white border rounded-xl text-center text-slate-500 shadow-sm'>
           Data pengajuan tidak ditemukan atau telah dihapus.
         </div>
       ) : (
         <>
-          {/* Tambahkan assertion (!) karena kita tahu mappedSubmission pasti ada jika masuk ke blok ini */}
-          <SubmissionInfoCard submission={mappedSubmission!} />
-
-          {mappedDocuments.length > 0 && (
-            <DocumentsCard documents={mappedDocuments} />
+          {apiType === "prestasi" && (
+            <PrestasiDetailView data={detail} audience='admin' />
+          )}
+          {apiType === "sertifikasi" && (
+            <SertifikatDetailView data={detail} audience='admin' />
+          )}
+          {apiType === "rekognisi" && (
+            <RekognisiDetailView data={detail} audience='admin' />
           )}
 
-          {data.status_internal === "PENDING" && (
+          {detail.status_internal === "PENDING" && (
             <div className='pt-4 border-t border-slate-200'>
               <VerificationActions
                 submissionId={id}
@@ -171,13 +168,13 @@ export default function VerificationDetailPage() {
         </>
       )}
 
-      {/* Memastikan modal hanya dirender jika data sudah siap */}
-      {mappedSubmission && (
+      {/* Modal hanya dirender jika data sudah siap */}
+      {detail && (
         <>
           <ApproveSubmissionModal
             isOpen={isApproveModalOpen}
             onClose={() => setIsApproveModalOpen(false)}
-            title={mappedSubmission.name}
+            title={submissionName}
             onApprove={submitApprove}
             isProcessing={isProcessing}
           />
@@ -185,7 +182,7 @@ export default function VerificationDetailPage() {
           <RejectSubmissionModal
             isOpen={isRejectModalOpen}
             onClose={() => setIsRejectModalOpen(false)}
-            title={mappedSubmission.name}
+            title={submissionName}
             onReject={submitReject}
             isProcessing={isProcessing}
           />

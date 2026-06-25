@@ -145,7 +145,7 @@ export function RecognitionTable({ data, onChanged }: RecognitionTableProps) {
 
               <TableCell className={CELL_BASE}>
                 <div className='flex flex-col items-start gap-1.5'>
-                  <StatusBadge status={row.status_internal} />
+                  <StatusBadge status={row.status_internal} audience='mahasiswa' />
                   {row.status_internal === "REJECTED" &&
                     row.alasan_penolakan && (
                       <RejectionReasonButton reason={row.alasan_penolakan} />

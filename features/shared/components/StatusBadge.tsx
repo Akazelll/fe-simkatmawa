@@ -16,10 +16,14 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { toMahasiswaStatusGroup } from "@/features/shared/constants/submissionStatus";
 
 interface StatusBadgeProps {
   status: string;
   className?: string;
+  // "admin" (default) menampilkan 5 status internal apa adanya.
+  // "mahasiswa" mengerucutkan menjadi 3: Menunggu Verifikasi / Berhasil / Ditolak.
+  audience?: "admin" | "mahasiswa";
   // Props opsional khusus untuk menampilkan alasan penolakan
   rejectionReason?: string | null;
   rejectedBy?: string | null;
@@ -29,6 +33,7 @@ interface StatusBadgeProps {
 export function StatusBadge({
   status,
   className,
+  audience = "admin",
   rejectionReason,
   rejectedBy,
   rejectedAt,
@@ -44,42 +49,70 @@ export function StatusBadge({
     colorClass: "bg-slate-50 text-slate-600 border-slate-200",
   };
 
-  switch (normalizedStatus) {
-    case "PENDING":
-      config = {
-        label: "Menunggu",
-        icon: Clock,
-        colorClass: "bg-amber-50 text-amber-600 border-amber-200",
-      };
-      break;
-    case "REJECTED":
-      config = {
-        label: "Ditolak",
-        icon: XCircle,
-        colorClass: "bg-red-50 text-red-600 border-red-200",
-      };
-      break;
-    case "APPROVED_UNSYNCED":
-      config = {
-        label: "Disetujui",
-        icon: CheckCircle2,
-        colorClass: "bg-blue-50 text-blue-600 border-blue-200",
-      };
-      break;
-    case "SYNC_SUCCESS":
-      config = {
-        label: "Tersinkronisasi",
-        icon: CheckCircle2,
-        colorClass: "bg-emerald-50 text-emerald-600 border-emerald-200",
-      };
-      break;
-    case "SYNC_FAILED":
-      config = {
-        label: "Gagal Sync",
-        icon: CloudOff,
-        colorClass: "bg-orange-50 text-orange-600 border-orange-200",
-      };
-      break;
+  if (audience === "mahasiswa") {
+    // Tampilan mahasiswa: 3 keadaan, status sinkronisasi internal disembunyikan.
+    const group = toMahasiswaStatusGroup(normalizedStatus);
+    switch (group) {
+      case "PENDING":
+        config = {
+          label: "Menunggu Verifikasi",
+          icon: Clock,
+          colorClass: "bg-amber-50 text-amber-600 border-amber-200",
+        };
+        break;
+      case "REJECTED":
+        config = {
+          label: "Ditolak",
+          icon: XCircle,
+          colorClass: "bg-red-50 text-red-600 border-red-200",
+        };
+        break;
+      case "BERHASIL":
+        config = {
+          label: "Berhasil",
+          icon: CheckCircle2,
+          colorClass: "bg-emerald-50 text-emerald-600 border-emerald-200",
+        };
+        break;
+    }
+  } else {
+    switch (normalizedStatus) {
+      case "PENDING":
+        config = {
+          label: "Menunggu",
+          icon: Clock,
+          colorClass: "bg-amber-50 text-amber-600 border-amber-200",
+        };
+        break;
+      case "REJECTED":
+        config = {
+          label: "Ditolak",
+          icon: XCircle,
+          colorClass: "bg-red-50 text-red-600 border-red-200",
+        };
+        break;
+      case "APPROVED_UNSYNCED":
+        config = {
+          label: "Disetujui",
+          icon: CheckCircle2,
+          colorClass: "bg-blue-50 text-blue-600 border-blue-200",
+        };
+        break;
+      case "SYNC_SUCCESS":
+        config = {
+          label: "Tersinkronisasi",
+          icon: CheckCircle2,
+          colorClass: "bg-emerald-50 text-emerald-600 border-emerald-200",
+        };
+        break;
+      case "SYNC_FAILED":
+        config = {
+          label: "Gagal Sync",
+          icon: CloudOff,
+          colorClass: "bg-orange-50 text-orange-600 border-orange-200",
+        };
+        break;
+    }
   }
 
   const Icon = config.icon;

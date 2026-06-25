@@ -1,6 +1,7 @@
 import { ExternalLink } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { StatusBadge } from "@/features/shared/components/StatusBadge";
+import { SubmissionMetaCard } from "@/features/shared/components/SubmissionMetaCard";
 import { RejectionReasonButton } from "@/features/shared/components/RejectionReasonButton";
 import { Certificate } from "../types";
 
@@ -49,7 +50,13 @@ function DocLink({ label, url }: { label: string; url?: string | null }) {
   );
 }
 
-export function SertifikatDetailView({ data }: { data: Certificate }) {
+export function SertifikatDetailView({
+  data,
+  audience = "mahasiswa",
+}: {
+  data: Certificate;
+  audience?: "admin" | "mahasiswa";
+}) {
   return (
     <div className='flex flex-col gap-6'>
       <Card className='border-slate-200 shadow-sm rounded-2xl bg-white'>
@@ -64,7 +71,7 @@ export function SertifikatDetailView({ data }: { data: Certificate }) {
               </p>
             </div>
             <div className='flex flex-col items-end gap-1.5 shrink-0'>
-              <StatusBadge status={data.status_internal} />
+              <StatusBadge status={data.status_internal} audience={audience} />
               {data.status_internal === "REJECTED" &&
                 data.alasan_penolakan && (
                   <RejectionReasonButton reason={data.alasan_penolakan} />
@@ -75,6 +82,7 @@ export function SertifikatDetailView({ data }: { data: Certificate }) {
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-6'>
             <Field label='Penyelenggara' value={data.penyelenggara} />
             <Field label='Level' value={label(LEVEL_LABEL, data.level)} />
+            <Field label='Tahun' value={String(data.tahun ?? "")} />
             <Field
               label='Tanggal Sertifikat'
               value={data.tgl_sertifikat?.slice(0, 10) ?? ""}
@@ -162,6 +170,13 @@ export function SertifikatDetailView({ data }: { data: Certificate }) {
           </CardContent>
         </Card>
       )}
+
+      <SubmissionMetaCard
+        createdAt={data.created_at}
+        approvedAt={data.approved_at}
+        pusatKemdikbudId={data.pusat_kemdikbud_id}
+        createdByName={data.created_by?.name}
+      />
     </div>
   );
 }

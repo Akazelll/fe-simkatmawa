@@ -14,6 +14,8 @@ export default function SettingsPage() {
   const {
     credential,
     isLoaded: isCredentialLoaded,
+    isUpdating,
+    error,
     updateCredential,
   } = useKemdikbudCredential();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -31,22 +33,25 @@ export default function SettingsPage() {
             footer={false}
             className='mx-auto max-w-3xl'
           />
-        ) : (
-          credential && (
-            <>
-              <KemdikbudIntegrationCard
-                credential={credential}
-                onEdit={() => setIsModalOpen(true)}
-              />
+        ) : credential ? (
+          <>
+            <KemdikbudIntegrationCard
+              credential={credential}
+              onEdit={() => setIsModalOpen(true)}
+            />
 
-              <UpdateKemdikbudCredentialModal
-                open={isModalOpen}
-                onOpenChange={setIsModalOpen}
-                currentEmail={credential.email}
-                onSubmit={updateCredential}
-              />
-            </>
-          )
+            <UpdateKemdikbudCredentialModal
+              open={isModalOpen}
+              onOpenChange={setIsModalOpen}
+              currentEmail={credential.email}
+              isSubmitting={isUpdating}
+              onSubmit={updateCredential}
+            />
+          </>
+        ) : (
+          <div className='mx-auto max-w-3xl rounded-2xl border border-red-200 bg-red-50 px-6 py-8 text-center text-sm font-semibold text-red-600'>
+            {error || "Gagal memuat kredensial Kemdiktisaintek."}
+          </div>
         )}
       </RoleGuard>
     </div>

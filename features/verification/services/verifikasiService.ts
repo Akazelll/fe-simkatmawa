@@ -24,6 +24,19 @@ export const verifikasiService = {
     return response.data;
   },
 
+  // Riwayat pengajuan yang sudah diproses (endpoint khusus history BE).
+  // Tanpa param `status`, BE default menampilkan semua status kecuali PENDING
+  // — termasuk SYNC_SUCCESS, sehingga data tidak hilang setelah sinkronisasi.
+  getHistory: async (
+    tipeKegiatan: "prestasi" | "sertifikasi" | "rekognisi",
+    params?: any,
+  ) => {
+    const response = await api.get(`/admin/history/${tipeKegiatan}`, {
+      params,
+    });
+    return response.data;
+  },
+
   verify: async (
     tipeKegiatan: "prestasi" | "sertifikasi" | "rekognisi",
     id: string | number,

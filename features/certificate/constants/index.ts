@@ -9,14 +9,8 @@ export const KATEGORI = [
   "Lokal",
 ];
 
-export const STATUSES = [
-  "Semua Status",
-  "Pending",
-  "Rejected",
-  "Approved_Unsynced",
-  "Sync_Failed",
-  "Sync_Success",
-];
+// Opsi filter status untuk mahasiswa (3 grup): Menunggu Verifikasi / Berhasil / Ditolak.
+export { MAHASISWA_STATUS_OPTIONS as STATUSES } from "@/features/shared/constants/submissionStatus";
 
 const UDINUS = "Universitas Dian Nuswantoro";
 const BNSP = "Badan Nasional Sertifikasi Profesi";

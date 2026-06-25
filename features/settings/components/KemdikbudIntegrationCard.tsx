@@ -28,17 +28,17 @@ export function KemdikbudIntegrationCard({ credential, onEdit }: Props) {
     {
       icon: KeyRound,
       label: "Password",
-      value: <PasswordMask hasPassword={credential.hasPassword} />,
+      value: <PasswordMask hasPassword={credential.is_password_set} />,
     },
     {
       icon: Clock,
       label: "Terakhir Update",
-      value: formatDateTime(credential.updatedAt),
+      value: formatDateTime(credential.terakhir_diperbarui),
     },
     {
       icon: User,
       label: "Diperbarui Oleh",
-      value: credential.updatedBy || "—",
+      value: credential.diperbarui_oleh || "—",
     },
   ];
 
@@ -61,7 +61,7 @@ export function KemdikbudIntegrationCard({ credential, onEdit }: Props) {
             </div>
           </div>
 
-          {credential.hasPassword ? (
+          {credential.is_password_set ? (
             <span className='inline-flex shrink-0 items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-600'>
               <CheckCircle2 size={14} /> Connected
             </span>
