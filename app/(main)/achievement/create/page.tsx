@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle } from "lucide-react";
 
 import { AchievementDetailSection } from "@/features/achievement/components/AchievementDetailSection";
+import { FormErrorSummary } from "@/features/shared/components/form/FormErrorSummary";
 import { MahasiswaListSection } from "@/features/shared/components/form/MahasiswaListSection";
 import { DosenListSection } from "@/features/shared/components/form/DosenListSection";
 import { FormWelcomeBanner } from "@/features/shared/components/form/FormWelcomeBanner";
@@ -118,12 +118,7 @@ export default function CreatePrestasiPage() {
           <FormSkeleton />
         ) : (
           <>
-            {errorMsg && (
-              <div className='flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-medium text-red-700'>
-                <AlertCircle className='h-5 w-5 shrink-0' />
-                <p>{errorMsg}</p>
-              </div>
-            )}
+            <FormErrorSummary message={errorMsg} errors={validationErrors} />
 
             <AchievementDetailSection />
 
