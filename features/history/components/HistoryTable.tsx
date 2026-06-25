@@ -123,7 +123,7 @@ export function HistoryTable({ data, isLoading }: HistoryTableProps) {
                         const rawType = row.tipe_kegiatan;
                         const urlType =
                           rawType === "sertifikasi" ? "sertifikat" : rawType;
-                        router.push(`/verification/${urlType}/${row.id}`);
+                        router.push(`/history/${urlType}/${row.id}`);
                       }}
                     >
                       <Eye className='mr-1.5 h-3.5 w-3.5 text-slate-400' />

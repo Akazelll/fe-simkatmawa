@@ -12,9 +12,7 @@ import { TipeKegiatan } from "@/features/verification/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { normalizeSubmissionDetail } from "@/features/verification/utils/verificationMapper";
-import { PrestasiDetailView } from "@/features/achievement/components/PrestasiDetailView";
-import { SertifikatDetailView } from "@/features/certificate/components/SertifikatDetailView";
-import { RekognisiDetailView } from "@/features/recognition/components/RekognisiDetailView";
+import { SubmissionDetailBody } from "@/features/verification/components/SubmissionDetailBody";
 
 export default function VerificationDetailPage() {
   const params = useParams();
@@ -66,7 +64,7 @@ export default function VerificationDetailPage() {
     try {
       await verifikasiService.verify(apiType, id, { status: "APPROVE" });
       setIsApproveModalOpen(false);
-      router.push(`/verification`);
+      router.push(`/verification/${type}`);
     } catch (error) {
       console.error("Gagal menyetujui:", error);
     } finally {
@@ -83,7 +81,7 @@ export default function VerificationDetailPage() {
         alasan_penolakan: reason,
       });
       setIsRejectModalOpen(false);
-      router.push(`/verification`);
+      router.push(`/verification/${type}`);
     } catch (error) {
       console.error("Gagal menolak:", error);
     } finally {
@@ -145,15 +143,7 @@ export default function VerificationDetailPage() {
         </div>
       ) : (
         <>
-          {apiType === "prestasi" && (
-            <PrestasiDetailView data={detail} audience='admin' />
-          )}
-          {apiType === "sertifikasi" && (
-            <SertifikatDetailView data={detail} audience='admin' />
-          )}
-          {apiType === "rekognisi" && (
-            <RekognisiDetailView data={detail} audience='admin' />
-          )}
+          <SubmissionDetailBody detail={detail} type={apiType} audience='admin' />
 
           {detail.status_internal === "PENDING" && (
             <div className='pt-4 border-t border-slate-200'>

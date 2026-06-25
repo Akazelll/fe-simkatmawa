@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
 import { AppNotification } from "../types";
 import { notificationService } from "../services/notificationService";
+import { showNotificationToast } from "../components/NotificationToast";
 import { getEcho } from "@/lib/echo";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 
@@ -65,7 +65,8 @@ export function useNotifications() {
           prev.some((n) => n.id === payload.id) ? prev : [payload, ...prev],
         );
         setUnreadCount((c) => c + 1);
-        toast(payload.title, { description: payload.message });
+        // Pop-up kustom di kanan atas saat notifikasi diterima.
+        showNotificationToast(payload);
       });
 
     return () => {
@@ -88,6 +89,25 @@ export function useNotifications() {
 
       try {
         await notificationService.markRead(String(id));
+      } catch {
+        // Gagal — re-sync agar state kembali konsisten dengan backend.
+        fetchNotifications();
+      }
+    },
+    [fetchNotifications],
+  );
+
+  const removeNotification = useCallback(
+    async (id: AppNotification["id"]) => {
+      const target = itemsRef.current.find((n) => n.id === id);
+      if (!target) return;
+
+      // Optimistic: buang dari daftar + kurangi badge bila masih belum dibaca.
+      setItems((prev) => prev.filter((n) => n.id !== id));
+      if (!target.is_read) setUnreadCount((c) => Math.max(0, c - 1));
+
+      try {
+        await notificationService.remove(String(id));
       } catch {
         // Gagal — re-sync agar state kembali konsisten dengan backend.
         fetchNotifications();
@@ -122,5 +142,6 @@ export function useNotifications() {
     refetch: fetchNotifications,
     markAsRead,
     markAllAsRead,
+    removeNotification,
   };
 }
