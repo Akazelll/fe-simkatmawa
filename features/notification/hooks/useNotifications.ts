@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
 import { AppNotification } from "../types";
 import { notificationService } from "../services/notificationService";
+import { showNotificationToast } from "../components/NotificationToast";
 import { getEcho } from "@/lib/echo";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 
@@ -28,13 +28,35 @@ export function useNotifications() {
     itemsRef.current = items;
   }, [items]);
 
+  // ID notifikasi yang sudah pernah diproses (di-toast atau di-load awal).
+  // Dipakai agar tiap notifikasi hanya memunculkan toast sekali, baik datang
+  // lewat WebSocket maupun lewat polling REST.
+  const seenIdsRef = useRef<Set<AppNotification["id"]>>(new Set());
+  const initializedRef = useRef(false);
+
   const fetchNotifications = useCallback(async () => {
     try {
       const [listRes, countRes] = await Promise.all([
         notificationService.list({ limit: 15 }),
         notificationService.unreadCount(),
       ]);
-      setItems(Array.isArray(listRes?.data) ? listRes.data : []);
+
+      const list = Array.isArray(listRes?.data) ? listRes.data : [];
+
+      // Munculkan toast untuk notifikasi BARU yang masuk lewat REST/polling
+      // (mis. ketika WebSocket sempat terputus). Load pertama dilewati agar
+      // tidak memunculkan toast untuk seluruh riwayat sekaligus.
+      if (initializedRef.current) {
+        const fresh = list.filter(
+          (n) => !n.is_read && !seenIdsRef.current.has(n.id),
+        );
+        // Tampilkan dari terlama → terbaru agar yang terbaru muncul paling atas.
+        [...fresh].reverse().forEach((n) => showNotificationToast(n));
+      }
+      list.forEach((n) => seenIdsRef.current.add(n.id));
+      initializedRef.current = true;
+
+      setItems(list);
       setUnreadCount(countRes?.unread_count ?? 0);
     } catch {
       // Diamkan — pertahankan state lama. Interceptor 401 menangani auth.
@@ -46,6 +68,9 @@ export function useNotifications() {
   // Load awal + fallback polling.
   useEffect(() => {
     if (!userId) return;
+    // Reset jejak saat user berganti agar riwayat user baru tidak ikut di-toast.
+    seenIdsRef.current = new Set();
+    initializedRef.current = false;
     fetchNotifications();
     const interval = setInterval(fetchNotifications, POLL_INTERVAL_MS);
     return () => clearInterval(interval);
@@ -64,8 +89,13 @@ export function useNotifications() {
         setItems((prev) =>
           prev.some((n) => n.id === payload.id) ? prev : [payload, ...prev],
         );
+
+        // Hanya proses bila benar-benar baru (belum pernah di-toast via REST).
+        if (seenIdsRef.current.has(payload.id)) return;
+        seenIdsRef.current.add(payload.id);
         setUnreadCount((c) => c + 1);
-        toast(payload.title, { description: payload.message });
+        // Pop-up kustom di kanan atas saat notifikasi diterima.
+        showNotificationToast(payload);
       });
 
     return () => {
@@ -88,6 +118,25 @@ export function useNotifications() {
 
       try {
         await notificationService.markRead(String(id));
+      } catch {
+        // Gagal — re-sync agar state kembali konsisten dengan backend.
+        fetchNotifications();
+      }
+    },
+    [fetchNotifications],
+  );
+
+  const removeNotification = useCallback(
+    async (id: AppNotification["id"]) => {
+      const target = itemsRef.current.find((n) => n.id === id);
+      if (!target) return;
+
+      // Optimistic: buang dari daftar + kurangi badge bila masih belum dibaca.
+      setItems((prev) => prev.filter((n) => n.id !== id));
+      if (!target.is_read) setUnreadCount((c) => Math.max(0, c - 1));
+
+      try {
+        await notificationService.remove(String(id));
       } catch {
         // Gagal — re-sync agar state kembali konsisten dengan backend.
         fetchNotifications();
@@ -122,5 +171,6 @@ export function useNotifications() {
     refetch: fetchNotifications,
     markAsRead,
     markAllAsRead,
+    removeNotification,
   };
 }

@@ -76,9 +76,9 @@ export function Navbar() {
     >
       <div className='flex items-center gap-4 min-w-0 flex-1'>
         <SidebarTrigger className='-ml-1 shrink-0' />
-        {/* Tambahkan hidden sm:block pada garis pemisah */}
+        
         <div className='h-4 w-px bg-slate-200 shrink-0 hidden sm:block' />
-        {/* Tambahkan hidden sm:block pada pembungkus Breadcrumbs */}
+        
         <div className='min-w-0 overflow-hidden hidden sm:block'>
           <Breadcrumbs />
         </div>
@@ -108,6 +108,7 @@ export function Navbar() {
               onClose={() => setIsNotifOpen(false)}
               onMarkAsRead={notif.markAsRead}
               onMarkAllAsRead={notif.markAllAsRead}
+              onDelete={notif.removeNotification}
             />
           )}
         </div>

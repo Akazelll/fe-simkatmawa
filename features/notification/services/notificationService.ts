@@ -47,7 +47,7 @@ export const notificationService = {
     return response.data;
   },
 
-  // DELETE /notifications/{id} — hapus notifikasi (belum diwire ke UI).
+  // DELETE /notifications/{id} — hapus permanen 1 notifikasi (hard delete).
   remove: async (id: string) => {
     const response = await api.delete(`/notifications/${id}`);
     return response.data;

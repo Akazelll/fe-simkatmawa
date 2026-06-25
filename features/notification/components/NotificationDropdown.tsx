@@ -1,23 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import {
-  CheckCircle2,
-  XCircle,
-  Upload,
-  PencilLine,
-  CloudOff,
-  AlertTriangle,
-  Activity,
-  Bell,
-  Loader2,
-  BellOff,
-  LucideIcon,
-} from "lucide-react";
+import { Loader2, BellOff, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { AppNotification, NotificationCategory, NotificationType } from "../types";
+import { AppNotification } from "../types";
 import { resolveActionUrl } from "../utils/resolveActionUrl";
 import { timeAgo } from "../utils/timeAgo";
+import { getCategoryIcon, getTypeStyle } from "../utils/notificationVisuals";
 
 interface Props {
   items: AppNotification[];
@@ -25,26 +14,8 @@ interface Props {
   onClose: () => void;
   onMarkAsRead: (id: AppNotification["id"]) => void;
   onMarkAllAsRead: () => void;
+  onDelete: (id: AppNotification["id"]) => void;
 }
-
-// Warna ditentukan oleh `type` (lihat dokumentasi notifikasi §3).
-const TYPE_STYLE: Record<NotificationType, { iconColor: string; iconBg: string }> = {
-  success: { iconColor: "text-emerald-600", iconBg: "bg-emerald-50" },
-  warning: { iconColor: "text-amber-600", iconBg: "bg-amber-50" },
-  error: { iconColor: "text-rose-600", iconBg: "bg-rose-50" },
-  info: { iconColor: "text-sky-600", iconBg: "bg-sky-50" },
-};
-
-// Ikon ditentukan oleh `category`, dengan fallback `Bell`.
-const CATEGORY_ICON: Record<NotificationCategory, LucideIcon> = {
-  submission_sent: Upload,
-  submission_approved: CheckCircle2,
-  submission_rejected: XCircle,
-  revision_resubmitted: PencilLine,
-  queue_alert: CloudOff,
-  system_alert: AlertTriangle,
-  queue_monitor: Activity,
-};
 
 export function NotificationDropdown({
   items,
@@ -52,6 +23,7 @@ export function NotificationDropdown({
   onClose,
   onMarkAsRead,
   onMarkAllAsRead,
+  onDelete,
 }: Props) {
   const router = useRouter();
   const hasUnread = items.some((n) => !n.is_read);
@@ -91,16 +63,16 @@ export function NotificationDropdown({
         ) : (
           <ul className='divide-y divide-slate-100'>
             {items.slice(0, 10).map((n) => {
-              const style = TYPE_STYLE[n.type] ?? TYPE_STYLE.info;
-              const Icon = CATEGORY_ICON[n.category] ?? Bell;
+              const style = getTypeStyle(n.type);
+              const Icon = getCategoryIcon(n.category);
               const isUnread = !n.is_read;
               return (
-                <li key={n.id}>
+                <li key={n.id} className='group relative'>
                   <button
                     type='button'
                     onClick={() => handlePick(n)}
                     className={cn(
-                      "w-full text-left px-4 py-3 hover:bg-slate-50 transition-colors flex gap-3 items-start",
+                      "w-full text-left px-4 py-3 pr-10 hover:bg-slate-50 transition-colors flex gap-3 items-start",
                       isUnread && "bg-sky-50/40",
                     )}
                   >
@@ -133,6 +105,18 @@ export function NotificationDropdown({
                         {timeAgo(n.created_at)}
                       </span>
                     </div>
+                  </button>
+
+                  <button
+                    type='button'
+                    aria-label='Hapus notifikasi'
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete(n.id);
+                    }}
+                    className='absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-md text-slate-300 opacity-0 transition-all hover:bg-rose-50 hover:text-rose-500 focus-visible:opacity-100 group-hover:opacity-100'
+                  >
+                    <Trash2 size={14} />
                   </button>
                 </li>
               );
