@@ -18,11 +18,23 @@ import { RejectionReasonButton } from "@/features/shared/components/RejectionRea
 import { DeleteSubmissionDialog } from "@/features/shared/components/DeleteSubmissionDialog";
 import { prestasiService } from "../services/prestasiService";
 import { Prestasi } from "../types";
+import type { SkeletonColumn } from "@/features/shared/components/TableSkeleton";
 
 const HEAD_CLASS =
   "h-12 text-[11px] font-bold tracking-wide uppercase text-slate-400 whitespace-nowrap";
 
 const CELL_BASE = "py-4 align-top text-sm text-slate-600";
+
+// Konfigurasi skeleton — disinkronkan dengan kolom tabel di bawah (7 kolom).
+export const ACHIEVEMENT_TABLE_COLUMNS: SkeletonColumn[] = [
+  { width: "w-24", cell: "h-4 w-10" }, // ID
+  { width: "min-w-72" }, // Lomba/Kompetisi
+  { width: "min-w-48", cell: "h-4 w-2/3" }, // Cabang
+  { width: "min-w-40", cell: "h-4 w-2/3" }, // Prestasi
+  { width: "w-20", align: "center", cell: "h-4 w-10" }, // Tahun
+  { width: "w-28", pill: true }, // Status
+  { width: "w-36", align: "right", actions: 3 }, // Aksi
+];
 
 interface AchievementTableProps {
   data: Prestasi[];
@@ -121,7 +133,10 @@ export function AchievementTable({ data, onChanged }: AchievementTableProps) {
                 </TableCell>
                 <TableCell className={CELL_BASE}>
                   <div className='flex flex-col items-start gap-1.5'>
-                    <StatusBadge status={row.status_internal} />
+                    <StatusBadge
+                      status={row.status_internal}
+                      audience='mahasiswa'
+                    />
                     {row.status_internal === "REJECTED" &&
                       row.alasan_penolakan && (
                         <RejectionReasonButton reason={row.alasan_penolakan} />

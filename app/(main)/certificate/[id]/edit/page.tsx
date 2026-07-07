@@ -8,7 +8,7 @@ import { SertifikatEditForm } from "@/features/certificate/components/Sertifikat
 import { sertifikasiService } from "@/features/certificate/services/sertifikasiService";
 import { Certificate } from "@/features/certificate/types";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { CardSkeleton } from "@/features/shared/components/CardSkeleton";
+import { FormSkeleton } from "@/features/shared/components/FormSkeleton";
 import { FormPageHeader } from "@/features/shared/components/form/FormPageHeader";
 
 export default function EditSertifikatPage() {
@@ -56,11 +56,7 @@ export default function EditSertifikatPage() {
       )}
       <RoleGuard allowedRoles={["mahasiswa"]}>
         {!isAuthLoaded || isLoading ? (
-          <div className='space-y-6'>
-            <CardSkeleton lines={6} />
-            <CardSkeleton lines={4} />
-            <CardSkeleton lines={4} />
-          </div>
+          <FormSkeleton />
         ) : (
           data && <SertifikatEditForm detail={data} />
         )}

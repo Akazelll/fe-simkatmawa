@@ -12,10 +12,21 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatDateTime } from "@/lib/utils/dateFormat";
+import type { SkeletonColumn } from "@/features/shared/components/TableSkeleton";
 
 const HEAD_CLASS =
   "h-12 text-[11px] font-bold tracking-wide uppercase text-slate-400 whitespace-nowrap";
 const CELL_BASE = "py-4 align-middle text-sm text-slate-600";
+
+// Konfigurasi skeleton — disinkronkan dengan kolom tabel di bawah (6 kolom).
+export const USER_TABLE_COLUMNS: SkeletonColumn[] = [
+  { cell: "h-4 w-32" }, // Nama
+  { cell: "h-4 w-40" }, // Email
+  { pill: true }, // Role
+  { pill: true }, // Status
+  { cell: "h-4 w-24" }, // Terakhir Login
+  { align: "right", actions: 2 }, // Aksi
+];
 
 interface UserTableProps {
   data: any[];
@@ -70,7 +81,7 @@ export function UserTable({
             data.map((user) => {
               const roleName =
                 user.roles?.[0]?.name || user.role || "Tanpa Role";
-              const isActive = user.is_active !== false;
+              const isActive = user.status === "active";
 
               return (
                 <TableRow

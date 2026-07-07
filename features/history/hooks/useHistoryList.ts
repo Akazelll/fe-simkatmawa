@@ -3,18 +3,23 @@
 import { useState, useEffect, useCallback } from "react";
 import { verifikasiService } from "@/features/verification/services/verifikasiService";
 import { TipeKegiatan } from "@/features/verification/types";
+import { PaginationMeta } from "@/features/shared/types/pagination";
+import { PAGE_SIZE } from "@/features/shared/constants/pagination";
 
 export function useHistoryList(tipeKegiatan: TipeKegiatan, page: number = 1) {
   const [data, setData] = useState<any[]>([]);
-  const [meta, setMeta] = useState<any>(null);
+  const [meta, setMeta] = useState<PaginationMeta | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchList = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await verifikasiService.getList(tipeKegiatan, {
+      // Endpoint history khusus (/admin/history/{tipe}). Tanpa param `status`,
+      // BE menampilkan semua pengajuan yang sudah diproses (non-PENDING),
+      // termasuk SYNC_SUCCESS — sehingga data tetap ada setelah sinkronisasi.
+      const response = await verifikasiService.getHistory(tipeKegiatan, {
         page,
-        status: "APPROVED_UNSYNCED,APPROVED_SYNCED,REJECTED",
+        limit: PAGE_SIZE,
       });
 
       const mappedData = (response.data || []).map((item: any) => ({

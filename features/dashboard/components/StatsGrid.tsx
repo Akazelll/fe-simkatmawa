@@ -1,6 +1,7 @@
 "use client";
 
 import { StatCard, StatCardSkeleton } from "./StatCard";
+import { StatVariant } from "../types";
 import {
   Trophy,
   FileBadge,
@@ -15,22 +16,32 @@ interface StatsGridProps {
   isLoading?: boolean;
 }
 
+// Warna skeleton mengikuti urutan & warna kartu asli di mappedStats
+const SKELETON_VARIANTS: StatVariant[] = [
+  "navy",
+  "emerald",
+  "amber",
+  "amber",
+  "emerald",
+  "rose",
+];
+
 export function StatsGrid({ stats, isLoading }: StatsGridProps) {
   if (isLoading) {
     return (
       <div className='space-y-6'>
         <div>
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'>
-            {[1, 2, 3].map((i) => (
-              <StatCardSkeleton key={`skel-top-${i}`} />
+            {SKELETON_VARIANTS.slice(0, 3).map((variant, i) => (
+              <StatCardSkeleton key={`skel-top-${i}`} variant={variant} />
             ))}
           </div>
         </div>
 
         <div>
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'>
-            {[4, 5, 6].map((i) => (
-              <StatCardSkeleton key={`skel-bot-${i}`} />
+            {SKELETON_VARIANTS.slice(3, 6).map((variant, i) => (
+              <StatCardSkeleton key={`skel-bot-${i}`} variant={variant} />
             ))}
           </div>
         </div>

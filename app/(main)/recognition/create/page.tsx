@@ -1,9 +1,9 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle } from "lucide-react";
 
 import { RecognitionDetailSection } from "@/features/recognition/components/RecognitionDetailSection";
+import { FormErrorSummary } from "@/features/shared/components/form/FormErrorSummary";
 import { MahasiswaListSection } from "@/features/shared/components/form/MahasiswaListSection";
 import { DosenListSection } from "@/features/shared/components/form/DosenListSection";
 import { FormWelcomeBanner } from "@/features/shared/components/form/FormWelcomeBanner";
@@ -16,7 +16,7 @@ import {
 } from "@/features/shared/hooks/useFieldList";
 import { RoleGuard } from "@/features/auth/components/RoleGuard";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { CardSkeleton } from "@/features/shared/components/CardSkeleton";
+import { FormSkeleton } from "@/features/shared/components/FormSkeleton";
 
 import { rekognisiService } from "@/features/recognition/services/rekognisiService";
 import { mapToRekognisiPayload } from "@/features/recognition/utils/rekognisiMapper";
@@ -29,6 +29,9 @@ export default function CreateRecognitionPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string[]>
+  >({});
 
   const prefilledRef = useRef(false);
   useEffect(() => {
@@ -46,6 +49,7 @@ export default function CreateRecognitionPage() {
     e.preventDefault();
     setIsSubmitting(true);
     setErrorMsg("");
+    setValidationErrors({});
 
     try {
       const formData = new FormData(e.currentTarget);
@@ -62,6 +66,7 @@ export default function CreateRecognitionPage() {
       }
     } catch (error: any) {
       if (error.response?.status === 422) {
+        setValidationErrors(error.response.data.errors ?? {});
         setErrorMsg(
           "Terdapat kesalahan pada input form. Silakan periksa kembali.",
         );
@@ -93,19 +98,10 @@ export default function CreateRecognitionPage() {
 
       <RoleGuard allowedRoles={["mahasiswa"]}>
         {!isAuthLoaded ? (
-          <div className='space-y-6'>
-            <CardSkeleton lines={6} />
-            <CardSkeleton lines={4} />
-            <CardSkeleton lines={4} />
-          </div>
+          <FormSkeleton />
         ) : (
           <>
-            {errorMsg && (
-              <div className='flex items-center gap-2 p-4 text-sm font-medium text-red-700 bg-red-50 rounded-xl border border-red-200'>
-                <AlertCircle className='w-5 h-5 shrink-0' />
-                <p>{errorMsg}</p>
-              </div>
-            )}
+            <FormErrorSummary message={errorMsg} errors={validationErrors} />
 
             <RecognitionDetailSection />
 

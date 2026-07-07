@@ -30,4 +30,10 @@ export interface Certificate {
   keterangan?: string | null;
   mahasiswa?: SubmissionMahasiswa[];
   dosen?: SubmissionDosen[];
+
+  // Metadata pengajuan (opsional — terisi dari detail)
+  pusat_kemdikbud_id?: string | null;
+  created_at?: string;
+  approved_at?: string | null;
+  created_by?: { id: string | number; name: string };
 }

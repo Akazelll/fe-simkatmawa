@@ -1,3 +1,5 @@
+import { PaginationMeta } from "@/features/shared/types/pagination";
+
 export type SubmissionType =
   | "Prestasi"
   | "Sertifikasi"
@@ -18,4 +20,11 @@ export interface TrashedItem {
 export interface RecycleBinResponse {
   data: TrashedItem[];
   total: number;
+}
+
+// Hasil 1 request trash (server-side paginated, per tipe).
+export interface TrashedListResult {
+  items: TrashedItem[];
+  meta: PaginationMeta | null;
+  totalTrash: number;
 }

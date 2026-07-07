@@ -4,13 +4,17 @@ import { useState } from "react";
 import { PageHeader } from "@/features/shared/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Pagination } from "@/features/shared/components/Pagination";
-import { UserTable } from "@/features/user-management/components/UserTable";
+import {
+  UserTable,
+  USER_TABLE_COLUMNS,
+} from "@/features/user-management/components/UserTable";
 import { UserModal } from "@/features/user-management/components/UserModal";
 import { DeleteUserModal } from "@/features/user-management/components/DeleteUserModal";
 import { useUsers } from "@/features/user-management/hooks/useUsers";
 import { TotalUserCard } from "@/features/user-management/components/TotalUserCard";
 import { FilterSection } from "@/features/shared/components/FilterSection";
-import { TableSkeleton } from "@/features/shared/components/TableSkeleton"; // 1. Import TableSkeleton
+import { TableSkeleton } from "@/features/shared/components/TableSkeleton";
+import { useSkeletonRows } from "@/features/shared/hooks/useSkeletonRows";
 
 export default function UserManagementPage() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -28,6 +32,18 @@ export default function UserManagementPage() {
     search,
     role: apiRoleFormat,
   });
+
+  const skeletonRows = useSkeletonRows("users", data.length, !isLoading);
+
+  const handleSearchChange = (val: string) => {
+    setSearch(val);
+    setCurrentPage(1);
+  };
+
+  const handleRoleChange = (val: string) => {
+    setRoleFilter(val);
+    setCurrentPage(1);
+  };
 
   return (
     <div className='flex flex-col gap-6 p-6 animate-in fade-in duration-500'>
@@ -47,34 +63,29 @@ export default function UserManagementPage() {
 
       <FilterSection
         search={search}
-        setSearch={setSearch}
+        setSearch={handleSearchChange}
         searchPlaceholder='Cari berdasarkan email...'
         category={roleFilter}
-        setCategory={setRoleFilter}
+        setCategory={handleRoleChange}
         categories={["Semua Role", "Admin", "Mahasiswa"]}
       />
 
       <TotalUserCard stats={stats} isLoading={isLoading} />
 
       <div className='space-y-4'>
-        {/* 2. Kondisional Render untuk Skeleton Tabel */}
         {isLoading ? (
-          <TableSkeleton />
+          <TableSkeleton columns={USER_TABLE_COLUMNS} rows={skeletonRows} />
         ) : (
           <>
             <UserTable
               data={data}
-              isLoading={false} // Pastikan loading bawaan tabel dimatikan
+              isLoading={false}
               onEdit={(user) => setEditUser(user)}
               onDelete={(user) => setDeleteUser(user)}
             />
 
             {meta && meta.last_page > 1 && (
-              <Pagination
-                page={meta.current_page}
-                totalPages={meta.last_page}
-                goTo={(page) => setCurrentPage(page)}
-              />
+              <Pagination meta={meta} onPageChange={setCurrentPage} />
             )}
           </>
         )}

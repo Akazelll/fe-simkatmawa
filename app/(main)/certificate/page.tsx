@@ -3,15 +3,25 @@
 import { PageHeader } from "@/features/shared/components/PageHeader";
 import { FilterSection } from "@/features/shared/components/FilterSection";
 import { Pagination } from "@/features/shared/components/Pagination";
-import { CertificateTable } from "@/features/certificate/components/CertificateTable";
+import {
+  CertificateTable,
+  CERTIFICATE_TABLE_COLUMNS,
+} from "@/features/certificate/components/CertificateTable";
 import { KATEGORI, STATUSES } from "@/features/certificate/constants";
+import {
+  mapMahasiswaStatusFilter,
+  mahasiswaStatusParamToLabel,
+} from "@/features/shared/constants/submissionStatus";
 import { AlertCircle } from "lucide-react";
 import { useSertifikasiList } from "@/features/certificate/hooks/useSertifikasiList";
 import { TableSkeleton } from "@/features/shared/components/TableSkeleton";
+import { useSkeletonRows } from "@/features/shared/hooks/useSkeletonRows";
 
 export default function SertifikatPage() {
   const { data, meta, isLoading, error, params, updateParams, refetch } =
     useSertifikasiList({ page: 1 });
+
+  const skeletonRows = useSkeletonRows("certificate", data.length, !isLoading);
 
   return (
     <div className='flex flex-col gap-6 animate-in fade-in duration-500'>
@@ -22,15 +32,21 @@ export default function SertifikatPage() {
 
       <FilterSection
         search={params.search || ""}
-        setSearch={(val) => updateParams({ search: val })}
+        setSearch={(val) => updateParams({ search: val, page: 1 })}
         category={params.level || "Semua Kategori"}
         setCategory={(val) =>
-          updateParams({ level: val === "Semua Kategori" ? undefined : val })
+          updateParams({
+            level: val === "Semua Kategori" ? undefined : val,
+            page: 1,
+          })
         }
         categories={KATEGORI}
-        status={params.status || "Semua Status"}
+        status={mahasiswaStatusParamToLabel(params.status)}
         setStatus={(val) =>
-          updateParams({ status: val === "Semua Status" ? undefined : val })
+          updateParams({
+            status: mapMahasiswaStatusFilter(val),
+            page: 1,
+          })
         }
         statuses={STATUSES}
       />
@@ -43,16 +59,20 @@ export default function SertifikatPage() {
       )}
       <div className='space-y-4'>
         {isLoading ? (
-          <TableSkeleton />
+          <TableSkeleton
+            columns={CERTIFICATE_TABLE_COLUMNS}
+            rows={skeletonRows}
+            header
+          />
         ) : (
           <>
             <CertificateTable data={data} onChanged={refetch} />
 
+            {/* PERBAIKAN: Menggunakan props 'meta' dan 'onPageChange' */}
             {meta && meta.last_page > 1 && (
               <Pagination
-                page={meta.current_page}
-                totalPages={meta.last_page}
-                goTo={(page) => updateParams({ page })}
+                meta={meta}
+                onPageChange={(page) => updateParams({ page })}
               />
             )}
           </>

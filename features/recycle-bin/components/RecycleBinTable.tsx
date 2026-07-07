@@ -16,10 +16,21 @@ import { formatDateTime } from "@/lib/utils/dateFormat";
 // IMPORT SHARED BADGES
 import { TypeBadge } from "@/features/shared/components/TypeBadge";
 import { StatusBadge } from "@/features/shared/components/StatusBadge";
+import type { SkeletonColumn } from "@/features/shared/components/TableSkeleton";
 
 const HEAD_CLASS =
   "h-12 text-[11px] font-bold tracking-wide uppercase text-slate-400 whitespace-nowrap";
 const CELL_BASE = "py-4 align-top text-sm text-slate-600";
+
+// Konfigurasi skeleton — disinkronkan dengan kolom tabel di bawah (6 kolom).
+export const RECYCLE_BIN_TABLE_COLUMNS: SkeletonColumn[] = [
+  { width: "w-[30%]" }, // Nama Pengajuan / Akun
+  { width: "w-[15%]", pill: true }, // Jenis
+  { width: "w-[15%]", pill: true }, // Status Awal
+  { width: "w-[15%]", cell: "h-4 w-24" }, // Deleted At
+  { width: "w-[15%]", cell: "h-4 w-24" }, // Deleted By
+  { width: "w-[10%]", align: "right", actions: 1 }, // Action
+];
 
 interface RecycleBinTableProps {
   data: TrashedItem[];

@@ -1,5 +1,32 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { formatDateTime } from "@/lib/utils/dateFormat";
+
+export function RecentActivitySkeleton() {
+  return (
+    <Card className='border-slate-200 shadow-sm rounded-2xl bg-white h-full'>
+      <CardHeader>
+        <Skeleton className='h-5 w-40' />
+      </CardHeader>
+      <CardContent>
+        <div className='flex flex-col gap-6'>
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div
+              key={i}
+              className='flex items-center justify-between gap-4'
+            >
+              <div className='flex items-center gap-3'>
+                <Skeleton className='size-9 shrink-0 rounded-full' />
+                <Skeleton className='h-4 w-56 max-w-full' />
+              </div>
+              <Skeleton className='h-3 w-24 shrink-0' />
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 const getInitials = (name: string) =>
   name ? name.substring(0, 2).toUpperCase() : "NA";

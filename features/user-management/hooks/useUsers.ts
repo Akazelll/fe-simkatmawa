@@ -15,10 +15,12 @@ export function useUsers({ page, search, role }: UseUsersProps) {
 
   const [stats, setStats] = useState({ totalAdmin: 0, totalMahasiswa: 0 });
 
+  // isLoading: load pertama (skeleton penuh). isFetching: refetch berikutnya tanpa membuang data lama.
   const [isLoading, setIsLoading] = useState(true);
+  const [isFetching, setIsFetching] = useState(false);
 
   const fetchUsers = useCallback(async () => {
-    setIsLoading(true);
+    setIsFetching(true);
     try {
       const response = await userService.getUsers({ page, search, role });
 
@@ -36,17 +38,15 @@ export function useUsers({ page, search, role }: UseUsersProps) {
       setData([]);
       setMeta(null);
     } finally {
-      setIsLoading(false);
+      setIsFetching(false);
+      setIsLoading(false); // setelah fetch pertama selesai, skeleton penuh tidak muncul lagi
     }
   }, [page, search, role]);
 
+  // Debounce search sudah ditangani di FilterSection, jadi cukup fetch langsung di sini.
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      fetchUsers();
-    }, 300);
-
-    return () => clearTimeout(timeoutId);
+    fetchUsers();
   }, [fetchUsers]);
 
-  return { data, meta, stats, isLoading, refetch: fetchUsers };
+  return { data, meta, stats, isLoading, isFetching, refetch: fetchUsers };
 }

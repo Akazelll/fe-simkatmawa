@@ -8,9 +8,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Trash2, AlertTriangle } from "lucide-react";
+import { Trash2, AlertTriangle, AlertCircle } from "lucide-react";
 import { userService } from "@/features/user-management/services/userService";
-import { toast } from "sonner";
 
 interface DeleteUserModalProps {
   isOpen: boolean;
@@ -26,25 +25,24 @@ export function DeleteUserModal({
   onSuccess,
 }: DeleteUserModalProps) {
   const [isProcessing, setIsProcessing] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const handleDelete = async () => {
     if (!user) return;
 
     setIsProcessing(true);
+    setErrorMsg("");
     try {
-      await userService.deleteUser(user.id);
-
-      toast.success("Berhasil dihapus", {
-        description: `Pengguna ${user.name} telah dihapus secara permanen.`,
-      });
-
+      const response = await userService.deleteUser(user.id);
+      if (response?.success === false) {
+        setErrorMsg(response.message || "Gagal menghapus pengguna.");
+        return;
+      }
       onSuccess();
     } catch (error: any) {
-      console.error("Gagal menghapus pengguna:", error);
-      toast.error("Gagal menghapus data", {
-        description:
-          error?.response?.data?.message || "Terjadi kesalahan pada server.",
-      });
+      const beMsg =
+        error.response?.data?.message || "Gagal menghapus pengguna.";
+      setErrorMsg(beMsg);
     } finally {
       setIsProcessing(false);
     }
@@ -82,7 +80,13 @@ export function DeleteUserModal({
           </div>
         </DialogHeader>
 
-        <div className='px-6 py-5'>
+        <div className='px-6 py-5 space-y-4'>
+          {errorMsg && (
+            <div className='flex items-center gap-2 p-3 text-sm font-medium text-red-700 bg-red-50 rounded-xl border border-red-200'>
+              <AlertCircle className='w-4 h-4 shrink-0' />
+              <p>{errorMsg}</p>
+            </div>
+          )}
           <div className='flex gap-3 p-4 rounded-xl bg-rose-50/50 border border-rose-100/60 text-rose-800'>
             <AlertTriangle
               className='shrink-0 mt-0.5 text-rose-500'

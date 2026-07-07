@@ -1,18 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import {
-  CheckCircle2,
-  XCircle,
-  CloudCheck,
-  CloudOff,
-  Loader2,
-  BellOff,
-  LucideIcon,
-} from "lucide-react";
+import { Loader2, BellOff, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { AppNotification, NotificationType, SubmissionType } from "../types";
+import { AppNotification } from "../types";
+import { resolveActionUrl } from "../utils/resolveActionUrl";
 import { timeAgo } from "../utils/timeAgo";
+import { getCategoryIcon, getTypeStyle } from "../utils/notificationVisuals";
 
 interface Props {
   items: AppNotification[];
@@ -20,42 +14,8 @@ interface Props {
   onClose: () => void;
   onMarkAsRead: (id: AppNotification["id"]) => void;
   onMarkAllAsRead: () => void;
+  onDelete: (id: AppNotification["id"]) => void;
 }
-
-interface TypeStyle {
-  icon: LucideIcon;
-  iconColor: string;
-  iconBg: string;
-}
-
-const TYPE_STYLE: Record<NotificationType, TypeStyle> = {
-  submission_approved: {
-    icon: CheckCircle2,
-    iconColor: "text-emerald-600",
-    iconBg: "bg-emerald-50",
-  },
-  submission_rejected: {
-    icon: XCircle,
-    iconColor: "text-rose-600",
-    iconBg: "bg-rose-50",
-  },
-  submission_synced: {
-    icon: CloudCheck,
-    iconColor: "text-sky-600",
-    iconBg: "bg-sky-50",
-  },
-  submission_sync_failed: {
-    icon: CloudOff,
-    iconColor: "text-orange-600",
-    iconBg: "bg-orange-50",
-  },
-};
-
-const SUBMISSION_PATH: Record<SubmissionType, string> = {
-  prestasi: "/achievement",
-  sertifikasi: "/certificate",
-  rekognisi: "/recognition",
-};
 
 export function NotificationDropdown({
   items,
@@ -63,14 +23,15 @@ export function NotificationDropdown({
   onClose,
   onMarkAsRead,
   onMarkAllAsRead,
+  onDelete,
 }: Props) {
   const router = useRouter();
-  const hasUnread = items.some((n) => !n.read_at);
+  const hasUnread = items.some((n) => !n.is_read);
 
   const handlePick = (n: AppNotification) => {
-    if (!n.read_at) onMarkAsRead(n.id);
-    const base = SUBMISSION_PATH[n.data.submission_type];
-    router.push(`${base}/${n.data.submission_id}`);
+    if (!n.is_read) onMarkAsRead(n.id);
+    const to = resolveActionUrl(n.action_url);
+    if (to) router.push(to);
     onClose();
   };
 
@@ -102,16 +63,16 @@ export function NotificationDropdown({
         ) : (
           <ul className='divide-y divide-slate-100'>
             {items.slice(0, 10).map((n) => {
-              const style = TYPE_STYLE[n.type];
-              const Icon = style.icon;
-              const isUnread = !n.read_at;
+              const style = getTypeStyle(n.type);
+              const Icon = getCategoryIcon(n.category);
+              const isUnread = !n.is_read;
               return (
-                <li key={n.id}>
+                <li key={n.id} className='group relative'>
                   <button
                     type='button'
                     onClick={() => handlePick(n)}
                     className={cn(
-                      "w-full text-left px-4 py-3 hover:bg-slate-50 transition-colors flex gap-3 items-start",
+                      "w-full text-left px-4 py-3 pr-10 hover:bg-slate-50 transition-colors flex gap-3 items-start",
                       isUnread && "bg-sky-50/40",
                     )}
                   >
@@ -144,6 +105,18 @@ export function NotificationDropdown({
                         {timeAgo(n.created_at)}
                       </span>
                     </div>
+                  </button>
+
+                  <button
+                    type='button'
+                    aria-label='Hapus notifikasi'
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete(n.id);
+                    }}
+                    className='absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-md text-slate-300 opacity-0 transition-all hover:bg-rose-50 hover:text-rose-500 focus-visible:opacity-100 group-hover:opacity-100'
+                  >
+                    <Trash2 size={14} />
                   </button>
                 </li>
               );

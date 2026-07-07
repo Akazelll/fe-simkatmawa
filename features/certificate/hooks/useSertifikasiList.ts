@@ -6,13 +6,7 @@ import {
   SertifikasiQueryParams,
 } from "../services/sertifikasiService";
 import { Certificate } from "../types";
-
-export type PaginationMeta = {
-  current_page: number;
-  last_page: number;
-  per_page: number;
-  total: number;
-};
+import { PaginationMeta } from "@/features/shared/types/pagination";
 
 export function useSertifikasiList(
   initialParams: SertifikasiQueryParams = { page: 1 },

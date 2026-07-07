@@ -47,25 +47,29 @@ export function SubmissionStatsGrid() {
       label: "Total Submission",
       value: totalSubmissions,
       icon: LayoutDashboard,
-      color: "text-indigo-500",
+      caption: "Keseluruhan",
+      gradient: "from-indigo-500 to-indigo-600",
     },
     {
       label: "Total Prestasi",
       value: stats.prestasi,
       icon: Trophy,
-      color: "text-amber-500",
+      caption: "Lomba & Kompetisi",
+      gradient: "from-amber-400 to-orange-500",
     },
     {
       label: "Total Sertifikat",
       value: stats.sertifikasi,
       icon: FileText,
-      color: "text-sky-500",
+      caption: "Pelatihan",
+      gradient: "from-sky-400 to-blue-500",
     },
     {
       label: "Total Rekognisi",
       value: stats.rekognisi,
       icon: ScrollText,
-      color: "text-emerald-500",
+      caption: "Pengakuan",
+      gradient: "from-emerald-400 to-green-500",
     },
   ];
 
@@ -74,21 +78,33 @@ export function SubmissionStatsGrid() {
       {items.map((item) => (
         <Card
           key={item.label}
-          className='border-slate-200 shadow-sm rounded-2xl'
+          className={`relative overflow-hidden rounded-2xl border-0 text-white shadow-md ring-0 bg-linear-to-br ${item.gradient} cursor-pointer transition-transform duration-200 ease-out hover:scale-[1.03] hover:shadow-lg`}
         >
-          <CardContent className='p-6 flex items-center justify-between'>
-            <div>
-              <p className='text-sm text-slate-500 font-medium'>{item.label}</p>
-              <div className='mt-1'>
+          <CardContent className='relative p-6'>
+            {/* Watermark icon di pojok kanan bawah */}
+            <item.icon
+              className='absolute -bottom-3 -right-2 text-white/15'
+              size={88}
+              strokeWidth={1.5}
+            />
+
+            <div className='relative z-10'>
+              <div className='min-h-9'>
                 {isLoading ? (
-                  <Skeleton className='h-8 w-16' />
+                  <Skeleton className='h-9 w-16 bg-white/30' />
                 ) : (
-                  <h3 className='text-2xl font-bold'>{item.value}</h3>
+                  <h3 className='text-3xl font-bold leading-none'>
+                    {item.value}
+                  </h3>
                 )}
               </div>
-            </div>
-            <div className={`p-3 bg-slate-50 rounded-xl ${item.color}`}>
-              <item.icon size={24} />
+              <p className='mt-2 text-sm font-semibold text-white/95'>
+                {item.label}
+              </p>
+              <div className='mt-3 flex items-center gap-1.5 text-xs font-medium text-white/80'>
+                <item.icon size={14} />
+                {item.caption}
+              </div>
             </div>
           </CardContent>
         </Card>

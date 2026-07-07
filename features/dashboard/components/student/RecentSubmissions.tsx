@@ -92,7 +92,7 @@ export function RecentSubmissions() {
                 </p>
                 <p className='text-xs text-slate-500'>{item.type}</p>
               </div>
-              <StatusBadge status={item.status_internal} />
+              <StatusBadge status={item.status_internal} audience='mahasiswa' />
             </div>
           ))
         )}

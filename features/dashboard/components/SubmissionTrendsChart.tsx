@@ -1,6 +1,6 @@
 "use client";
 
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ChartContainer,
@@ -26,7 +26,20 @@ export function SubmissionTrendsChart({ data }: { data?: any[] }) {
           </div>
         ) : (
           <ChartContainer config={TREND_CONFIG} className='h-[260px] w-full'>
-            <LineChart data={chartData} margin={{ left: 8, right: 16, top: 8 }}>
+            <AreaChart data={chartData} margin={{ left: 8, right: 16, top: 8 }}>
+              <defs>
+                <linearGradient
+                  id='fillSubmissions'
+                  x1='0'
+                  y1='0'
+                  x2='0'
+                  y2='1'
+                >
+                  {/* Gradient sky -> indigo (opsi B) */}
+                  <stop offset='5%' stopColor='#38bdf8' stopOpacity={0.8} />
+                  <stop offset='95%' stopColor='#6366f1' stopOpacity={0.1} />
+                </linearGradient>
+              </defs>
               <CartesianGrid strokeDasharray='4 4' vertical={false} />
               <XAxis
                 dataKey='month'
@@ -36,17 +49,20 @@ export function SubmissionTrendsChart({ data }: { data?: any[] }) {
               />
               <YAxis tickLine={false} axisLine={false} tickMargin={8} />
               <ChartTooltip
+                cursor={false}
                 content={<ChartTooltipContent indicator='line' />}
               />
-              <Line
+              <Area
                 type='monotone'
                 dataKey='submissions'
                 stroke='var(--color-submissions)'
                 strokeWidth={2}
-                dot={{ r: 5, fill: "#fff", strokeWidth: 2 }}
+                fill='url(#fillSubmissions)'
+                fillOpacity={1}
+                dot={{ r: 4, fill: "#fff", strokeWidth: 2 }}
                 activeDot={{ r: 6 }}
               />
-            </LineChart>
+            </AreaChart>
           </ChartContainer>
         )}
       </CardContent>

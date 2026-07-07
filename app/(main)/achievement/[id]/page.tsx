@@ -9,7 +9,7 @@ import { PrestasiDetailView } from "@/features/achievement/components/PrestasiDe
 import { prestasiService } from "@/features/achievement/services/prestasiService";
 import { Prestasi } from "@/features/achievement/types";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { CardSkeleton } from "@/features/shared/components/CardSkeleton";
+import { DetailSkeleton } from "@/features/shared/components/DetailSkeleton";
 
 export default function PrestasiDetailPage() {
   const router = useRouter();
@@ -76,10 +76,7 @@ export default function PrestasiDetailPage() {
 
       <RoleGuard allowedRoles={["mahasiswa"]}>
         {!isAuthLoaded || isLoading ? (
-          <div className='space-y-6'>
-            <CardSkeleton lines={6} />
-            <CardSkeleton lines={4} />
-          </div>
+          <DetailSkeleton />
         ) : (
           data && <PrestasiDetailView data={data} />
         )}

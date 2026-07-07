@@ -18,11 +18,24 @@ import { RejectionReasonButton } from "@/features/shared/components/RejectionRea
 import { DeleteSubmissionDialog } from "@/features/shared/components/DeleteSubmissionDialog";
 import { rekognisiService } from "../services/rekognisiService";
 import { Rekognisi } from "../types";
+import type { SkeletonColumn } from "@/features/shared/components/TableSkeleton";
 
 const HEAD_CLASS =
   "h-12 text-[11px] font-bold tracking-wide uppercase text-slate-400 whitespace-nowrap";
 
 const CELL_BASE = "py-4 align-top text-sm text-slate-600";
+
+// Konfigurasi skeleton — disinkronkan dengan kolom tabel di bawah (8 kolom).
+export const RECOGNITION_TABLE_COLUMNS: SkeletonColumn[] = [
+  { width: "w-16", cell: "h-4 w-8" }, // ID
+  { width: "w-[20%]" }, // Nama Rekognisi
+  { width: "w-[15%]", cell: "h-4 w-2/3" }, // Jenis
+  { width: "w-[15%]", cell: "h-4 w-2/3" }, // Penyelenggara
+  { width: "w-[10%]", cell: "h-4 w-12" }, // Level
+  { width: "w-16", align: "center", cell: "h-4 w-8" }, // Tahun
+  { width: "w-24", pill: true }, // Status
+  { width: "w-32", align: "right", actions: 3 }, // Aksi
+];
 
 interface RecognitionTableProps {
   data: Rekognisi[];
@@ -132,7 +145,7 @@ export function RecognitionTable({ data, onChanged }: RecognitionTableProps) {
 
               <TableCell className={CELL_BASE}>
                 <div className='flex flex-col items-start gap-1.5'>
-                  <StatusBadge status={row.status_internal} />
+                  <StatusBadge status={row.status_internal} audience='mahasiswa' />
                   {row.status_internal === "REJECTED" &&
                     row.alasan_penolakan && (
                       <RejectionReasonButton reason={row.alasan_penolakan} />
