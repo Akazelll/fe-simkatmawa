@@ -23,11 +23,11 @@ const HEAD_CLASS =
 const CELL_BASE = "py-4 align-top text-sm text-slate-600";
 
 export const QUEUE_TABLE_COLUMNS: SkeletonColumn[] = [
-  { cell: "h-4 w-40" }, 
-  { cell: "h-4 w-28" }, 
-  { cell: "h-4 w-24" }, 
-  { pill: true }, 
-  { align: "right", actions: 2 }, 
+  { cell: "h-4 w-40" },
+  { cell: "h-4 w-28" },
+  { cell: "h-4 w-24" },
+  { pill: true },
+  { align: "right", actions: 2 },
 ];
 
 interface QueueTableProps {
@@ -149,21 +149,23 @@ export function QueueTable({
                         <Button
                           onClick={() => onRetry(item.id)}
                           disabled={isMutating}
-                          variant='ghost'
-                          title='Coba ulang'
-                          className='h-8 w-8 p-0 text-sky-600 hover:bg-sky-50 rounded-lg disabled:opacity-40'
+                          variant='outline'
+                          size='sm'
+                          className='h-8 rounded-lg px-3 text-xs font-semibold text-slate-600 border-slate-200 hover:bg-slate-50 disabled:opacity-40'
                         >
-                          <RefreshCw size={16} />
+                          <RefreshCw className='mr-1.5 h-3.5 w-3.5 text-slate-400' />
+                          Coba Ulang
                         </Button>
                       )}
                       {isSuperadmin && (
                         <Button
                           onClick={() => onShowDetail(item.id)}
-                          variant='ghost'
-                          title='Lihat detail'
-                          className='h-8 w-8 p-0 text-slate-500 hover:bg-slate-100 rounded-lg'
+                          variant='outline'
+                          size='sm'
+                          className='h-8 rounded-lg px-3 text-xs font-semibold text-slate-600 border-slate-200 hover:bg-slate-50'
                         >
-                          <Eye size={16} />
+                          <Eye className='mr-1.5 h-3.5 w-3.5 text-slate-400' />
+                          Detail
                         </Button>
                       )}
                       {!failed && !isSuperadmin && (

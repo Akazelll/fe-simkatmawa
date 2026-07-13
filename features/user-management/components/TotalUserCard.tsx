@@ -3,6 +3,7 @@
 import { Shield, Users } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils"; // Pastikan import cn ditambahkan
 
 interface TotalUserCardProps {
   stats?: {
@@ -17,24 +18,36 @@ export function TotalUserCard({ stats, isLoading }: TotalUserCardProps) {
   if (isLoading) {
     return (
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-        {/* Skeleton Card 1 */}
-        <Card className='rounded-2xl border-slate-200 bg-white shadow-sm'>
-          <CardContent className='p-6 flex items-center gap-4'>
-            <Skeleton className='w-12 h-12 rounded-full shrink-0' />
-            <div className='space-y-2'>
-              <Skeleton className='h-4 w-24' />
-              <Skeleton className='h-7 w-16' />
+        {/* Skeleton Card 1: Admin (Navy) */}
+        <Card
+          className={cn(
+            "relative overflow-hidden rounded-2xl border-0 text-white shadow-md ring-0 bg-linear-to-br",
+            "from-[#1769aa] to-[#0F4C81]",
+          )}
+        >
+          <CardContent className='relative p-6'>
+            {/* Watermark bulat meniru ikon */}
+            <div className='absolute -bottom-3 -right-2 h-[88px] w-[88px] rounded-full bg-white/10' />
+            <div className='relative z-10'>
+              <Skeleton className='h-8 w-16 rounded-lg bg-white/30' />
+              <Skeleton className='mt-2 h-4 w-24 rounded-md bg-white/25' />
             </div>
           </CardContent>
         </Card>
 
-        {/* Skeleton Card 2 */}
-        <Card className='rounded-2xl border-slate-200 bg-white shadow-sm'>
-          <CardContent className='p-6 flex items-center gap-4'>
-            <Skeleton className='w-12 h-12 rounded-full shrink-0' />
-            <div className='space-y-2'>
-              <Skeleton className='h-4 w-32' />
-              <Skeleton className='h-7 w-16' />
+        {/* Skeleton Card 2: Mahasiswa (Emerald) */}
+        <Card
+          className={cn(
+            "relative overflow-hidden rounded-2xl border-0 text-white shadow-md ring-0 bg-linear-to-br",
+            "from-emerald-400 to-green-500",
+          )}
+        >
+          <CardContent className='relative p-6'>
+            {/* Watermark bulat meniru ikon */}
+            <div className='absolute -bottom-3 -right-2 h-[88px] w-[88px] rounded-full bg-white/10' />
+            <div className='relative z-10'>
+              <Skeleton className='h-8 w-24 rounded-lg bg-white/30' />
+              <Skeleton className='mt-2 h-4 w-32 rounded-md bg-white/25' />
             </div>
           </CardContent>
         </Card>
@@ -45,32 +58,54 @@ export function TotalUserCard({ stats, isLoading }: TotalUserCardProps) {
   // TAMPILAN ASLI (Saat Data Tersedia)
   return (
     <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-      <Card className='rounded-2xl border-slate-200 bg-white shadow-sm'>
-        <CardContent className='p-6 flex items-center gap-4'>
-          <div className='w-12 h-12 rounded-full bg-sky-50 flex items-center justify-center border border-sky-100 shrink-0'>
-            <Shield className='text-sky-600' size={24} />
-          </div>
-          <div>
-            <p className='text-sm font-semibold text-slate-500'>Total Admin</p>
-            <h3 className='text-2xl font-bold text-slate-900'>
+      {/* Card 1: Total Admin */}
+      <Card
+        className={cn(
+          "relative overflow-hidden rounded-2xl border-0 text-white shadow-md ring-0 bg-linear-to-br",
+          "cursor-pointer transition-transform duration-200 ease-out hover:scale-[1.03] hover:shadow-lg",
+          "from-[#1769aa] to-[#0F4C81]",
+        )}
+      >
+        <CardContent className='relative p-6'>
+          {/* Watermark icon di pojok kanan bawah */}
+          <Shield
+            className='absolute -bottom-3 -right-2 text-white/15'
+            size={88}
+            strokeWidth={1.5}
+          />
+          <div className='relative z-10'>
+            <div className='text-3xl font-bold leading-none'>
               {stats?.totalAdmin || 0}
-            </h3>
+            </div>
+            <p className='mt-2 text-sm font-semibold text-white/95'>
+              Total Admin
+            </p>
           </div>
         </CardContent>
       </Card>
 
-      <Card className='rounded-2xl border-slate-200 bg-white shadow-sm'>
-        <CardContent className='p-6 flex items-center gap-4'>
-          <div className='w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center border border-emerald-100 shrink-0'>
-            <Users className='text-emerald-600' size={24} />
-          </div>
-          <div>
-            <p className='text-sm font-semibold text-slate-500'>
+      {/* Card 2: Total Mahasiswa */}
+      <Card
+        className={cn(
+          "relative overflow-hidden rounded-2xl border-0 text-white shadow-md ring-0 bg-linear-to-br",
+          "cursor-pointer transition-transform duration-200 ease-out hover:scale-[1.03] hover:shadow-lg",
+          "from-emerald-400 to-green-500",
+        )}
+      >
+        <CardContent className='relative p-6'>
+          {/* Watermark icon di pojok kanan bawah */}
+          <Users
+            className='absolute -bottom-3 -right-2 text-white/15'
+            size={88}
+            strokeWidth={1.5}
+          />
+          <div className='relative z-10'>
+            <div className='text-3xl font-bold leading-none'>
+              {stats?.totalMahasiswa || 0}
+            </div>
+            <p className='mt-2 text-sm font-semibold text-white/95'>
               Total Mahasiswa
             </p>
-            <h3 className='text-2xl font-bold text-slate-900'>
-              {stats?.totalMahasiswa || 0}
-            </h3>
           </div>
         </CardContent>
       </Card>
