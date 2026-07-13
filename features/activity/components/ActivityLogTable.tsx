@@ -30,36 +30,11 @@ export const ACTIVITY_TABLE_COLUMNS: SkeletonColumn[] = [
   { width: "w-[15%]", pill: true }, // Aksi (badge)
   { width: "w-[15%]", cell: "h-4 w-20" }, // Modul
   { width: "w-[25%]" }, // Target
-  { width: "w-[10%]", align: "center", cell: "h-8 w-20 rounded-lg" }, // Detail
+  { width: "w-[10%]", align: "center", cell: "h-8 w-20 rounded-lg" },
 ];
 
 export function ActivityLogTable({ data }: { data: ActivityLog[] }) {
   const [selectedLog, setSelectedLog] = useState<ActivityLog | null>(null);
-
-  const getActionBadge = (action: ActivityLog["action"]) => {
-    switch (action) {
-      case "created":
-        return (
-          <Badge className='bg-emerald-50 text-emerald-600 border-emerald-200'>
-            🟢 Dibuat
-          </Badge>
-        );
-      case "updated":
-        return (
-          <Badge className='bg-amber-50 text-amber-600 border-amber-200'>
-            🟡 Diubah
-          </Badge>
-        );
-      case "deleted":
-        return (
-          <Badge className='bg-red-50 text-red-600 border-red-200'>
-            🔴 Dihapus
-          </Badge>
-        );
-      default:
-        return <Badge variant='outline'>{action}</Badge>;
-    }
-  };
 
   return (
     <>
@@ -120,11 +95,13 @@ export function ActivityLogTable({ data }: { data: ActivityLog[] }) {
                   </TableCell>
                   <TableCell className={`${CELL_BASE} pr-6 text-center`}>
                     <Button
-                      variant='ghost'
+                      variant='outline'
                       size='sm'
+                      className='h-8 rounded-lg px-3 text-xs font-semibold text-slate-600 border-slate-200 hover:bg-slate-50'
                       onClick={() => setSelectedLog(row)}
                     >
-                      <Eye className='w-4 h-4 mr-1' /> Detail
+                      <Eye className='mr-1.5 h-3.5 w-3.5 text-slate-400' />
+                      Detail
                     </Button>
                   </TableCell>
                 </TableRow>

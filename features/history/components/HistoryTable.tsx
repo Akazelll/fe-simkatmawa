@@ -127,7 +127,7 @@ export function HistoryTable({ data, isLoading }: HistoryTableProps) {
                       }}
                     >
                       <Eye className='mr-1.5 h-3.5 w-3.5 text-slate-400' />
-                      Lihat Detail
+                       Detail
                     </Button>
                   </div>
                 </TableCell>
