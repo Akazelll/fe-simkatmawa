@@ -34,7 +34,7 @@ Aplikasi web ini digunakan untuk mengelola pengajuan, verifikasi, dan rekapitula
 | **User Management** — kelola pengguna | — | — | ✅ |
 | **Recycle Bin** — pemulihan data terhapus | — | — | ✅ |
 | **Settings** — kelola kredensial Kemdikbud | — | — | ✅ |
-| **Notifications** — notifikasi dalam aplikasi | ✅ | ✅ | ✅ |
+| **Notifications** — notifikasi real-time dalam aplikasi (WebSocket) | ✅ | ✅ | ✅ |
 
 > Domain pengajuan terbagi menjadi tiga jenis: **Prestasi** (achievement), **Sertifikat** (certificate), dan **Rekognisi** (recognition).
 
@@ -51,6 +51,7 @@ Aplikasi web ini digunakan untuk mengelola pengajuan, verifikasi, dan rekapitula
 - **PDF:** `@react-pdf/renderer` (ekspor log aktivitas)
 - **Form & input:** `cmdk`, `react-day-picker`, `date-fns`
 - **Notifikasi:** `sonner` (toast)
+- **Realtime:** WebSocket notifikasi melalui Laravel Reverb (lihat [Variabel Lingkungan](#variabel-lingkungan))
 - **Tooling:** ESLint 9, [react-scan](https://github.com/aidenybai/react-scan) (audit re-render)
 
 ---
@@ -89,13 +90,28 @@ cp .env.example .env.local
 ```
 
 ```env
-# Base URL API backend (Laravel). Wajib diisi.
+# Base URL API backend (Laravel), termasuk prefix /api/v1. Wajib diisi.
+# Ganti dengan URL API backend Anda.
 NEXT_PUBLIC_API_URL=your backend api key
+
+# WebSocket real-time (Laravel Reverb) untuk notifikasi.
+NEXT_PUBLIC_REVERB_APP_KEY=simkatmawa-reverb-key
+NEXT_PUBLIC_REVERB_HOST=127.0.0.1
+NEXT_PUBLIC_REVERB_PORT=8080
+# http untuk lokal (ws://), https untuk produksi (wss://).
+NEXT_PUBLIC_REVERB_SCHEME=http
+# Opsional: override endpoint auth broadcast bila tidak di root domain API.
+# NEXT_PUBLIC_REVERB_AUTH_ENDPOINT=http://127.0.0.1:8000/broadcasting/auth
 ```
 
 | Variabel | Wajib | Keterangan |
 | --- | :---: | --- |
-| `NEXT_PUBLIC_API_URL` | ✅ | Base URL endpoint API backend. Diekspos ke browser (prefix `NEXT_PUBLIC_`). |
+| `NEXT_PUBLIC_API_URL` | ✅ | Base URL endpoint API backend, termasuk prefix `/api/v1`. Diekspos ke browser (prefix `NEXT_PUBLIC_`). |
+| `NEXT_PUBLIC_REVERB_APP_KEY` | ✅ | App key untuk koneksi WebSocket ke Laravel Reverb. |
+| `NEXT_PUBLIC_REVERB_HOST` | ✅ | Host server Reverb (mis. `127.0.0.1` untuk lokal). |
+| `NEXT_PUBLIC_REVERB_PORT` | ✅ | Port server Reverb (default `8080`). |
+| `NEXT_PUBLIC_REVERB_SCHEME` | ✅ | `http` untuk lokal (`ws://`), `https` untuk produksi (`wss://`). |
+| `NEXT_PUBLIC_REVERB_AUTH_ENDPOINT` | — | Opsional; override endpoint auth broadcast bila API tidak berada di root domain. |
 
 ---
 
@@ -193,4 +209,4 @@ Komponen pelindung yang tersedia: `ProtectedRoute`, `RoleGuard`, `PermissionGuar
 - Bahasa UI menggunakan **Bahasa Indonesia** (`<html lang="id">`).
 - Penambahan komponen UI mengikuti konfigurasi [`components.json`](components.json) (shadcn/ui, style `base-nova`, ikon lucide).
 - `react-scan` aktif hanya pada mode development untuk membantu mengaudit re-render.
-- Sebagian modul masih menggunakan data dummy / `localStorage` selama integrasi backend berjalan.
+- Seluruh modul telah terintegrasi penuh dengan backend API — data dummy sudah tidak digunakan lagi di aplikasi ini.
