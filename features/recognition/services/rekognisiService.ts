@@ -1,6 +1,7 @@
 import { api } from "@/lib/api";
 
 export type RekognisiQueryParams = {
+  jenis_group?: string;
   status?: string;
   level?: string;
   search?: string;

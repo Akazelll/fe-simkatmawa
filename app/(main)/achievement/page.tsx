@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { PageHeader } from "@/features/shared/components/PageHeader";
 import { FilterSection } from "@/features/shared/components/FilterSection";
 import { Pagination } from "@/features/shared/components/Pagination";
@@ -19,9 +20,24 @@ import { AlertCircle } from "lucide-react";
 import { TableSkeleton } from "@/features/shared/components/TableSkeleton";
 import { useSkeletonRows } from "@/features/shared/hooks/useSkeletonRows";
 
+const KATEGORI_LABEL_MAP: Record<string, string> = {
+  RISNOV: "Inovasi Saintek",
+  RISNOVSSH: "Inovasi Soshum",
+  SENBUD: "Seni Budaya",
+  OLAHRAGA: "Olahraga",
+  MINAT: "Minat Khusus",
+};
+
 export default function PrestasiPage() {
+  const searchParams = useSearchParams();
+  const kategoriQuery = searchParams.get("kategori") || undefined;
+
   const { data, meta, isLoading, error, params, updateParams, refetch } =
-    usePrestasiList({ page: 1 });
+    usePrestasiList({ page: 1, kategori: kategoriQuery });
+
+  useEffect(() => {
+    updateParams({ kategori: kategoriQuery, page: 1 });
+  }, [kategoriQuery, updateParams]);
 
   const skeletonRows = useSkeletonRows("achievement", data.length, !isLoading);
 
@@ -53,12 +69,21 @@ export default function PrestasiPage() {
     [updateParams],
   );
 
+  const activeCategoryLabel = kategoriQuery
+    ? KATEGORI_LABEL_MAP[kategoriQuery] || kategoriQuery
+    : null;
+
+  const pageTitle = activeCategoryLabel
+    ? `Prestasi Mandiri — ${activeCategoryLabel}`
+    : "Prestasi Mandiri";
+
+  const pageDescription = activeCategoryLabel
+    ? `Daftar pengajuan prestasi mandiri kategori ${activeCategoryLabel}`
+    : "Kelola data prestasi mahasiswa";
+
   return (
     <div className='flex flex-col gap-6 animate-in fade-in duration-500'>
-      <PageHeader
-        title='Prestasi Mandiri'
-        description='Kelola data prestasi mahasiswa'
-      />
+      <PageHeader title={pageTitle} description={pageDescription} />
 
       <FilterSection
         search={params.search || ""}

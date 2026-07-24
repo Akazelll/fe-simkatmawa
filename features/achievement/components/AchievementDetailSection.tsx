@@ -1,3 +1,4 @@
+import { useSearchParams } from "next/navigation";
 import {
   Trophy,
   Package,
@@ -33,6 +34,11 @@ interface AchievementDetailSectionProps {
 export function AchievementDetailSection({
   defaultData,
 }: AchievementDetailSectionProps) {
+  const searchParams = useSearchParams();
+  const kategoriFromUrl = searchParams.get("kategori");
+  const selectedKategori = defaultData?.kategori || kategoriFromUrl || undefined;
+  const isKategoriLocked = Boolean(kategoriFromUrl);
+
   return (
     <Card className='w-full shadow-sm rounded-2xl border-slate-200 overflow-hidden bg-white'>
       <CardContent className='p-6 md:p-8 flex flex-col gap-5'>
@@ -74,10 +80,15 @@ export function AchievementDetailSection({
             <Label htmlFor='kategori' className={LABEL_CLASS}>
               Kategori <Required />
             </Label>
+            {isKategoriLocked && (
+              <input type='hidden' name='kategori' value={selectedKategori} />
+            )}
             <Select
-              name='kategori'
+              name={isKategoriLocked ? undefined : "kategori"}
               required
-              defaultValue={defaultData?.kategori}
+              disabled={isKategoriLocked}
+              value={selectedKategori}
+              defaultValue={selectedKategori}
             >
               <SelectTrigger id='kategori' className={SELECT_CLASS}>
                 <SelectValue placeholder='Pilih Kategori' />
@@ -90,6 +101,11 @@ export function AchievementDetailSection({
                 <SelectItem value='MINAT'>Minat Khusus</SelectItem>
               </SelectContent>
             </Select>
+            {isKategoriLocked && (
+              <span className='text-[11px] font-medium text-slate-400'>
+                Kategori terisi otomatis berdasarkan menu sidebar.
+              </span>
+            )}
           </div>
 
           {/* NAMA LOMBA */}
@@ -268,7 +284,7 @@ export function AchievementDetailSection({
           {/* URL FOTO UPP */}
           <div className='flex flex-col gap-1.5'>
             <Label htmlFor='link-foto' className={LABEL_CLASS}>
-              Link Foto UPP <Required />
+              Link Dokumentasi Membawa Piala/Medali <Required />
             </Label>
             <IconInput
               id='link-foto'

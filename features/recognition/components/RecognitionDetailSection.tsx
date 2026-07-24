@@ -1,4 +1,6 @@
-// features/recognition/components/RecognitionDetailSection.tsx
+"use client";
+
+import { useSearchParams } from "next/navigation";
 import {
   ScrollText,
   Package,
@@ -24,6 +26,49 @@ const SELECT_CLASS =
 const LABEL_CLASS = "text-slate-700 font-semibold text-xs";
 const Required = () => <span className='text-red-500'>*</span>;
 
+type OptionItem = { value: string; label: string };
+
+const JENIS_GROUP_OPTIONS: Record<string, OptionItem[]> = {
+  juri: [
+    { value: "JURIOR", label: "Juri/Pelatih Olahraga" },
+    { value: "JURINOR", label: "Juri/Pelatih Non Olahraga" },
+  ],
+  keynote: [
+    { value: "KEYCONF", label: "Keynote Speaker Conference" },
+    { value: "KEYWORK", label: "Keynote Speaker Workshop / Pelatihan" },
+  ],
+  karya_seni: [
+    { value: "PAMERAN", label: "Pameran Karya Seni" },
+    { value: "KARYA", label: "Cipta Lagu / Tari" },
+  ],
+  buku: [{ value: "BUKU", label: "Penulis Buku" }],
+  paten: [{ value: "PATEN", label: "Paten / Paten Sederhana" }],
+  publikasi: [{ value: "PUB", label: "Publikasi Artikel Ilmiah" }],
+  duta: [{ value: "DUTA", label: "Duta / Brand Ambassador" }],
+  produk: [
+    { value: "PTG", label: "Produk Teknologi Tepat Guna" },
+    { value: "PSB", label: "Produk Seni dan Budaya" },
+    { value: "PKD", label: "Produk Kreatif Dunia Usaha dan Industri" },
+  ],
+};
+
+const ALL_JENIS_OPTIONS: OptionItem[] = [
+  { value: "SERKOM", label: "Sertifikasi Kompetensi (SERKOM)" },
+  { value: "JURIOR", label: "Juri/Pelatih Olahraga (JURIOR)" },
+  { value: "JURINOR", label: "Juri/Pelatih Non Olahraga (JURINOR)" },
+  { value: "KEYCONF", label: "Keynote Speaker Conference (KEYCONF)" },
+  { value: "KEYWORK", label: "Keynote Speaker Workshop / Pelatihan (KEYWORK)" },
+  { value: "PAMERAN", label: "Pameran Karya Seni (PAMERAN)" },
+  { value: "KARYA", label: "Cipta Lagu / Tari (KARYA)" },
+  { value: "BUKU", label: "Penulis Buku (BUKU)" },
+  { value: "PATEN", label: "Paten (PATEN)" },
+  { value: "PUB", label: "Publikasi Artikel Ilmiah (PUB)" },
+  { value: "DUTA", label: "Duta / Brand Ambassador (DUTA)" },
+  { value: "PTG", label: "Produk Teknologi Tepat Guna (PTG)" },
+  { value: "PSB", label: "Produk Seni dan Budaya (PSB)" },
+  { value: "PKD", label: "Produk Kreatif Dunia Usaha dan Industri (PKD)" },
+];
+
 interface RecognitionDetailSectionProps {
   defaultData?: Rekognisi;
 }
@@ -31,6 +76,23 @@ interface RecognitionDetailSectionProps {
 export function RecognitionDetailSection({
   defaultData,
 }: RecognitionDetailSectionProps) {
+  const searchParams = useSearchParams();
+  const jenisGroupParam = searchParams.get("jenis_group");
+
+  const availableOptions = jenisGroupParam
+    ? JENIS_GROUP_OPTIONS[jenisGroupParam] || ALL_JENIS_OPTIONS
+    : ALL_JENIS_OPTIONS;
+
+  const isSingleOption = availableOptions.length === 1;
+
+  const selectedJenisValue = defaultData?.jenis
+    ? defaultData.jenis
+    : isSingleOption
+    ? availableOptions[0].value
+    : undefined;
+
+  const isLocked = isSingleOption && Boolean(jenisGroupParam);
+
   return (
     <Card className='w-full shadow-sm rounded-2xl border-slate-200 bg-white'>
       <CardContent className='p-6 md:p-8 flex flex-col gap-5'>
@@ -48,41 +110,40 @@ export function RecognitionDetailSection({
         </div>
 
         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-          {/* Sesuai Migrasi: 'jenis' (Enum) */}
+          {/* Jenis Rekognisi */}
           <div className='flex flex-col gap-1.5'>
             <Label className={LABEL_CLASS}>
               Jenis Rekognisi <Required />
             </Label>
-            <Select name='jenis' required defaultValue={defaultData?.jenis}>
+            {isLocked && (
+              <input type='hidden' name='jenis' value={selectedJenisValue} />
+            )}
+            <Select
+              name={isLocked ? undefined : "jenis"}
+              required
+              disabled={isLocked}
+              value={selectedJenisValue}
+              defaultValue={selectedJenisValue}
+            >
               <SelectTrigger className={SELECT_CLASS}>
                 <SelectValue placeholder='Pilih Jenis' />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value='SERKOM'>
-                  Sertifikasi Kompetensi (SERKOM)
-                </SelectItem>
-                <SelectItem value='JURIOR'>Juri/Pelatih (JURIOR)</SelectItem>
-                <SelectItem value='JURINOR'>Juri/Pelatih (JURINOR)</SelectItem>
-                <SelectItem value='KEYCONF'>
-                  Keynote Speaker/Narasumber (KEYCONF)
-                </SelectItem>
-                <SelectItem value='KEYWORK'>
-                  Keynote Speaker/Workshop (KEYWORK)
-                </SelectItem>
-                <SelectItem value='PAMERAN'>Pameran (PAMERAN)</SelectItem>
-                <SelectItem value='KARYA'>Karya (KARYA)</SelectItem>
-                <SelectItem value='BUKU'>Buku (BUKU)</SelectItem>
-                <SelectItem value='PATEN'>Paten (PATEN)</SelectItem>
-                <SelectItem value='PUB'>Publikasi (PUB)</SelectItem>
-                <SelectItem value='DUTA'>Duta (DUTA)</SelectItem>
-                <SelectItem value='PTG'>PTG (PTG)</SelectItem>
-                <SelectItem value='PSB'>PSB (PSB)</SelectItem>
-                <SelectItem value='PKD'>PKD (PKD)</SelectItem>
+                {availableOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
+            {isLocked && (
+              <span className='text-[11px] font-medium text-slate-400'>
+                Jenis rekognisi terisi otomatis berdasarkan kelompok sidebar.
+              </span>
+            )}
           </div>
 
-          {/* Sesuai Migrasi: 'level' (Enum) */}
+          {/* Level */}
           <div className='flex flex-col gap-1.5'>
             <Label className={LABEL_CLASS}>
               Level <Required />
@@ -100,7 +161,6 @@ export function RecognitionDetailSection({
             </Select>
           </div>
 
-          {/* Field lainnya sesuai resource */}
           <div className='flex flex-col gap-1.5'>
             <Label className={LABEL_CLASS}>
               Nama Kegiatan <Required />
@@ -170,7 +230,7 @@ export function RecognitionDetailSection({
 
           <div className='flex flex-col gap-1.5'>
             <Label className={LABEL_CLASS}>
-              URL Foto UPP <Required />
+              URL Dokumentasi Membawa Piala/Medali <Required />
             </Label>
             <IconInput
               name='url_foto_upp'

@@ -1,6 +1,7 @@
 "use client";
+
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { RecognitionDetailSection } from "@/features/recognition/components/RecognitionDetailSection";
 import { FormErrorSummary } from "@/features/shared/components/form/FormErrorSummary";
@@ -23,6 +24,8 @@ import { mapToRekognisiPayload } from "@/features/recognition/utils/rekognisiMap
 
 export default function CreateRecognitionPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const jenisGroupParam = searchParams.get("jenis_group");
   const { currentUser, isLoaded: isAuthLoaded } = useAuth();
   const mahasiswa = useFieldList(MAHASISWA_INITIAL);
   const dosen = useFieldList(DOSEN_INITIAL);
@@ -32,6 +35,10 @@ export default function CreateRecognitionPage() {
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string[]>
   >({});
+
+  const backUrl = jenisGroupParam
+    ? `/recognition?jenis_group=${jenisGroupParam}`
+    : `/recognition`;
 
   const prefilledRef = useRef(false);
   useEffect(() => {
@@ -62,7 +69,7 @@ export default function CreateRecognitionPage() {
 
       const response = await rekognisiService.createRekognisi(payload);
       if (response.success) {
-        router.push("/recognition");
+        router.push(backUrl);
       }
     } catch (error: any) {
       if (error.response?.status === 422) {
@@ -119,7 +126,7 @@ export default function CreateRecognitionPage() {
               update={dosen.update}
             />
 
-            <FormFooter backHref='/recognition' />
+            <FormFooter backHref={backUrl} />
           </>
         )}
       </RoleGuard>

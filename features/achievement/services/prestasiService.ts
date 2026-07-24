@@ -4,6 +4,7 @@ import { api } from "@/lib/api";
 export type { PaginationMeta } from "@/features/shared/types/pagination";
 
 export type PrestasiQueryParams = {
+  kategori?: string;
   status?: string;
   level?: string;
   search?: string;

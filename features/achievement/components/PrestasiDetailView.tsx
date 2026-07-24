@@ -147,7 +147,7 @@ export function PrestasiDetailView({
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-6'>
             <DocLink label='URL Kompetisi' url={data.url_peserta} />
             <DocLink label='Sertifikat' url={data.url_sertifikat} />
-            <DocLink label='Foto UPP' url={data.url_foto_upp} />
+            <DocLink label='Dokumentasi Membawa Piala/Medali' url={data.url_foto_upp} />
             <DocLink label='Dokumen Undangan' url={data.url_dokumen_undangan} />
           </div>
         </CardContent>

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Eye, Pencil, Trash2, Plus } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -44,6 +44,9 @@ interface RecognitionTableProps {
 
 export function RecognitionTable({ data, onChanged }: RecognitionTableProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const jenisGroupParam = searchParams.get("jenis_group");
+
   const [deleteTarget, setDeleteTarget] = useState<Rekognisi | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -61,6 +64,13 @@ export function RecognitionTable({ data, onChanged }: RecognitionTableProps) {
     }
   };
 
+  const handleAddData = () => {
+    const url = jenisGroupParam
+      ? `/recognition/create?jenis_group=${jenisGroupParam}`
+      : `/recognition/create`;
+    router.push(url);
+  };
+
   return (
     <Card className='border-slate-200 shadow-sm rounded-2xl overflow-hidden bg-white p-0'>
       <div className='flex flex-col gap-3 p-6 border-b border-slate-100 sm:flex-row sm:items-start sm:justify-between'>
@@ -75,7 +85,7 @@ export function RecognitionTable({ data, onChanged }: RecognitionTableProps) {
         </div>
 
         <Button
-          onClick={() => router.push("/recognition/create")}
+          onClick={handleAddData}
           className='gap-2 rounded-xl bg-[#0F4C81] hover:bg-[#0c3e6b] text-white font-bold text-sm px-5 h-10 shadow-sm shrink-0 self-start sm:self-auto'
         >
           <Plus size={16} strokeWidth={3} />

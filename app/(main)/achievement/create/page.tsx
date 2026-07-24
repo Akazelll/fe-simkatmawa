@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { AchievementDetailSection } from "@/features/achievement/components/AchievementDetailSection";
 import { FormErrorSummary } from "@/features/shared/components/form/FormErrorSummary";
@@ -25,6 +25,8 @@ import { mapToPrestasiPayload } from "@/features/achievement/utils/prestasiMappe
 
 export default function CreatePrestasiPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const kategoriParam = searchParams.get("kategori");
   const { currentUser, isLoaded: isAuthLoaded } = useAuth();
 
   const mahasiswa = useFieldList(MAHASISWA_INITIAL);
@@ -37,6 +39,10 @@ export default function CreatePrestasiPage() {
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string[]>
   >({});
+
+  const backUrl = kategoriParam
+    ? `/achievement?kategori=${kategoriParam}`
+    : `/achievement`;
 
   useEffect(() => {
     if (prefilledRef.current) return;
@@ -75,7 +81,7 @@ export default function CreatePrestasiPage() {
       const response = await prestasiService.createPrestasi(payload);
 
       if (response.success) {
-        router.push("/achievement");
+        router.push(backUrl);
         return;
       }
 
@@ -136,7 +142,7 @@ export default function CreatePrestasiPage() {
               update={dosen.update}
             />
 
-            <FormFooter backHref='/achievement' />
+            <FormFooter backHref={backUrl} />
           </>
         )}
       </RoleGuard>

@@ -36,9 +36,9 @@ export function useRekognisiList(
     fetchRekognisi();
   }, [fetchRekognisi]);
 
-  const updateParams = (newParams: Partial<RekognisiQueryParams>) => {
+  const updateParams = useCallback((newParams: Partial<RekognisiQueryParams>) => {
     setParams((prev) => ({ ...prev, ...newParams, page: newParams.page || 1 }));
-  };
+  }, []);
 
   return {
     data,

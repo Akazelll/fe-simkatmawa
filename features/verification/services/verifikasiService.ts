@@ -2,8 +2,10 @@ import { api } from "@/lib/api";
 
 export type VerifikasiPayload = {
   status: "APPROVE" | "REJECT";
+  alasan_penolakan_id?: number;
   alasan_penolakan?: string;
 };
+
 
 export const verifikasiService = {
   getList: async (

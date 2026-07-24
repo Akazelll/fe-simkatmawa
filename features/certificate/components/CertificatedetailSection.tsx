@@ -141,7 +141,7 @@ export function CertificateDetailSection({
 
           <div className='flex flex-col gap-1.5'>
             <Label htmlFor='link-foto' className={LABEL_CLASS}>
-              Link Foto UPP <Required />
+              Link Dokumentasi Membawa Piala/Medali <Required />
             </Label>
             <IconInput
               id='link-foto'

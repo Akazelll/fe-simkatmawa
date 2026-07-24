@@ -72,13 +72,16 @@ export default function VerificationDetailPage() {
     }
   };
 
-  const submitReject = async (reason: string) => {
+  const submitReject = async (payload: {
+    alasan_penolakan_id?: number;
+    alasan_penolakan?: string;
+  }) => {
     if (!type || !id) return;
     setIsProcessing(true);
     try {
       await verifikasiService.verify(apiType, id, {
         status: "REJECT",
-        alasan_penolakan: reason,
+        ...payload,
       });
       setIsRejectModalOpen(false);
       router.push(`/verification/${type}`);

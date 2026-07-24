@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { PageHeader } from "@/features/shared/components/PageHeader";
 import { FilterSection } from "@/features/shared/components/FilterSection";
 import { Pagination } from "@/features/shared/components/Pagination";
@@ -17,18 +19,45 @@ import { useRekognisiList } from "@/features/recognition/hooks/useRekognisiList"
 import { TableSkeleton } from "@/features/shared/components/TableSkeleton";
 import { useSkeletonRows } from "@/features/shared/hooks/useSkeletonRows";
 
+const REKOGNISI_GROUP_LABEL_MAP: Record<string, string> = {
+  juri: "Juri",
+  keynote: "Keynote",
+  karya_seni: "Karya Seni",
+  buku: "Buku",
+  paten: "Paten",
+  publikasi: "Publikasi",
+  duta: "Duta",
+  produk: "Produk",
+};
+
 export default function RekognisiPage() {
+  const searchParams = useSearchParams();
+  const jenisGroupQuery = searchParams.get("jenis_group") || undefined;
+
   const { data, meta, isLoading, error, params, updateParams, refetch } =
-    useRekognisiList({ page: 1 });
+    useRekognisiList({ page: 1, jenis_group: jenisGroupQuery });
+
+  useEffect(() => {
+    updateParams({ jenis_group: jenisGroupQuery, page: 1 });
+  }, [jenisGroupQuery, updateParams]);
 
   const skeletonRows = useSkeletonRows("recognition", data.length, !isLoading);
 
+  const activeGroupLabel = jenisGroupQuery
+    ? REKOGNISI_GROUP_LABEL_MAP[jenisGroupQuery] || jenisGroupQuery
+    : null;
+
+  const pageTitle = activeGroupLabel
+    ? `Rekognisi — ${activeGroupLabel}`
+    : "Rekognisi";
+
+  const pageDescription = activeGroupLabel
+    ? `Daftar pengajuan rekognisi kelompok ${activeGroupLabel}`
+    : "Kelola data rekognisi mahasiswa";
+
   return (
     <div className='flex flex-col gap-6 animate-in fade-in duration-500'>
-      <PageHeader
-        title='Rekognisi'
-        description='Kelola data rekognisi mahasiswa'
-      />
+      <PageHeader title={pageTitle} description={pageDescription} />
 
       <FilterSection
         search={params.search || ""}
