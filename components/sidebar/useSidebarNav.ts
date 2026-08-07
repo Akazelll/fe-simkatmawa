@@ -141,23 +141,26 @@ export function useSidebarNav(currentUser: any) {
     if (hasRole(currentUser, ["admin", "superadmin"])) {
       items.push(
         {
-          label: "Verification",
+          label: "Daftar Pengajuan",
           icon: SquareCheckBig,
           children: [
-            { label: "Prestasi", icon: Trophy, href: "/verification/prestasi" },
             {
-              label: "Sertifikat",
-              icon: ScrollText,
-              href: "/verification/sertifikat",
+              label: "Prestasi Mandiri",
+              icon: Trophy,
+              href: "/verification/prestasi",
             },
             {
               label: "Rekognisi",
               icon: UserCheck,
               href: "/verification/rekognisi",
             },
+            {
+              label: "Sertifikasi",
+              icon: ScrollText,
+              href: "/verification/sertifikasi",
+            },
           ],
         },
-        { label: "History", icon: History, href: "/history" },
         { label: "Queue Monitoring", icon: Rows3, href: "/queue" },
         { label: "Activity Log", icon: Activity, href: "/activity" },
       );

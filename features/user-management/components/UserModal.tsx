@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { userService } from "@/features/user-management/services/userService";
-import { toast } from "sonner";
+import { customToast } from "@/lib/custom-toast";
 import { UserFormFields, UserFormData } from "./UserFormFields";
 
 interface UserModalProps {
@@ -58,14 +58,14 @@ export function UserModal({
 
   const handleSubmit = async () => {
     if (!formData.name || !formData.email || !formData.role) {
-      toast.error("Validasi Gagal", {
+      customToast.error("Validasi Gagal", {
         description: "Semua kolom wajib diisi.",
       });
       return;
     }
 
     if (!isEdit && !formData.password) {
-      toast.error("Validasi Gagal", {
+      customToast.error("Validasi Gagal", {
         description: "Password wajib diisi untuk pengguna baru.",
       });
       return;
@@ -85,12 +85,12 @@ export function UserModal({
 
       if (isEdit) {
         await userService.updateUser(user.id, payload);
-        toast.success("Berhasil diperbarui", {
+        customToast.success("Berhasil diperbarui", {
           description: `Data pengguna ${formData.name} telah disimpan.`,
         });
       } else {
         await userService.createUser(payload);
-        toast.success("Berhasil ditambahkan", {
+        customToast.success("Berhasil ditambahkan", {
           description: `Pengguna ${formData.name} berhasil dibuat.`,
         });
       }
@@ -99,9 +99,23 @@ export function UserModal({
       onClose();
     } catch (error: any) {
       console.error("Error submitting user:", error);
-      toast.error("Gagal menyimpan data", {
-        description:
-          error?.response?.data?.message || "Terjadi kesalahan pada server.",
+      const errorsObj = error?.response?.data?.errors;
+      let errorDescription =
+        error?.response?.data?.message || "Terjadi kesalahan pada server.";
+
+      if (errorsObj && typeof errorsObj === "object") {
+        const firstKey = Object.keys(errorsObj)[0];
+        if (
+          firstKey &&
+          Array.isArray(errorsObj[firstKey]) &&
+          errorsObj[firstKey].length > 0
+        ) {
+          errorDescription = errorsObj[firstKey][0];
+        }
+      }
+
+      customToast.error("Gagal menyimpan data", {
+        description: errorDescription,
       });
     } finally {
       setIsProcessing(false);

@@ -16,6 +16,7 @@ import {
 } from "@/features/shared/hooks/useFieldList";
 import { sertifikasiService } from "@/features/certificate/services/sertifikasiService";
 import { mapToSertifikasiPayload } from "@/features/certificate/utils/sertifikasiMapper";
+import { customToast } from "@/lib/custom-toast";
 import { Certificate } from "@/features/certificate/types";
 
 export function SertifikatEditForm({ detail }: { detail: Certificate }) {
@@ -52,15 +53,21 @@ export function SertifikatEditForm({ detail }: { detail: Certificate }) {
         payload,
       );
       if (response.success) {
+        customToast.success("Berhasil!", {
+          description: "Data pengajuan sertifikasi berhasil diperbarui.",
+        });
         router.push(`/certificate/${detail.id}`);
       } else {
-        setErrorMsg(response.message || "Gagal memperbarui pengajuan.");
+        const msg = response.message || "Gagal memperbarui pengajuan.";
+        setErrorMsg(msg);
+        customToast.error("Gagal", { description: msg });
       }
     } catch (error: any) {
-      setErrorMsg(
+      const msg =
         error.response?.data?.message ||
-          "Gagal memperbarui pengajuan sertifikasi.",
-      );
+        "Gagal memperbarui pengajuan sertifikasi.";
+      setErrorMsg(msg);
+      customToast.error("Gagal", { description: msg });
     } finally {
       setIsSubmitting(false);
     }

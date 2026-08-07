@@ -1,4 +1,5 @@
 import { api } from "@/lib/api";
+import { TipeKegiatan, VerifikasiQueryParams, PengajuanResponse } from "../types";
 
 export type VerifikasiPayload = {
   status: "APPROVE" | "REJECT";
@@ -6,12 +7,11 @@ export type VerifikasiPayload = {
   alasan_penolakan?: string;
 };
 
-
 export const verifikasiService = {
   getList: async (
-    tipeKegiatan: "prestasi" | "sertifikasi" | "rekognisi",
-    params?: any,
-  ) => {
+    tipeKegiatan: TipeKegiatan,
+    params?: VerifikasiQueryParams,
+  ): Promise<PengajuanResponse> => {
     const response = await api.get(`/admin/pengajuan/${tipeKegiatan}`, {
       params,
     });
@@ -19,33 +19,15 @@ export const verifikasiService = {
   },
 
   getDetail: async (
-    tipeKegiatan: "prestasi" | "sertifikasi" | "rekognisi",
+    tipeKegiatan: TipeKegiatan,
     id: string | number,
   ) => {
     const response = await api.get(`/admin/pengajuan/${tipeKegiatan}/${id}`);
     return response.data;
   },
 
-  getHistory: async (
-    tipeKegiatan: "prestasi" | "sertifikasi" | "rekognisi",
-    params?: any,
-  ) => {
-    const response = await api.get(`/admin/history/${tipeKegiatan}`, {
-      params,
-    });
-    return response.data;
-  },
-
-  getHistoryDetail: async (
-    tipeKegiatan: "prestasi" | "sertifikasi" | "rekognisi",
-    id: string | number,
-  ) => {
-    const response = await api.get(`/admin/history/${tipeKegiatan}/${id}`);
-    return response.data;
-  },
-
   verify: async (
-    tipeKegiatan: "prestasi" | "sertifikasi" | "rekognisi",
+    tipeKegiatan: TipeKegiatan,
     id: string | number,
     payload: VerifikasiPayload,
   ) => {

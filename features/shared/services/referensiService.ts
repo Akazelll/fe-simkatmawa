@@ -24,5 +24,15 @@ export const referensiService = {
     const response = await api.get("/referensi/alasan-penolakan");
     return response.data?.data ?? [];
   },
+
+  async getEnums(): Promise<{
+    level?: string[];
+    kategori_prestasi?: string[];
+    status_internal?: string[];
+    rekognisi_jenis_group?: Array<{ key: string; label: string; jenis: string[] }>;
+  }> {
+    const response = await api.get("/referensi/enums");
+    return response.data?.data ?? response.data ?? {};
+  },
 };
 

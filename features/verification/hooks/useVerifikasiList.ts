@@ -2,28 +2,45 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { verifikasiService } from "../services/verifikasiService";
-import { TipeKegiatan } from "../types";
+import { TipeKegiatan, VerifikasiQueryParams, PengajuanItem } from "../types";
 import { PaginationMeta } from "@/features/shared/types/pagination";
-import { PAGE_SIZE } from "@/features/shared/constants/pagination";
 
 export function useVerifikasiList(
   tipeKegiatan: TipeKegiatan,
-  page: number = 1,
+  initialParams: VerifikasiQueryParams = {},
 ) {
-  const [data, setData] = useState<any[]>([]);
-  const [meta, setMeta] = useState<PaginationMeta | null>(null); // Tambahkan state meta
+  const [data, setData] = useState<PengajuanItem[]>([]);
+  const [meta, setMeta] = useState<PaginationMeta | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFetching, setIsFetching] = useState(false);
+
+  const [params, setParams] = useState<VerifikasiQueryParams>({
+    page: 1,
+    limit: 10,
+    status: "all",
+    ...initialParams,
+  });
 
   const fetchList = useCallback(async () => {
-    setIsLoading(true);
+    setIsFetching(true);
     try {
-      // Kirim parameter page + limit (BE endpoint pengajuan membaca `limit`).
-      const response = await verifikasiService.getList(tipeKegiatan, {
-        page,
-        limit: PAGE_SIZE,
-      });
+      // Membersihkan parameter kosong sebelum dikirim ke BE
+      const cleanParams: Record<string, any> = {};
 
-      const mappedData = (response.data || []).map((item: any) => ({
+      if (params.page) cleanParams.page = params.page;
+      if (params.limit) cleanParams.limit = params.limit;
+      if (params.status && params.status !== "all") cleanParams.status = params.status;
+      if (params.kategori && params.kategori !== "all") cleanParams.kategori = params.kategori;
+      if (params.jenis_group && params.jenis_group !== "all") cleanParams.jenis_group = params.jenis_group;
+      if (params.level && params.level !== "all") cleanParams.level = params.level;
+      if (params.tahun && params.tahun !== "all") cleanParams.tahun = params.tahun;
+      if (params.search && params.search.trim()) cleanParams.search = params.search.trim();
+      if (params.sort_by) cleanParams.sort_by = params.sort_by;
+      if (params.sort_dir) cleanParams.sort_dir = params.sort_dir;
+
+      const response = await verifikasiService.getList(tipeKegiatan, cleanParams);
+
+      const mappedData: PengajuanItem[] = (response.data || []).map((item: any) => ({
         ...item,
         tipe_kegiatan: tipeKegiatan,
         nama_kegiatan: item.lomba || item.nama || "Tanpa Nama",
@@ -34,21 +51,43 @@ export function useVerifikasiList(
 
       setData(mappedData);
 
-      // Simpan data meta dari backend (jika ada)
       if (response.meta) {
         setMeta(response.meta);
       }
     } catch (error) {
-      console.error(`Gagal memuat antrean ${tipeKegiatan}:`, error);
+      console.error(`Gagal memuat daftar ${tipeKegiatan}:`, error);
       setData([]);
+      setMeta(null);
     } finally {
+      setIsFetching(false);
       setIsLoading(false);
     }
-  }, [tipeKegiatan, page]); // Tambahkan page ke dependency array
+  }, [tipeKegiatan, params]);
 
   useEffect(() => {
     fetchList();
   }, [fetchList]);
 
-  return { data, meta, isLoading, refetch: fetchList };
+  const updateParams = useCallback(
+    (newParams: Partial<VerifikasiQueryParams>) => {
+      setParams((prev) => ({
+        ...prev,
+        ...newParams,
+        // Jika mengubah filter (bukan hanya ubah halaman), reset ke page 1
+        page: newParams.page !== undefined ? newParams.page : 1,
+      }));
+    },
+    [],
+  );
+
+  return {
+    data,
+    meta,
+    isLoading,
+    isFetching,
+    params,
+    setParams,
+    updateParams,
+    refetch: fetchList,
+  };
 }

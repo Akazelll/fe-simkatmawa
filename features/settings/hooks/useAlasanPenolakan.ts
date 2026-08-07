@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { toast } from "sonner";
+import { customToast } from "@/lib/custom-toast";
 import { settingsService } from "../services/settingsService";
 import type {
   AlasanPenolakan,
@@ -44,7 +44,7 @@ export function useAlasanPenolakan() {
         }
       }
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Gagal memuat master alasan penolakan");
+      customToast.error(err?.response?.data?.message || "Gagal memuat master alasan penolakan");
     } finally {
       setIsLoading(false);
     }
@@ -59,14 +59,14 @@ export function useAlasanPenolakan() {
     try {
       const res = await settingsService.createAlasanPenolakan(payload);
       if (res?.success === false) {
-        toast.error(res?.message || "Gagal menambahkan alasan penolakan");
+        customToast.error(res?.message || "Gagal menambahkan alasan penolakan");
         return false;
       }
-      toast.success(res?.message || "Master alasan penolakan berhasil ditambahkan.");
+      customToast.success(res?.message || "Master alasan penolakan berhasil ditambahkan.");
       await fetchList();
       return true;
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Terjadi kesalahan pada server");
+      customToast.error(err?.response?.data?.message || "Terjadi kesalahan pada server");
       return false;
     } finally {
       setIsSubmitting(false);
@@ -78,14 +78,14 @@ export function useAlasanPenolakan() {
     try {
       const res = await settingsService.updateAlasanPenolakan(id, payload);
       if (res?.success === false) {
-        toast.error(res?.message || "Gagal memperbarui alasan penolakan");
+        customToast.error(res?.message || "Gagal memperbarui alasan penolakan");
         return false;
       }
-      toast.success(res?.message || "Master alasan penolakan berhasil diperbarui.");
+      customToast.success(res?.message || "Master alasan penolakan berhasil diperbarui.");
       await fetchList();
       return true;
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Terjadi kesalahan pada server");
+      customToast.error(err?.response?.data?.message || "Terjadi kesalahan pada server");
       return false;
     } finally {
       setIsSubmitting(false);
@@ -105,14 +105,14 @@ export function useAlasanPenolakan() {
     try {
       const res = await settingsService.deleteAlasanPenolakan(id);
       if (res?.success === false) {
-        toast.error(res?.message || "Gagal menghapus alasan penolakan");
+        customToast.error(res?.message || "Gagal menghapus alasan penolakan");
         return false;
       }
-      toast.success(res?.message || "Master alasan penolakan berhasil dihapus.");
+      customToast.success(res?.message || "Master alasan penolakan berhasil dihapus.");
       await fetchList();
       return true;
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Terjadi kesalahan pada server");
+      customToast.error(err?.response?.data?.message || "Terjadi kesalahan pada server");
       return false;
     } finally {
       setIsSubmitting(false);

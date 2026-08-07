@@ -11,6 +11,7 @@ import { verifikasiService } from "@/features/verification/services/verifikasiSe
 import { TipeKegiatan } from "@/features/verification/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
+import { customToast } from "@/lib/custom-toast";
 import { normalizeSubmissionDetail } from "@/features/verification/utils/verificationMapper";
 import { SubmissionDetailBody } from "@/features/verification/components/SubmissionDetailBody";
 
@@ -64,9 +65,15 @@ export default function VerificationDetailPage() {
     try {
       await verifikasiService.verify(apiType, id, { status: "APPROVE" });
       setIsApproveModalOpen(false);
+      customToast.success("Disetujui!", {
+        description: "Pengajuan berhasil disetujui.",
+      });
       router.push(`/verification/${type}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Gagal menyetujui:", error);
+      customToast.error("Gagal Disetujui", {
+        description: error?.response?.data?.message || "Terjadi kesalahan saat menyetujui pengajuan.",
+      });
     } finally {
       setIsProcessing(false);
     }
@@ -84,9 +91,15 @@ export default function VerificationDetailPage() {
         ...payload,
       });
       setIsRejectModalOpen(false);
+      customToast.warning("Ditolak", {
+        description: "Pengajuan telah ditolak.",
+      });
       router.push(`/verification/${type}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Gagal menolak:", error);
+      customToast.error("Gagal Menolak", {
+        description: error?.response?.data?.message || "Terjadi kesalahan saat menolak pengajuan.",
+      });
     } finally {
       setIsProcessing(false);
     }
@@ -102,7 +115,7 @@ export default function VerificationDetailPage() {
 
   return (
     <div className='space-y-6 p-6 max-w-5xl mx-auto animate-in fade-in duration-500'>
-      <BackLink href={`/verification`} label='Kembali ke Antrean' />
+      <BackLink href={`/verification/${type || "prestasi"}`} label='Kembali ke Daftar Pengajuan' />
 
       <PageHeader
         title='Review Pengajuan'

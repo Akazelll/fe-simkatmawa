@@ -20,6 +20,7 @@ import {
 import { RoleGuard } from "@/features/auth/components/RoleGuard";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 
+import { customToast } from "@/lib/custom-toast";
 import { prestasiService } from "@/features/achievement/services/prestasiService";
 import { mapToPrestasiPayload } from "@/features/achievement/utils/prestasiMapper";
 
@@ -81,22 +82,28 @@ export default function CreatePrestasiPage() {
       const response = await prestasiService.createPrestasi(payload);
 
       if (response.success) {
+        customToast.success("Berhasil!", {
+          description: "Pengajuan prestasi mandiri berhasil disimpan.",
+        });
         router.push(backUrl);
         return;
       }
 
-      setErrorMsg(response.message || "Gagal menyimpan pengajuan prestasi.");
+      const msg = response.message || "Gagal menyimpan pengajuan prestasi.";
+      setErrorMsg(msg);
+      customToast.error("Gagal", { description: msg });
     } catch (error: any) {
       if (error.response?.status === 422) {
         setValidationErrors(error.response.data.errors ?? {});
-        setErrorMsg(
-          "Terdapat kesalahan pada input form. Silakan periksa kembali.",
-        );
+        const msg = "Terdapat kesalahan pada input form. Silakan periksa kembali.";
+        setErrorMsg(msg);
+        customToast.error("Validasi Gagal", { description: msg });
       } else {
-        setErrorMsg(
+        const msg =
           error.response?.data?.message ||
-            "Gagal menyimpan pengajuan prestasi.",
-        );
+          "Gagal menyimpan pengajuan prestasi.";
+        setErrorMsg(msg);
+        customToast.error("Gagal", { description: msg });
       }
     } finally {
       setIsSubmitting(false);

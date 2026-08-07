@@ -1,6 +1,7 @@
 export interface SubmissionMahasiswa {
   nim: string;
   nama: string;
+  urutan?: number;
 }
 
 export interface SubmissionDosen {

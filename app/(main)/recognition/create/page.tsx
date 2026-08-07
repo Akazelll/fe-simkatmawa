@@ -19,6 +19,7 @@ import { RoleGuard } from "@/features/auth/components/RoleGuard";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { FormSkeleton } from "@/features/shared/components/FormSkeleton";
 
+import { customToast } from "@/lib/custom-toast";
 import { rekognisiService } from "@/features/recognition/services/rekognisiService";
 import { mapToRekognisiPayload } from "@/features/recognition/utils/rekognisiMapper";
 
@@ -69,19 +70,27 @@ export default function CreateRecognitionPage() {
 
       const response = await rekognisiService.createRekognisi(payload);
       if (response.success) {
+        customToast.success("Berhasil!", {
+          description: "Pengajuan rekognisi berhasil disimpan.",
+        });
         router.push(backUrl);
+      } else {
+        const msg = response.message || "Gagal menyimpan pengajuan rekognisi.";
+        setErrorMsg(msg);
+        customToast.error("Gagal", { description: msg });
       }
     } catch (error: any) {
       if (error.response?.status === 422) {
         setValidationErrors(error.response.data.errors ?? {});
-        setErrorMsg(
-          "Terdapat kesalahan pada input form. Silakan periksa kembali.",
-        );
+        const msg = "Terdapat kesalahan pada input form. Silakan periksa kembali.";
+        setErrorMsg(msg);
+        customToast.error("Validasi Gagal", { description: msg });
       } else {
-        setErrorMsg(
+        const msg =
           error.response?.data?.message ||
-            "Gagal menyimpan pengajuan rekognisi.",
-        );
+          "Gagal menyimpan pengajuan rekognisi.";
+        setErrorMsg(msg);
+        customToast.error("Gagal", { description: msg });
       }
     } finally {
       setIsSubmitting(false);

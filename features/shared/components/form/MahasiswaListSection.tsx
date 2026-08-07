@@ -92,10 +92,10 @@ export function MahasiswaListSection({
                 {isMulti && (
                   <span
                     className={cn(
-                      "inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold",
+                      "inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold border",
                       isKetua
-                        ? "bg-amber-50 text-amber-700"
-                        : "bg-slate-100 text-slate-600",
+                        ? "bg-amber-50 text-amber-700 border-amber-200/80"
+                        : "bg-slate-50 text-slate-600 border-slate-200/80",
                     )}
                   >
                     {isKetua ? <Crown size={12} /> : <UserRound size={12} />}

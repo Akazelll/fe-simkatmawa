@@ -1,6 +1,7 @@
 export interface MahasiswaPrestasi {
   nim: string;
   nama: string;
+  urutan?: number;
 }
 
 export interface DosenPembimbing {

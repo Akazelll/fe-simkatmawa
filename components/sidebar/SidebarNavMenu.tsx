@@ -34,6 +34,7 @@ export function SidebarNavMenu({ items }: SidebarNavMenuProps) {
     "Rekognisi": true,
     "Submission": true,
     "Verification": true,
+    "Daftar Pengajuan": true,
   });
 
   const isPathActive = React.useCallback(
