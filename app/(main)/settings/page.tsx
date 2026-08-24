@@ -8,7 +8,7 @@ import { KemdikbudIntegrationCard } from "@/features/settings/components/Kemdikb
 import { AlasanPenolakanManagementCard } from "@/features/settings/components/AlasanPenolakanManagementCard";
 import { UpdateKemdikbudCredentialModal } from "@/features/settings/components/UpdateKemdikbudCredentialModal";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { FormSkeleton } from "@/features/shared/components/FormSkeleton";
+import { SettingsSkeleton } from "@/features/settings/components/SettingsSkeleton";
 
 export default function SettingsPage() {
   const { isLoaded: isAuthLoaded } = useAuth();
@@ -29,11 +29,7 @@ export default function SettingsPage() {
       />
       <RoleGuard allowedRoles={["superadmin"]}>
         {!isAuthLoaded || !isCredentialLoaded ? (
-          <FormSkeleton
-            sections={[5]}
-            footer={false}
-            className='mx-auto max-w-3xl'
-          />
+          <SettingsSkeleton />
         ) : (
           <div className='space-y-6'>
             {/* Form CRUD Alasan Penolakan untuk Superadmin */}

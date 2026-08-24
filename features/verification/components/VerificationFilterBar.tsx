@@ -21,12 +21,12 @@ interface VerificationFilterBarProps {
 }
 
 const STATUS_CHIPS = [
-  { value: "all", label: "Semua" },
-  { value: "PENDING", label: "Pending" },
-  { value: "APPROVED", label: "Approved" },
-  { value: "REJECTED", label: "Rejected" },
-  { value: "SYNC_SUCCESS", label: "Sync Sukses" },
-  { value: "SYNC_FAILED", label: "Sync Gagal" },
+  { value: "all", label: "Semua", activeClass: "bg-slate-700 text-white border-slate-700", inactiveClass: "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100" },
+  { value: "PENDING", label: "Pending", activeClass: "bg-amber-500 text-white border-amber-500", inactiveClass: "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100" },
+  { value: "APPROVED", label: "Approved", activeClass: "bg-blue-500 text-white border-blue-500", inactiveClass: "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100" },
+  { value: "REJECTED", label: "Rejected", activeClass: "bg-rose-500 text-white border-rose-500", inactiveClass: "bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100" },
+  { value: "SYNC_SUCCESS", label: "Sync Sukses", activeClass: "bg-emerald-500 text-white border-emerald-500", inactiveClass: "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100" },
+  { value: "SYNC_FAILED", label: "Sync Gagal", activeClass: "bg-orange-500 text-white border-orange-500", inactiveClass: "bg-orange-50 text-orange-700 border-orange-200 hover:bg-orange-100" },
 ];
 
 const KATEGORI_OPTIONS = [
@@ -193,8 +193,8 @@ function VerificationFilterBarComponent({
               onClick={() => handleStatusClick(chip.value)}
               className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all whitespace-nowrap border cursor-pointer ${
                 isActive
-                  ? "bg-[#0F4C81] text-white border-[#0F4C81] shadow-sm"
-                  : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100 hover:text-slate-900"
+                  ? chip.activeClass
+                  : chip.inactiveClass
               }`}
             >
               {chip.label}
@@ -214,6 +214,7 @@ function VerificationFilterBarComponent({
             <Select
               value={params.kategori ?? "all"}
               onValueChange={(val) => val && updateParams({ kategori: val === "all" ? undefined : val })}
+              items={KATEGORI_OPTIONS}
             >
               <SelectTrigger className='h-12 min-h-12 w-full rounded-2xl border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-none flex items-center focus:ring-0 focus:ring-offset-0'>
                 <SelectValue />
@@ -238,6 +239,7 @@ function VerificationFilterBarComponent({
             <Select
               value={params.jenis_group ?? "all"}
               onValueChange={(val) => val && updateParams({ jenis_group: val === "all" ? undefined : val })}
+              items={JENIS_GROUP_OPTIONS}
             >
               <SelectTrigger className='h-12 min-h-12 w-full rounded-2xl border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-none flex items-center focus:ring-0 focus:ring-offset-0'>
                 <SelectValue />
@@ -261,6 +263,7 @@ function VerificationFilterBarComponent({
           <Select
             value={params.level ?? "all"}
             onValueChange={(val) => val && updateParams({ level: val === "all" ? undefined : val })}
+            items={LEVEL_OPTIONS}
           >
             <SelectTrigger className='h-12 min-h-12 w-full rounded-2xl border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-none flex items-center focus:ring-0 focus:ring-offset-0'>
               <SelectValue />
@@ -283,6 +286,7 @@ function VerificationFilterBarComponent({
           <Select
             value={params.tahun ? String(params.tahun) : "all"}
             onValueChange={(val) => updateParams({ tahun: !val || val === "all" ? undefined : val })}
+            items={[{ value: "all", label: "Semua Tahun" }, ...yearOptions.map((y) => ({ value: y, label: y }))]}
           >
             <SelectTrigger className='h-12 min-h-12 w-full rounded-2xl border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-none flex items-center focus:ring-0 focus:ring-offset-0'>
               <SelectValue />
