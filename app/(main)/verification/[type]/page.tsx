@@ -1,104 +1,107 @@
 "use client";
 
-import { useState, useMemo } from "react";
 import { useParams } from "next/navigation";
+import { Download, Loader2 } from "lucide-react";
+import { PageHeader } from "@/features/shared/components/PageHeader";
+import { RoleGuard } from "@/features/auth/components/RoleGuard";
+import { VerificationFilterBar } from "@/features/verification/components/VerificationFilterBar";
 import {
   VerificationTable,
   VERIFICATION_TABLE_COLUMNS,
 } from "@/features/verification/components/VerificationTable";
 import { Pagination } from "@/features/shared/components/Pagination";
-import { FilterSection } from "@/features/shared/components/FilterSection";
 import { useVerifikasiList } from "@/features/verification/hooks/useVerifikasiList";
+import { useExportExcel } from "@/features/verification/hooks/useExportExcel";
 import { TipeKegiatan } from "@/features/verification/types";
 import { TableSkeleton } from "@/features/shared/components/TableSkeleton";
 import { useSkeletonRows } from "@/features/shared/hooks/useSkeletonRows";
+import { ExportLogButton } from "@/features/activity/components/ExportLogButton";
 
 type VerificationType = "prestasi" | "sertifikat" | "rekognisi";
 
+const TITLE_MAP: Record<VerificationType, string> = {
+  prestasi: "Verifikasi Prestasi",
+  sertifikat: "Verifikasi Sertifikat",
+  rekognisi: "Verifikasi Rekognisi",
+};
+
 export default function VerificationTypePage() {
   const params = useParams<{ type: VerificationType }>();
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [sortOrder, setSortOrder] = useState("Terbaru ");
 
   const type = params?.type;
   const apiType = (
     type === "sertifikat" ? "sertifikasi" : type
   ) as TipeKegiatan;
 
-  const {
-    data: pendingSubmissions,
-    meta,
-    isLoading,
-  } = useVerifikasiList(apiType, currentPage);
+  const { data, meta, isLoading, params: queryParams, updateParams } = useVerifikasiList(apiType);
+  const { isExporting, exportExcel } = useExportExcel();
 
   const skeletonRows = useSkeletonRows(
     `verification:${apiType}`,
-    pendingSubmissions?.length,
+    data?.length,
     !isLoading,
   );
 
-  const handleSortChange = (val: string) => {
-    setSortOrder(val);
-    setCurrentPage(1);
-  };
-
-  const sortedData = useMemo(() => {
-    if (!pendingSubmissions) return [];
-
-    return [...pendingSubmissions].sort((a: any, b: any) => {
-      const dateA = new Date(
-        a.created_at || a.date || a.updated_at || 0,
-      ).getTime();
-      const dateB = new Date(
-        b.created_at || b.date || b.updated_at || 0,
-      ).getTime();
-
-      if (sortOrder === "Terbaru ") {
-        return dateB - dateA;
-      } else {
-        return dateA - dateB;
-      }
-    });
-  }, [pendingSubmissions, sortOrder]);
+  const title = TITLE_MAP[type!] || "Verifikasi";
 
   if (!type) return null;
 
   return (
-    <div className='space-y-6 p-6 animate-in fade-in duration-500'>
-      <div className='space-y-1'>
-        <h1 className='text-2xl font-bold capitalize text-slate-900'>
-          Verifikasi {type}
-        </h1>
-        <p className='text-sm text-slate-500'>
-          Kelola antrean {type} mahasiswa yang sedang menunggu proses
-          verifikasi.
-        </p>
-      </div>
-
-      <FilterSection
-        status={sortOrder}
-        setStatus={handleSortChange}
-        statuses={["Terbaru ", "Terlama"]}
-        statusLabel='Urutkan Tanggal'
-      />
-
-      <div className='space-y-4'>
-        {isLoading ? (
-          <TableSkeleton
-            columns={VERIFICATION_TABLE_COLUMNS}
-            rows={skeletonRows}
-          />
-        ) : (
-          <>
-            <VerificationTable data={sortedData} />
-
-            {meta && meta.last_page > 1 && (
-              <Pagination meta={meta} onPageChange={setCurrentPage} />
+    <RoleGuard allowedRoles={["admin", "superadmin"]}>
+      <div className='flex flex-col gap-6 animate-in fade-in duration-500 w-full'>
+        {/* Page Header */}
+        <PageHeader
+          title={title}
+          description='Kelola, filter, cari, dan verifikasi seluruh pengajuan mahasiswa.'
+        >
+          <ExportLogButton
+            onClick={() => exportExcel(apiType, queryParams)}
+            disabled={isExporting}
+          >
+            {isExporting ? (
+              <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+            ) : (
+              <Download className='mr-2 h-4 w-4' />
             )}
-          </>
-        )}
+            {isExporting ? "Mengunduh..." : "Export Excel"}
+          </ExportLogButton>
+        </PageHeader>
+
+        {/* Filter Bar */}
+        <VerificationFilterBar
+          tipeKegiatan={apiType}
+          params={queryParams}
+          updateParams={updateParams}
+          total={meta?.total}
+        />
+
+        {/* Table & Pagination */}
+        <div className='space-y-4 w-full'>
+          {isLoading ? (
+            <TableSkeleton
+              columns={VERIFICATION_TABLE_COLUMNS}
+              rows={skeletonRows}
+            />
+          ) : (
+            <>
+              <VerificationTable
+                tipeKegiatan={apiType}
+                data={data}
+                isLoading={isLoading}
+                params={queryParams}
+                updateParams={updateParams}
+              />
+
+              {meta && (
+                <Pagination
+                  meta={meta}
+                  onPageChange={(page) => updateParams({ page })}
+                />
+              )}
+            </>
+          )}
+        </div>
       </div>
-    </div>
+    </RoleGuard>
   );
 }

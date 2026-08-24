@@ -48,7 +48,7 @@ export default function VerificationPage() {
               rows={skeletonRows}
             />
           ) : (
-            <VerificationTable data={data} />
+            <VerificationTable tipeKegiatan={apiTypeFormat} data={data} />
           )}
         </div>
       </div>
