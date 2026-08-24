@@ -33,6 +33,19 @@ export function VerificationTable({
     }
   };
 
+  const handleSort = (key: string) => {
+    if (!updateParams) return;
+    if (params?.sort_by !== key) {
+      updateParams({ sort_by: key, sort_dir: "asc" });
+    } else if (params?.sort_dir === "asc") {
+      updateParams({ sort_by: key, sort_dir: "desc" });
+    } else {
+      updateParams({ sort_by: undefined, sort_dir: undefined });
+    }
+  };
+
+  const nameSortKey = tipeKegiatan === "prestasi" ? "lomba" : "nama";
+
   if (isLoading) {
     return <VerificationTableSkeleton />;
   }

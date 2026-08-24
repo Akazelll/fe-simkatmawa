@@ -16,6 +16,7 @@ import {
 } from "@/features/shared/hooks/useFieldList";
 import { prestasiService } from "@/features/achievement/services/prestasiService";
 import { mapToPrestasiPayload } from "@/features/achievement/utils/prestasiMapper";
+import { customToast } from "@/lib/custom-toast";
 import { Prestasi } from "@/features/achievement/types";
 
 export function PrestasiEditForm({ detail }: { detail: Prestasi }) {
@@ -49,18 +50,22 @@ export function PrestasiEditForm({ detail }: { detail: Prestasi }) {
     try {
       const response = await prestasiService.updatePrestasi(detail.id, payload);
       if (response.success) {
+        customToast.success("Berhasil!", {
+          description: "Data pengajuan prestasi berhasil diperbarui.",
+        });
         router.push(`/achievement/${detail.id}`);
       } else {
-        setErrorMsg(response.message || "Gagal memperbarui pengajuan.");
+        const msg = response.message || "Gagal memperbarui pengajuan.";
+        setErrorMsg(msg);
+        customToast.error("Gagal", { description: msg });
       }
     } catch (error: any) {
-      if (error.response?.status === 422) {
-        setErrorMsg("Terdapat kesalahan pada input form. Silakan periksa kembali.");
-      } else {
-        setErrorMsg(
-          error.response?.data?.message || "Gagal memperbarui pengajuan prestasi.",
-        );
-      }
+      const msg =
+        error.response?.status === 422
+          ? "Terdapat kesalahan pada input form. Silakan periksa kembali."
+          : error.response?.data?.message || "Gagal memperbarui pengajuan prestasi.";
+      setErrorMsg(msg);
+      customToast.error("Gagal", { description: msg });
     } finally {
       setIsSubmitting(false);
     }

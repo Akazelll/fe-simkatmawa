@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { toast } from "sonner";
+import { customToast } from "@/lib/custom-toast";
 import { settingsService } from "../services/settingsService";
 import type {
   KemdikbudCredential,
@@ -46,14 +46,14 @@ export function useKemdikbudCredential() {
           password: payload.password,
         });
         if (res?.success === false) {
-          toast.error(res?.message || "Gagal memperbarui kredensial");
+          customToast.error(res?.message || "Gagal memperbarui kredensial");
           return false;
         }
-        toast.success(res?.message || "Kredensial berhasil diperbarui.");
+        customToast.success(res?.message || "Kredensial berhasil diperbarui.");
         await fetchCredential();
         return true;
       } catch (err: any) {
-        toast.error(
+        customToast.error(
           err?.response?.data?.message || "Terjadi kesalahan pada server",
         );
         return false;

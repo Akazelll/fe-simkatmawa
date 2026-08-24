@@ -32,10 +32,10 @@ export function ProtectedRoute({
 
   if (!isLoaded) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#f0f2f5]">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#1a2b5e] border-t-transparent" />
-          <p className="text-sm font-medium text-slate-500 animate-pulse">
+      <div className="flex min-h-screen items-center justify-center bg-[#f0f2f5]" suppressHydrationWarning>
+        <div className="flex flex-col items-center gap-3" suppressHydrationWarning>
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#1a2b5e] border-t-transparent" suppressHydrationWarning />
+          <p className="text-sm font-medium text-slate-500 animate-pulse" suppressHydrationWarning>
             Memverifikasi sesi...
           </p>
         </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { AchievementDetailSection } from "@/features/achievement/components/AchievementDetailSection";
 import { FormErrorSummary } from "@/features/shared/components/form/FormErrorSummary";
@@ -20,11 +20,14 @@ import {
 import { RoleGuard } from "@/features/auth/components/RoleGuard";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 
+import { customToast } from "@/lib/custom-toast";
 import { prestasiService } from "@/features/achievement/services/prestasiService";
 import { mapToPrestasiPayload } from "@/features/achievement/utils/prestasiMapper";
 
 export default function CreatePrestasiPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const kategoriParam = searchParams.get("kategori");
   const { currentUser, isLoaded: isAuthLoaded } = useAuth();
 
   const mahasiswa = useFieldList(MAHASISWA_INITIAL);
@@ -37,6 +40,10 @@ export default function CreatePrestasiPage() {
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string[]>
   >({});
+
+  const backUrl = kategoriParam
+    ? `/achievement?kategori=${kategoriParam}`
+    : `/achievement`;
 
   useEffect(() => {
     if (prefilledRef.current) return;
@@ -75,22 +82,28 @@ export default function CreatePrestasiPage() {
       const response = await prestasiService.createPrestasi(payload);
 
       if (response.success) {
-        router.push("/achievement");
+        customToast.success("Berhasil!", {
+          description: "Pengajuan prestasi mandiri berhasil disimpan.",
+        });
+        router.push(backUrl);
         return;
       }
 
-      setErrorMsg(response.message || "Gagal menyimpan pengajuan prestasi.");
+      const msg = response.message || "Gagal menyimpan pengajuan prestasi.";
+      setErrorMsg(msg);
+      customToast.error("Gagal", { description: msg });
     } catch (error: any) {
       if (error.response?.status === 422) {
         setValidationErrors(error.response.data.errors ?? {});
-        setErrorMsg(
-          "Terdapat kesalahan pada input form. Silakan periksa kembali.",
-        );
+        const msg = "Terdapat kesalahan pada input form. Silakan periksa kembali.";
+        setErrorMsg(msg);
+        customToast.error("Validasi Gagal", { description: msg });
       } else {
-        setErrorMsg(
+        const msg =
           error.response?.data?.message ||
-            "Gagal menyimpan pengajuan prestasi.",
-        );
+          "Gagal menyimpan pengajuan prestasi.";
+        setErrorMsg(msg);
+        customToast.error("Gagal", { description: msg });
       }
     } finally {
       setIsSubmitting(false);
@@ -136,7 +149,7 @@ export default function CreatePrestasiPage() {
               update={dosen.update}
             />
 
-            <FormFooter backHref='/achievement' />
+            <FormFooter backHref={backUrl} />
           </>
         )}
       </RoleGuard>

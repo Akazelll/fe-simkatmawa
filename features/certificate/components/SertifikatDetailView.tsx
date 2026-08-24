@@ -1,8 +1,9 @@
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Crown, UserRound } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { StatusBadge } from "@/features/shared/components/StatusBadge";
 import { SubmissionMetaCard } from "@/features/shared/components/SubmissionMetaCard";
 import { RejectionReasonButton } from "@/features/shared/components/RejectionReasonButton";
+import { cn } from "@/lib/utils";
 import { Certificate } from "../types";
 
 const LEVEL_LABEL: Record<string, string> = {
@@ -105,7 +106,7 @@ export function SertifikatDetailView({
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-6'>
             <DocLink label='URL Penyelenggara' url={data.url_peserta} />
             <DocLink label='Sertifikat' url={data.url_sertifikat} />
-            <DocLink label='Foto UPP' url={data.url_foto_upp} />
+            <DocLink label='Dokumentasi Membawa Piala/Medali' url={data.url_foto_upp} />
             <DocLink label='Dokumen Undangan' url={data.url_dokumen_undangan} />
           </div>
         </CardContent>
@@ -120,16 +121,35 @@ export function SertifikatDetailView({
                   Mahasiswa Terlibat
                 </h3>
                 <div className='flex flex-col divide-y divide-slate-100'>
-                  {data.mahasiswa.map((m, i) => (
-                    <div key={i} className='flex items-center gap-4 py-2.5'>
-                      <span className='text-xs font-mono text-slate-400 w-36 shrink-0'>
-                        {m.nim}
-                      </span>
-                      <span className='text-sm font-semibold text-slate-800'>
-                        {m.nama}
-                      </span>
-                    </div>
-                  ))}
+                  {data.mahasiswa.map((m, i) => {
+                    const isKetua = m.urutan === 0 || (m.urutan === undefined && i === 0);
+                    const isMultiMhs = (data.mahasiswa?.length ?? 0) > 1;
+                    return (
+                      <div key={i} className='flex items-center justify-between gap-4 py-2.5'>
+                        <div className='flex items-center gap-4 min-w-0'>
+                          <span className='text-xs font-mono text-slate-400 w-36 shrink-0'>
+                            {m.nim}
+                          </span>
+                          <span className='text-sm font-semibold text-slate-800 truncate'>
+                            {m.nama}
+                          </span>
+                        </div>
+                        {isMultiMhs && (
+                          <span
+                            className={cn(
+                              "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold shrink-0 border",
+                              isKetua
+                                ? "bg-amber-50 text-amber-700 border-amber-200/80"
+                                : "bg-slate-50 text-slate-600 border-slate-200/80"
+                            )}
+                          >
+                            {isKetua ? <Crown size={10} /> : <UserRound size={10} />}
+                            {isKetua ? "Ketua" : `Anggota ${m.urutan ?? i}`}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}

@@ -1,18 +1,4 @@
-"use client";
-
-import { useState } from "react";
-import { PageHeader } from "@/features/shared/components/PageHeader";
-import {
-  VerificationTable,
-  VERIFICATION_TABLE_COLUMNS,
-} from "@/features/verification/components/VerificationTable";
-import { useVerifikasiList } from "@/features/verification/hooks/useVerifikasiList";
-import { TipeKegiatan } from "@/features/verification/types";
-import { RoleGuard } from "@/features/auth/components/RoleGuard";
-
-import { FilterSection } from "@/features/shared/components/FilterSection";
-import { TableSkeleton } from "@/features/shared/components/TableSkeleton";
-import { useSkeletonRows } from "@/features/shared/hooks/useSkeletonRows";
+import { redirect } from "next/navigation";
 
 export default function VerificationPage() {
   const [typeFilter, setTypeFilter] = useState("Prestasi");

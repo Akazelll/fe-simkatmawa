@@ -21,7 +21,7 @@ const FIELD_LABELS: Record<string, string> = {
   url_peserta: "URL Kompetisi / Lomba",
   url_sertifikat: "Link Dokumen Sertifikat",
   tgl_sertifikat: "Tanggal Sertifikat",
-  url_foto_upp: "Link Foto UPP",
+  url_foto_upp: "Link Dokumentasi Membawa Piala/Medali",
   url_dokumen_undangan: "Link Dokumen Undangan",
   keterangan: "Keterangan",
   mahasiswa: "Data Mahasiswa",

@@ -17,7 +17,13 @@ import { TableSkeleton } from "@/features/shared/components/TableSkeleton";
 import { useSkeletonRows } from "@/features/shared/hooks/useSkeletonRows";
 import { ExportLogButton } from "@/features/activity/components/ExportLogButton";
 
-type VerificationType = "prestasi" | "sertifikat" | "rekognisi";
+type VerificationUrlType = "prestasi" | "sertifikat" | "sertifikasi" | "rekognisi";
+
+const TITLE_MAP: Record<TipeKegiatan, string> = {
+  prestasi: "Daftar Prestasi Mandiri",
+  rekognisi: "Daftar Rekognisi",
+  sertifikasi: "Daftar Sertifikasi",
+};
 
 const TITLE_MAP: Record<VerificationType, string> = {
   prestasi: "Verifikasi Prestasi",
@@ -26,7 +32,7 @@ const TITLE_MAP: Record<VerificationType, string> = {
 };
 
 export default function VerificationTypePage() {
-  const params = useParams<{ type: VerificationType }>();
+  const params = useParams<{ type: VerificationUrlType }>();
 
   const type = params?.type;
   const apiType = (

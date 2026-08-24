@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { customToast } from "@/lib/custom-toast";
 import { CertificateDetailSection } from "@/features/certificate/components/CertificatedetailSection";
 import { MahasiswaListSection } from "@/features/shared/components/form/MahasiswaListSection";
 import { DosenListSection } from "@/features/shared/components/form/DosenListSection";
@@ -58,7 +58,7 @@ export default function CreateCertificatePage() {
       const response = await sertifikasiService.createSertifikasi(payload);
 
       if (response.success) {
-        toast.success("Berhasil!", {
+        customToast.success("Berhasil!", {
           description: "Pengajuan Sertifikasi berhasil disimpan.",
         });
         router.push("/certificate");
@@ -69,7 +69,7 @@ export default function CreateCertificatePage() {
         error.response?.data?.message ||
         "Gagal menyimpan pengajuan sertifikasi.";
 
-      toast.error("Validasi Gagal", {
+      customToast.error("Validasi Gagal", {
         description: errorMsg,
       });
 

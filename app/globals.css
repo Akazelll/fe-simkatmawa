@@ -128,3 +128,51 @@
     @apply font-sans;
   }
 }
+
+/* Custom Sonner Toast Entrance & Exit Animations */
+html body [data-sonner-toaster] [data-sonner-toast],
+html body [data-sonner-toast] {
+  transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1), opacity 350ms ease, height 350ms ease !important;
+}
+
+/* Base mounting state */
+html body [data-sonner-toaster] [data-sonner-toast]:not([data-mounted='true']) {
+  transform: translate3d(120%, 0, 0) scale(0.9) !important;
+  opacity: 0 !important;
+}
+
+/* Mounted state (On-screen) */
+html body [data-sonner-toaster] [data-sonner-toast][data-mounted='true']:not([data-removed='true']) {
+  transform: translate3d(0, 0, 0) scale(1) !important;
+  opacity: 1 !important;
+}
+
+/* Exit state: Moving backward (bergeser mundur ke kanan) saat ditutup / menghilang */
+html body [data-sonner-toaster] [data-sonner-toast][data-removed='true'],
+html body [data-sonner-toaster] [data-sonner-toast][data-dismissed='true'],
+html body [data-sonner-toaster] [data-sonner-toast][data-swipe-out='true'],
+html body [data-sonner-toast][data-removed='true'] {
+  transform: translate3d(120%, 0, 0) scale(0.9) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: transform 450ms cubic-bezier(0.4, 0, 0.2, 1), opacity 350ms ease-out !important;
+}
+
+@keyframes shrinkProgress {
+  0% {
+    width: 100%;
+  }
+  100% {
+    width: 0%;
+  }
+}
+
+.group:hover .toast-progress {
+  animation-play-state: paused;
+}
+
+.cn-toast {
+  font-family: var(--font-sans);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}

@@ -27,8 +27,7 @@ Aplikasi web ini digunakan untuk mengelola pengajuan, verifikasi, dan rekapitula
 | --- | :---: | :---: | :---: |
 | **Dashboard** — ringkasan statistik & aktivitas terbaru | ✅ | ✅ | ✅ |
 | **Submission** — pengajuan Prestasi / Sertifikat / Rekognisi (CRUD milik sendiri) | ✅ | — | — |
-| **Verification** — verifikasi (approve/reject) pengajuan mahasiswa | — | ✅ | ✅ |
-| **History** — riwayat pengajuan yang sudah diproses | — | ✅ | ✅ |
+| **Daftar Pengajuan** — verifikasi, filter, sort & riwayat pengajuan mahasiswa | — | ✅ | ✅ |
 | **Queue Monitoring** — pemantauan antrian sinkronisasi & failed jobs | — | ✅ | ✅ |
 | **Activity Log** — log aktivitas + ekspor PDF | ✅ | ✅ | ✅ |
 | **User Management** — kelola pengguna | — | — | ✅ |

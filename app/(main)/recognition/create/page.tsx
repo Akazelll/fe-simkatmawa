@@ -1,6 +1,7 @@
 "use client";
+
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { RecognitionDetailSection } from "@/features/recognition/components/RecognitionDetailSection";
 import { FormErrorSummary } from "@/features/shared/components/form/FormErrorSummary";
@@ -18,11 +19,14 @@ import { RoleGuard } from "@/features/auth/components/RoleGuard";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { FormSkeleton } from "@/features/shared/components/FormSkeleton";
 
+import { customToast } from "@/lib/custom-toast";
 import { rekognisiService } from "@/features/recognition/services/rekognisiService";
 import { mapToRekognisiPayload } from "@/features/recognition/utils/rekognisiMapper";
 
 export default function CreateRecognitionPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const jenisGroupParam = searchParams.get("jenis_group");
   const { currentUser, isLoaded: isAuthLoaded } = useAuth();
   const mahasiswa = useFieldList(MAHASISWA_INITIAL);
   const dosen = useFieldList(DOSEN_INITIAL);
@@ -32,6 +36,10 @@ export default function CreateRecognitionPage() {
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string[]>
   >({});
+
+  const backUrl = jenisGroupParam
+    ? `/recognition?jenis_group=${jenisGroupParam}`
+    : `/recognition`;
 
   const prefilledRef = useRef(false);
   useEffect(() => {
@@ -62,19 +70,27 @@ export default function CreateRecognitionPage() {
 
       const response = await rekognisiService.createRekognisi(payload);
       if (response.success) {
-        router.push("/recognition");
+        customToast.success("Berhasil!", {
+          description: "Pengajuan rekognisi berhasil disimpan.",
+        });
+        router.push(backUrl);
+      } else {
+        const msg = response.message || "Gagal menyimpan pengajuan rekognisi.";
+        setErrorMsg(msg);
+        customToast.error("Gagal", { description: msg });
       }
     } catch (error: any) {
       if (error.response?.status === 422) {
         setValidationErrors(error.response.data.errors ?? {});
-        setErrorMsg(
-          "Terdapat kesalahan pada input form. Silakan periksa kembali.",
-        );
+        const msg = "Terdapat kesalahan pada input form. Silakan periksa kembali.";
+        setErrorMsg(msg);
+        customToast.error("Validasi Gagal", { description: msg });
       } else {
-        setErrorMsg(
+        const msg =
           error.response?.data?.message ||
-            "Gagal menyimpan pengajuan rekognisi.",
-        );
+          "Gagal menyimpan pengajuan rekognisi.";
+        setErrorMsg(msg);
+        customToast.error("Gagal", { description: msg });
       }
     } finally {
       setIsSubmitting(false);
@@ -119,7 +135,7 @@ export default function CreateRecognitionPage() {
               update={dosen.update}
             />
 
-            <FormFooter backHref='/recognition' />
+            <FormFooter backHref={backUrl} />
           </>
         )}
       </RoleGuard>

@@ -16,6 +16,7 @@ import {
 } from "@/features/shared/hooks/useFieldList";
 import { rekognisiService } from "@/features/recognition/services/rekognisiService";
 import { mapToRekognisiPayload } from "@/features/recognition/utils/rekognisiMapper";
+import { customToast } from "@/lib/custom-toast";
 import { Rekognisi } from "@/features/recognition/types";
 
 export function RekognisiEditForm({ detail }: { detail: Rekognisi }) {
@@ -52,15 +53,21 @@ export function RekognisiEditForm({ detail }: { detail: Rekognisi }) {
         payload,
       );
       if (response.success) {
+        customToast.success("Berhasil!", {
+          description: "Data pengajuan rekognisi berhasil diperbarui.",
+        });
         router.push(`/recognition/${detail.id}`);
       } else {
-        setErrorMsg(response.message || "Gagal memperbarui pengajuan.");
+        const msg = response.message || "Gagal memperbarui pengajuan.";
+        setErrorMsg(msg);
+        customToast.error("Gagal", { description: msg });
       }
     } catch (error: any) {
-      setErrorMsg(
+      const msg =
         error.response?.data?.message ||
-          "Gagal memperbarui pengajuan rekognisi.",
-      );
+        "Gagal memperbarui pengajuan rekognisi.";
+      setErrorMsg(msg);
+      customToast.error("Gagal", { description: msg });
     } finally {
       setIsSubmitting(false);
     }

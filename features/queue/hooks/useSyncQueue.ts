@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { toast } from "sonner";
+import { customToast } from "@/lib/custom-toast";
 import { syncQueueService } from "../services/syncQueueService";
 import type {
   SyncQueueItem,
@@ -78,14 +78,14 @@ export function useSyncQueue() {
       try {
         const res = await fn();
         if (res?.success === false) {
-          toast.error(res?.message || "Aksi gagal diproses");
+          customToast.error(res?.message || "Aksi gagal diproses");
           return res;
         }
-        toast.success(successMsg || res?.message || "Aksi berhasil diproses");
+        customToast.success(successMsg || res?.message || "Aksi berhasil diproses");
         await fetchData({ silent: true });
         return res;
       } catch (err: any) {
-        toast.error(
+        customToast.error(
           err?.response?.data?.message || "Terjadi kesalahan pada server",
         );
         throw err;

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { customToast } from "@/lib/custom-toast";
 import { authService } from "@/features/auth/services/authService";
 
 export function useLoginForm() {
@@ -30,20 +31,24 @@ export function useLoginForm() {
       });
 
       if (!result.success) {
-        setError(result.message || "Email atau password salah.");
+        const msg = result.message || "Email atau password salah.";
+        setError(msg);
+        customToast.error("Login Gagal", { description: msg });
         return;
       }
 
+      customToast.success("Selamat Datang!", {
+        description: "Berhasil masuk ke sistem SIMKATMAWA.",
+      });
       router.push("/dashboard");
     } catch (err: any) {
-      if (err.response?.status === 422) {
-        setError("Format email atau password tidak valid.");
-      } else {
-        setError(
-          err.response?.data?.message ||
-            "Terjadi kesalahan koneksi. Pastikan backend berjalan.",
-        );
-      }
+      const msg =
+        err.response?.status === 422
+          ? "Format email atau password tidak valid."
+          : err.response?.data?.message ||
+            "Terjadi kesalahan koneksi. Pastikan backend berjalan.";
+      setError(msg);
+      customToast.error("Login Gagal", { description: msg });
     } finally {
       setIsLoading(false);
     }

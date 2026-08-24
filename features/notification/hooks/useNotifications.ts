@@ -10,6 +10,12 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 // Re-sync berkala sebagai fallback bila koneksi WebSocket terputus.
 const POLL_INTERVAL_MS = 60_000;
 
+// ID notifikasi yang sudah pernah diproses secara global (disimpan dalam bentuk string untuk menghindari mismatch tipe number/string)
+const globalSeenNotificationIds = new Set<string>();
+
+const isAlreadySeen = (id: string | number) => globalSeenNotificationIds.has(String(id));
+const markAsSeen = (id: string | number) => globalSeenNotificationIds.add(String(id));
+
 /**
  * Hook notifikasi: load awal via REST, update real-time via Laravel Echo
  * (channel privat `notifications.{userId}`, event `.notification.new`).
@@ -28,11 +34,9 @@ export function useNotifications() {
     itemsRef.current = items;
   }, [items]);
 
-  // ID notifikasi yang sudah pernah diproses (di-toast atau di-load awal).
-  // Dipakai agar tiap notifikasi hanya memunculkan toast sekali, baik datang
-  // lewat WebSocket maupun lewat polling REST.
-  const seenIdsRef = useRef<Set<AppNotification["id"]>>(new Set());
-  const initializedRef = useRef(false);
+  // Guard agar Echo subscription hanya aktif satu kali (mencegah duplikat
+  // akibat React Strict Mode mount → unmount → mount).
+  const echoSubscribedRef = useRef(false);
 
   const fetchNotifications = useCallback(async () => {
     try {
@@ -43,18 +47,9 @@ export function useNotifications() {
 
       const list = Array.isArray(listRes?.data) ? listRes.data : [];
 
-      // Munculkan toast untuk notifikasi BARU yang masuk lewat REST/polling
-      // (mis. ketika WebSocket sempat terputus). Load pertama dilewati agar
-      // tidak memunculkan toast untuk seluruh riwayat sekaligus.
-      if (initializedRef.current) {
-        const fresh = list.filter(
-          (n) => !n.is_read && !seenIdsRef.current.has(n.id),
-        );
-        // Tampilkan dari terlama → terbaru agar yang terbaru muncul paling atas.
-        [...fresh].reverse().forEach((n) => showNotificationToast(n));
-      }
-      list.forEach((n) => seenIdsRef.current.add(n.id));
-      initializedRef.current = true;
+      // Catat seluruh ID notifikasi dari REST agar tidak terjadi duplikasi.
+      // REST polling TIDAK PERNAH memunculkan popup toast.
+      list.forEach((n) => markAsSeen(n.id));
 
       setItems(list);
       setUnreadCount(countRes?.unread_count ?? 0);
@@ -68,50 +63,71 @@ export function useNotifications() {
   // Load awal + fallback polling.
   useEffect(() => {
     if (!userId) return;
-    // Reset jejak saat user berganti agar riwayat user baru tidak ikut di-toast.
-    seenIdsRef.current = new Set();
-    initializedRef.current = false;
     fetchNotifications();
     const interval = setInterval(fetchNotifications, POLL_INTERVAL_MS);
     return () => clearInterval(interval);
   }, [userId, fetchNotifications]);
 
-  // Subscribe real-time.
+  // Subscribe real-time HANYA via Echo Reverb WebSocket untuk memunculkan popup Toast.
   useEffect(() => {
     if (!userId) return;
     const echo = getEcho();
     if (!echo) return;
 
-    const channelName = `notifications.${userId}`;
-    echo
-      .private(channelName)
-      .listen(".notification.new", (payload: AppNotification) => {
-        setItems((prev) =>
-          prev.some((n) => n.id === payload.id) ? prev : [payload, ...prev],
-        );
+    // Cegah double-subscribe (React Strict Mode / hot-reload)
+    if (echoSubscribedRef.current) return;
+    echoSubscribedRef.current = true;
 
-        // Hanya proses bila benar-benar baru (belum pernah di-toast via REST).
-        if (seenIdsRef.current.has(payload.id)) return;
-        seenIdsRef.current.add(payload.id);
-        setUnreadCount((c) => c + 1);
-        // Pop-up kustom di kanan atas saat notifikasi diterima.
-        showNotificationToast(payload);
-      });
+    const channelName = `notifications.${userId}`;
+    const channel = echo.private(channelName);
+
+    const handleNewNotification = (rawPayload: any) => {
+      const payload: AppNotification = rawPayload?.notification ?? rawPayload;
+      if (!payload || !payload.id) return;
+      const strId = String(payload.id);
+
+      setItems((prev) =>
+        prev.some((n) => String(n.id) === strId) ? prev : [payload, ...prev],
+      );
+
+      // HANYA Munculkan 1 toast per notifikasi real-time dari Reverb.
+      // Cek & tandai secara atomik untuk mencegah race condition.
+      if (isAlreadySeen(strId)) return;
+      markAsSeen(strId);
+
+      setUnreadCount((c) => c + 1);
+      showNotificationToast(payload);
+    };
+
+    try {
+      (channel as any).unbind?.(".notification.new");
+      (channel as any).unbind?.("notification.new");
+    } catch {
+      // Safe fallback
+    }
+
+    channel.listen(".notification.new", handleNewNotification);
 
     return () => {
-      echo.leave(channelName);
+      echoSubscribedRef.current = false;
+      try {
+        channel.stopListening(".notification.new", handleNewNotification);
+        echo.leave(channelName);
+      } catch {
+        // Safe fallback
+      }
     };
   }, [userId]);
 
   const markAsRead = useCallback(
     async (id: AppNotification["id"]) => {
-      const target = itemsRef.current.find((n) => n.id === id);
+      const target = itemsRef.current.find((n) => String(n.id) === String(id));
       if (!target || target.is_read) return;
 
       const nowIso = new Date().toISOString();
       setItems((prev) =>
         prev.map((n) =>
-          n.id === id ? { ...n, is_read: true, read_at: nowIso } : n,
+          String(n.id) === String(id) ? { ...n, is_read: true, read_at: nowIso } : n,
         ),
       );
       setUnreadCount((c) => Math.max(0, c - 1));
@@ -119,7 +135,6 @@ export function useNotifications() {
       try {
         await notificationService.markRead(String(id));
       } catch {
-        // Gagal — re-sync agar state kembali konsisten dengan backend.
         fetchNotifications();
       }
     },
@@ -128,17 +143,15 @@ export function useNotifications() {
 
   const removeNotification = useCallback(
     async (id: AppNotification["id"]) => {
-      const target = itemsRef.current.find((n) => n.id === id);
+      const target = itemsRef.current.find((n) => String(n.id) === String(id));
       if (!target) return;
 
-      // Optimistic: buang dari daftar + kurangi badge bila masih belum dibaca.
-      setItems((prev) => prev.filter((n) => n.id !== id));
+      setItems((prev) => prev.filter((n) => String(n.id) !== String(id)));
       if (!target.is_read) setUnreadCount((c) => Math.max(0, c - 1));
 
       try {
         await notificationService.remove(String(id));
       } catch {
-        // Gagal — re-sync agar state kembali konsisten dengan backend.
         fetchNotifications();
       }
     },

@@ -44,25 +44,18 @@ export function SubmissionStatsGrid() {
 
   const items = [
     {
-      label: "Total Submission",
+      label: "Total Keseluruhan",
       value: totalSubmissions,
       icon: LayoutDashboard,
       caption: "Keseluruhan",
       gradient: "from-indigo-500 to-indigo-600",
     },
     {
-      label: "Total Prestasi",
+      label: "Total Prestasi Mandiri",
       value: stats.prestasi,
       icon: Trophy,
       caption: "Lomba & Kompetisi",
       gradient: "from-amber-400 to-orange-500",
-    },
-    {
-      label: "Total Sertifikat",
-      value: stats.sertifikasi,
-      icon: FileText,
-      caption: "Pelatihan",
-      gradient: "from-sky-400 to-blue-500",
     },
     {
       label: "Total Rekognisi",
@@ -70,6 +63,13 @@ export function SubmissionStatsGrid() {
       icon: ScrollText,
       caption: "Pengakuan",
       gradient: "from-emerald-400 to-green-500",
+    },
+    {
+      label: "Total Sertifikasi",
+      value: stats.sertifikasi,
+      icon: FileText,
+      caption: "Pelatihan",
+      gradient: "from-sky-400 to-blue-500",
     },
   ];
 

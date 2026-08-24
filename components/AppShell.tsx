@@ -5,12 +5,12 @@ import { Navbar } from "@/components/Navbar";
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
-      <div className='flex min-h-screen w-full bg-slate-50/50'>
+      <div className='flex min-h-screen w-full bg-slate-50/50' suppressHydrationWarning>
         <AppSidebar />
-        <SidebarInset className='flex flex-col w-full'>
+        <SidebarInset className='flex flex-col w-full' suppressHydrationWarning>
           <Navbar />
-          <main className='flex-1 overflow-y-auto'>
-            <div className='px-8 pt-6 pb-8'>{children}</div>
+          <main className='flex-1 overflow-y-auto' suppressHydrationWarning>
+            <div className='px-8 pt-6 pb-8' suppressHydrationWarning>{children}</div>
           </main>
         </SidebarInset>
       </div>

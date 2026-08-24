@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import { verifikasiService } from "../services/verifikasiService";
 import { TipeKegiatan, VerifikasiQueryParams } from "../types";
 import { PaginationMeta } from "@/features/shared/types/pagination";
-import { PAGE_SIZE } from "@/features/shared/constants/pagination";
 
 export function useVerifikasiList(tipeKegiatan: TipeKegiatan) {
   const [data, setData] = useState<any[]>([]);
@@ -16,7 +15,7 @@ export function useVerifikasiList(tipeKegiatan: TipeKegiatan) {
   });
 
   const fetchList = useCallback(async () => {
-    setIsLoading(true);
+    setIsFetching(true);
     try {
       const response = await verifikasiService.getList(tipeKegiatan, {
         page: params.page || 1,
@@ -27,7 +26,7 @@ export function useVerifikasiList(tipeKegiatan: TipeKegiatan) {
         sort_dir: params.sort_dir,
       });
 
-      const mappedData = (response.data || []).map((item: any) => ({
+      const mappedData: PengajuanItem[] = (response.data || []).map((item: any) => ({
         ...item,
         tipe_kegiatan: tipeKegiatan,
         nama_kegiatan: item.lomba || item.nama || "Tanpa Nama",
@@ -42,9 +41,11 @@ export function useVerifikasiList(tipeKegiatan: TipeKegiatan) {
         setMeta(response.meta);
       }
     } catch (error) {
-      console.error(`Gagal memuat antrean ${tipeKegiatan}:`, error);
+      console.error(`Gagal memuat daftar ${tipeKegiatan}:`, error);
       setData([]);
+      setMeta(null);
     } finally {
+      setIsFetching(false);
       setIsLoading(false);
     }
   }, [tipeKegiatan, params]);
