@@ -12,3 +12,30 @@ export interface UpdateKemdikbudCredentialPayload {
   email: string;
   password: string;
 }
+
+// Alasan Penolakan
+export interface AlasanPenolakan {
+  id: number;
+  judul: string;
+  alasan: string;
+  is_active: boolean;
+  creator?: {
+    id: number;
+    name: string;
+  };
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface AlasanPenolakanInput {
+  judul: string;
+  alasan: string;
+  is_active?: boolean;
+}
+
+export interface AlasanPenolakanMeta {
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+}

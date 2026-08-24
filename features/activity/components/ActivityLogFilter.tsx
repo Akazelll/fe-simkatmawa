@@ -61,6 +61,7 @@ export function ActivityLogFilter({
     <FilterSection
       search={search}
       setSearch={onSearchChange}
+      searchPlaceholder="Cari aktivitas..."
       category={getActionLabel(actionValue)}
       setCategory={(label) => onActionChange(getActionValue(label))}
       categories={ACTION_OPTIONS}
